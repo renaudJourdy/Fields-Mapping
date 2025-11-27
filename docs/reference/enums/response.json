@@ -1,0 +1,1716 @@
+{
+    "results": [
+        {
+            "enum": "AccessoryConnectionEnum",
+            "values": [
+                {
+                    "value": 10,
+                    "name": "Wire",
+                    "fr": "Filaire",
+                    "en": "Wire"
+                },
+                {
+                    "value": 20,
+                    "name": "Bluetooth",
+                    "fr": "Bluetooth",
+                    "en": "Bluetooth"
+                },
+                {
+                    "value": 30,
+                    "name": "Wifi",
+                    "fr": "Wifi",
+                    "en": "Wifi"
+                }
+            ]
+        },
+        {
+            "enum": "AccessoryTypeEnum",
+            "values": [
+                {
+                    "value": 1,
+                    "name": "Immobilizer",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AccessoryTypeEnum/Immobilizer.svg",
+                    "fr": "Immobilisateur",
+                    "en": "Immobilizer"
+                },
+                {
+                    "value": 2,
+                    "name": "Temperature",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AccessoryTypeEnum/Temperature.svg",
+                    "fr": "Température",
+                    "en": "Temperature"
+                },
+                {
+                    "value": 3,
+                    "name": "Led",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AccessoryTypeEnum/Led.svg",
+                    "fr": "Led",
+                    "en": "Led"
+                },
+                {
+                    "value": 4,
+                    "name": "RfidReader",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AccessoryTypeEnum/RfidReader.svg",
+                    "fr": "Lecteur RFID",
+                    "en": "RFID Reader"
+                },
+                {
+                    "value": 6,
+                    "name": "FuelCapacity",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AccessoryTypeEnum/FuelCapacity.svg",
+                    "fr": "Carburant",
+                    "en": "Fuel"
+                },
+                {
+                    "value": 7,
+                    "name": "IButtonReader",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AccessoryTypeEnum/IButtonReader.svg",
+                    "fr": "Lecteur iButton",
+                    "en": "iButton Reader"
+                },
+                {
+                    "value": 8,
+                    "name": "Digicode",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AccessoryTypeEnum/Digicode.svg",
+                    "fr": "Digicode",
+                    "en": "Digicode"
+                },
+                {
+                    "value": 9,
+                    "name": "DoorOpening",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AccessoryTypeEnum/DoorOpening.svg",
+                    "fr": "Ouverture de porte",
+                    "en": "Door Opening"
+                },
+                {
+                    "value": 11,
+                    "name": "Buzzer",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AccessoryTypeEnum/Buzzer.svg",
+                    "fr": "Buzzer",
+                    "en": "Buzzer"
+                },
+                {
+                    "value": 13,
+                    "name": "AngleMovement",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AccessoryTypeEnum/AngleMovement.svg",
+                    "fr": "Angle",
+                    "en": "Angle Movement"
+                },
+                {
+                    "value": 15,
+                    "name": "Weight",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AccessoryTypeEnum/Weight.svg",
+                    "fr": "Poids",
+                    "en": "Weight"
+                },
+                {
+                    "value": 16,
+                    "name": "SosButton",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AccessoryTypeEnum/SosButton.svg",
+                    "fr": "SOS Button",
+                    "en": "SOS Button"
+                },
+                {
+                    "value": 17,
+                    "name": "ExternalCamera",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AccessoryTypeEnum/ExternalCamera.svg",
+                    "fr": "Caméra externe",
+                    "en": "ExternalCamera"
+                },
+                {
+                    "value": 18,
+                    "name": "MonitoringScreen",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AccessoryTypeEnum/MonitoringScreen.svg",
+                    "fr": "Écran de contrôle",
+                    "en": "Monitoring Screen"
+                },
+                {
+                    "value": 19,
+                    "name": "Can",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AccessoryTypeEnum/Can.svg",
+                    "fr": "CAN",
+                    "en": "CAN"
+                }
+            ]
+        },
+        {
+            "enum": "AssetStatusEnum",
+            "values": [
+                {
+                    "value": 0,
+                    "name": "Undefined",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AssetStatusEnum/Undefined.svg",
+                    "fr": "Non défini",
+                    "en": "Undefined"
+                },
+                {
+                    "value": 1,
+                    "name": "Operational",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AssetStatusEnum/Operational.svg",
+                    "fr": "Opérationnel",
+                    "en": "Operational"
+                },
+                {
+                    "value": 2,
+                    "name": "NonOperational",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AssetStatusEnum/NonOperational.svg",
+                    "fr": "Non-opérationnel",
+                    "en": "Non-Operational"
+                },
+                {
+                    "value": 3,
+                    "name": "InRepair",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AssetStatusEnum/InRepair.svg",
+                    "fr": "En réparation",
+                    "en": "In Repair"
+                },
+                {
+                    "value": 4,
+                    "name": "NotInstalled",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AssetStatusEnum/NotInstalled.svg",
+                    "fr": "Non installé",
+                    "en": "Not Installed"
+                }
+            ]
+        },
+        {
+            "enum": "AssetTypeEnum",
+            "values": [
+                {
+                    "value": 0,
+                    "name": "Undefined",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AssetTypeEnum/Undefined.svg",
+                    "fr": "Non défini",
+                    "en": "Undefined"
+                },
+                {
+                    "value": 10,
+                    "name": "Vehicle",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AssetTypeEnum/Vehicle.svg",
+                    "fr": "Véhicule",
+                    "en": "Vehicle"
+                },
+                {
+                    "value": 20,
+                    "name": "Equipment",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AssetTypeEnum/Equipment.svg",
+                    "fr": "Équipement",
+                    "en": "Equipment"
+                },
+                {
+                    "value": 30,
+                    "name": "Site",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AssetTypeEnum/Site.svg",
+                    "fr": "Site",
+                    "en": "Site"
+                },
+                {
+                    "value": 40,
+                    "name": "Phone",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/AssetTypeEnum/Phone.svg",
+                    "fr": "Téléphone",
+                    "en": "Phone"
+                }
+            ]
+        },
+        {
+            "enum": "CustomerBusinessEnum",
+            "values": [
+                {
+                    "value": 0,
+                    "name": "Undefined",
+                    "fr": "Non défini",
+                    "en": "Undefined"
+                },
+                {
+                    "value": 20,
+                    "name": "Business",
+                    "fr": "Business",
+                    "en": "Business"
+                },
+                {
+                    "value": 40,
+                    "name": "Individual",
+                    "fr": "Individuel",
+                    "en": "Individual"
+                }
+            ]
+        },
+        {
+            "enum": "CustomerRoleEnum",
+            "values": [
+                {
+                    "value": 0,
+                    "name": "None",
+                    "fr": "Aucun",
+                    "en": "None"
+                },
+                {
+                    "value": 10,
+                    "name": "CreateSubCustomer",
+                    "fr": "Création de sous-client",
+                    "en": "Create Sub Customer"
+                }
+            ]
+        },
+        {
+            "enum": "CustomerRelationTypeEnum",
+            "values": [
+                {
+                    "value": 10,
+                    "name": "Subsidiary",
+                    "fr": "Filiale",
+                    "en": "Subsidiary"
+                },
+                {
+                    "value": 20,
+                    "name": "Renter",
+                    "fr": "Loueur",
+                    "en": "Renter"
+                },
+                {
+                    "value": 30,
+                    "name": "DealerCustomer",
+                    "fr": "Revendeur",
+                    "en": "Dealer Customer"
+                }
+            ]
+        },
+        {
+            "enum": "DayOfTheWeek",
+            "values": [
+                {
+                    "value": 1,
+                    "name": "Monday",
+                    "fr": "Lundi",
+                    "en": "Monday"
+                },
+                {
+                    "value": 2,
+                    "name": "Tuesday",
+                    "fr": "Mardi",
+                    "en": "Tuesday"
+                },
+                {
+                    "value": 3,
+                    "name": "Wednesday",
+                    "fr": "Mercredi",
+                    "en": "Wednesday"
+                },
+                {
+                    "value": 4,
+                    "name": "Thursday",
+                    "fr": "Jeudi",
+                    "en": "Thursday"
+                },
+                {
+                    "value": 5,
+                    "name": "Friday",
+                    "fr": "Vendredi",
+                    "en": "Friday"
+                },
+                {
+                    "value": 6,
+                    "name": "Saturday",
+                    "fr": "Samedi",
+                    "en": "Saturday"
+                },
+                {
+                    "value": 0,
+                    "name": "Sunday",
+                    "fr": "Dimanche",
+                    "en": "Sunday"
+                },
+                {
+                    "value": 7,
+                    "name": "Day",
+                    "fr": "Jour",
+                    "en": "Day"
+                },
+                {
+                    "value": 8,
+                    "name": "Weekday",
+                    "fr": "Semaine",
+                    "en": "Weekday"
+                },
+                {
+                    "value": 9,
+                    "name": "WeekendDay",
+                    "fr": "Weekend",
+                    "en": "WeekendDay"
+                }
+            ]
+        },
+        {
+            "enum": "EmbeddedModuleActionEnum",
+            "values": [
+                {
+                    "value": 1,
+                    "name": "Enable"
+                },
+                {
+                    "value": 2,
+                    "name": "Disable"
+                }
+            ]
+        },
+        {
+            "enum": "EmbeddedModuleAuthorizationTypeEnum",
+            "values": [
+                {
+                    "value": 1,
+                    "name": "ApiKey"
+                },
+                {
+                    "value": 2,
+                    "name": "UserSession"
+                }
+            ]
+        },
+        {
+            "enum": "EmbeddedModuleDisplayMethodEnum",
+            "values": [
+                {
+                    "value": 1,
+                    "name": "NewTab"
+                },
+                {
+                    "value": 2,
+                    "name": "Embedded"
+                }
+            ]
+        },
+        {
+            "enum": "EndpointStatusEnum",
+            "values": [
+                {
+                    "value": 0,
+                    "name": "Undefined",
+                    "fr": "Non défini",
+                    "en": "Undefined"
+                },
+                {
+                    "value": 10,
+                    "name": "Active",
+                    "fr": "Actif",
+                    "en": "Active"
+                },
+                {
+                    "value": 20,
+                    "name": "Suspend",
+                    "fr": "Suspendu",
+                    "en": "Suspend"
+                },
+                {
+                    "value": 30,
+                    "name": "Hold",
+                    "fr": "En attente",
+                    "en": "Hold"
+                },
+                {
+                    "value": 40,
+                    "name": "PreActive",
+                    "fr": "Pré-activé",
+                    "en": "Pre Active"
+                },
+                {
+                    "value": 50,
+                    "name": "ActiveTest",
+                    "fr": "En teste",
+                    "en": "ActiveTest"
+                },
+                {
+                    "value": 60,
+                    "name": "ActiveInventory",
+                    "fr": "Inventaire actif",
+                    "en": "ActiveInventory"
+                }
+            ]
+        },
+        {
+            "enum": "EnergyTypeEnum",
+            "values": [
+                {
+                    "value": 0,
+                    "name": "Undefined",
+                    "fr": "Non défini",
+                    "en": "Undefined"
+                },
+                {
+                    "value": 1,
+                    "name": "Gasoline",
+                    "fr": "Essence",
+                    "en": "Gasoline"
+                },
+                {
+                    "value": 5,
+                    "name": "UnleadedGasoline",
+                    "fr": "Essence Sans Plomb",
+                    "en": "Unleaded Gasoline"
+                },
+                {
+                    "value": 2,
+                    "name": "Diesel",
+                    "fr": "Diesel",
+                    "en": "Diesel"
+                },
+                {
+                    "value": 3,
+                    "name": "BioDiesel",
+                    "fr": "Bio-Diesel",
+                    "en": "Bio-Diesel"
+                },
+                {
+                    "value": 6,
+                    "name": "BioEthanol",
+                    "fr": "Bio-Éthanol",
+                    "en": "Bio-Ethanol"
+                },
+                {
+                    "value": 4,
+                    "name": "Ethanol",
+                    "fr": "Éthanol",
+                    "en": "Ethanol"
+                },
+                {
+                    "value": 7,
+                    "name": "Gaz",
+                    "fr": "Gaz",
+                    "en": "Gaz"
+                },
+                {
+                    "value": 8,
+                    "name": "Hybrid",
+                    "fr": "Hybride",
+                    "en": "Hybrid"
+                },
+                {
+                    "value": 9,
+                    "name": "Other",
+                    "fr": "Autre",
+                    "en": "Other"
+                },
+                {
+                    "value": 10,
+                    "name": "Electric",
+                    "fr": "Électrique",
+                    "en": "Electric"
+                }
+            ]
+        },
+        {
+            "enum": "EnvironmentEnum",
+            "values": [
+                {
+                    "value": 10,
+                    "name": "DEV"
+                },
+                {
+                    "value": 20,
+                    "name": "PR"
+                }
+            ]
+        },
+        {
+            "enum": "EquipmentTypeEnum",
+            "values": [
+                {
+                    "value": 0,
+                    "name": "Undefined",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/EquipmentTypeEnum/Undefined.svg",
+                    "fr": "Non défini",
+                    "en": "Undefined"
+                },
+                {
+                    "value": 1,
+                    "name": "FuelTank",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/EquipmentTypeEnum/FuelTank.svg",
+                    "fr": "Cuve à carburant",
+                    "en": "Fuel Tank"
+                },
+                {
+                    "value": 2,
+                    "name": "ElectricGenerator",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/EquipmentTypeEnum/ElectricGenerator.svg",
+                    "fr": "Générateur électrique",
+                    "en": "Electric Generator"
+                }
+            ]
+        },
+        {
+            "enum": "FuelTypeEnum",
+            "values": [
+                {
+                    "value": 2,
+                    "name": "Digital",
+                    "fr": "Digitale",
+                    "en": "Digital"
+                },
+                {
+                    "value": 3,
+                    "name": "Analogic",
+                    "fr": "Analogique",
+                    "en": "Analogic"
+                }
+            ]
+        },
+        {
+            "enum": "GatewayCommandEnum",
+            "values": [
+                {
+                    "value": 1,
+                    "name": "GetRecord"
+                },
+                {
+                    "value": 2,
+                    "name": "WebConnect"
+                },
+                {
+                    "value": 3,
+                    "name": "CpuReset"
+                },
+                {
+                    "value": 4,
+                    "name": "OpenDoor"
+                },
+                {
+                    "value": 5,
+                    "name": "CloseDoor"
+                },
+                {
+                    "value": 6,
+                    "name": "KeepOnline"
+                },
+                {
+                    "value": 7,
+                    "name": "Immobilize"
+                },
+                {
+                    "value": 8,
+                    "name": "Unimmobilize"
+                },
+                {
+                    "value": 9,
+                    "name": "EnableEngineHoursOnCounter"
+                },
+                {
+                    "value": 13,
+                    "name": "EnableDigitalOutput"
+                },
+                {
+                    "value": 14,
+                    "name": "EnableIButton"
+                },
+                {
+                    "value": 15,
+                    "name": "DisableIButton"
+                },
+                {
+                    "value": 10,
+                    "name": "SetSmsLogin"
+                },
+                {
+                    "value": 11,
+                    "name": "SetSmsPassword"
+                },
+                {
+                    "value": 12,
+                    "name": "SetKey"
+                }
+            ]
+        },
+        {
+            "enum": "GatewayCounterTypeEnum",
+            "values": [
+                {
+                    "value": 0,
+                    "name": "Undefined",
+                    "fr": "Non défini",
+                    "en": "Undefined"
+                },
+                {
+                    "value": 1,
+                    "name": "Odometer",
+                    "fr": "Compteur kilométrique",
+                    "en": "Odometer"
+                },
+                {
+                    "value": 2,
+                    "name": "EngineHours",
+                    "fr": "Compteur d'heures moteur",
+                    "en": "Engine Hours Counter"
+                },
+                {
+                    "value": 3,
+                    "name": "EngineHoursOnCounter",
+                    "fr": "Compteur d'heures sur moteur",
+                    "en": "Engine Hours On Counter"
+                }
+            ]
+        },
+        {
+            "enum": "GatewayFeatureEnum",
+            "values": [
+                {
+                    "value": 100,
+                    "name": "TrackingHistorique"
+                },
+                {
+                    "value": 101,
+                    "name": "EngineHoursMileage"
+                },
+                {
+                    "value": 102,
+                    "name": "EcoConduite"
+                },
+                {
+                    "value": 103,
+                    "name": "Can"
+                },
+                {
+                    "value": 104,
+                    "name": "WaterproofDustproof"
+                },
+                {
+                    "value": 105,
+                    "name": "AdvancedDriverAssistanceSystems"
+                },
+                {
+                    "value": 106,
+                    "name": "WifiHubspot"
+                },
+                {
+                    "value": 107,
+                    "name": "HighVoltageReady"
+                },
+                {
+                    "value": 108,
+                    "name": "Forms"
+                },
+                {
+                    "value": 109,
+                    "name": "ConnectedLocalAssets"
+                },
+                {
+                    "value": 1000,
+                    "name": "VideoStreaming"
+                },
+                {
+                    "value": 2000,
+                    "name": "VideoLocalStorage"
+                }
+            ]
+        },
+        {
+            "enum": "GatewayMovementStatusEnum",
+            "values": [
+                {
+                    "value": 10,
+                    "name": "Parked",
+                    "fr": "Garé",
+                    "en": "Parked"
+                },
+                {
+                    "value": 20,
+                    "name": "Moving",
+                    "fr": "En mouvement",
+                    "en": "Moving"
+                },
+                {
+                    "value": 30,
+                    "name": "Stopped",
+                    "fr": "À l'arrêt",
+                    "en": "Stopped"
+                }
+            ]
+        },
+        {
+            "enum": "GatewayConnectionStatusEnum",
+            "values": [
+                {
+                    "value": 10,
+                    "name": "SignalLost",
+                    "fr": "Aucun signal",
+                    "en": "Signal Lost"
+                },
+                {
+                    "value": 20,
+                    "name": "JustRegistered",
+                    "fr": "Créé",
+                    "en": "Just Registered"
+                },
+                {
+                    "value": 22,
+                    "name": "JustReplaced",
+                    "fr": "Remplacé",
+                    "en": "Just Replaced"
+                },
+                {
+                    "value": 30,
+                    "name": "Offline",
+                    "fr": "Hors ligne",
+                    "en": "Offline"
+                },
+                {
+                    "value": 40,
+                    "name": "Idle",
+                    "fr": "Inactif",
+                    "en": "Idle"
+                },
+                {
+                    "value": 50,
+                    "name": "Active",
+                    "fr": "Actif",
+                    "en": "Active"
+                }
+            ]
+        },
+        {
+            "enum": "LocationTypeEnum",
+            "values": [
+                {
+                    "value": 1,
+                    "name": "Geofence"
+                },
+                {
+                    "value": 2,
+                    "name": "Poi"
+                }
+            ]
+        },
+        {
+            "enum": "LocationGeofenceTypeEnum",
+            "values": [
+                {
+                    "value": 0,
+                    "name": "Unknown"
+                },
+                {
+                    "value": 1,
+                    "name": "Circle"
+                },
+                {
+                    "value": 2,
+                    "name": "Polygon"
+                },
+                {
+                    "value": 3,
+                    "name": "Sausage"
+                }
+            ]
+        },
+        {
+            "enum": "LogLevel",
+            "values": [
+                {
+                    "value": 10,
+                    "name": "Debug"
+                },
+                {
+                    "value": 20,
+                    "name": "Info"
+                },
+                {
+                    "value": 30,
+                    "name": "Warn"
+                },
+                {
+                    "value": 40,
+                    "name": "Error"
+                }
+            ]
+        },
+        {
+            "enum": "ManufacturerTypeEnum",
+            "values": [
+                {
+                    "value": 0,
+                    "name": "Undefined",
+                    "fr": "Undefined",
+                    "en": "Undefined"
+                },
+                {
+                    "value": 10,
+                    "name": "Teltonika",
+                    "fr": "Teltonika",
+                    "en": "Teltonika"
+                },
+                {
+                    "value": 20,
+                    "name": "Queclink",
+                    "fr": "Queclink",
+                    "en": "Queclink"
+                },
+                {
+                    "value": 30,
+                    "name": "GalileoSky",
+                    "fr": "GalileoSky",
+                    "en": "GalileoSky"
+                },
+                {
+                    "value": 50,
+                    "name": "Howen",
+                    "fr": "Howen",
+                    "en": "Howen"
+                },
+                {
+                    "value": 60,
+                    "name": "Ruptela",
+                    "fr": "Ruptela",
+                    "en": "Ruptela"
+                },
+                {
+                    "value": 70,
+                    "name": "Careu",
+                    "fr": "Careu",
+                    "en": "Careu"
+                },
+                {
+                    "value": 80,
+                    "name": "JimiLab",
+                    "fr": "Careu",
+                    "en": "Careu"
+                },
+                {
+                    "value": 100,
+                    "name": "Smartphone",
+                    "fr": "Smartphone",
+                    "en": "Smartphone"
+                }
+            ]
+        },
+        {
+            "enum": "OperationStatusEnum",
+            "values": [
+                {
+                    "value": 10,
+                    "name": "Pending",
+                    "fr": "En attente",
+                    "en": "Pending"
+                },
+                {
+                    "value": 20,
+                    "name": "Configuration",
+                    "fr": "En configuration",
+                    "en": "Configuration"
+                },
+                {
+                    "value": 30,
+                    "name": "Configured",
+                    "fr": "Configuré",
+                    "en": "Configured"
+                },
+                {
+                    "value": 50,
+                    "name": "Ongoing",
+                    "fr": "En cours",
+                    "en": "Ongoing"
+                },
+                {
+                    "value": 60,
+                    "name": "Verified",
+                    "fr": "Vérifié",
+                    "en": "Verified"
+                },
+                {
+                    "value": 70,
+                    "name": "Done",
+                    "fr": "Terminé",
+                    "en": "Done"
+                },
+                {
+                    "value": 80,
+                    "name": "Closed",
+                    "fr": "Archivé",
+                    "en": "Closed"
+                }
+            ]
+        },
+        {
+            "enum": "OperationConfigurationStatusEnum",
+            "values": [
+                {
+                    "value": 10,
+                    "name": "Pending",
+                    "fr": "En attente",
+                    "en": "Pending"
+                },
+                {
+                    "value": 20,
+                    "name": "SimCardConfigured",
+                    "fr": "Carte SIM configurée",
+                    "en": "SIM Card Configured"
+                },
+                {
+                    "value": 30,
+                    "name": "GatewayConfigured",
+                    "fr": "Gateway configurée",
+                    "en": "Gateway Configured"
+                },
+                {
+                    "value": 50,
+                    "name": "AccessoriesConfigured",
+                    "fr": "Accessoires configurés",
+                    "en": "Accessories Configured"
+                },
+                {
+                    "value": 55,
+                    "name": "Verified",
+                    "fr": "Vérifié",
+                    "en": "Verified"
+                },
+                {
+                    "value": 60,
+                    "name": "Done",
+                    "fr": "Terminé",
+                    "en": "Done"
+                }
+            ]
+        },
+        {
+            "enum": "OperationTypeEnum",
+            "values": [
+                {
+                    "value": 10,
+                    "name": "Installation",
+                    "fr": "Installation",
+                    "en": "Installation"
+                },
+                {
+                    "value": 20,
+                    "name": "GatewayReplacement",
+                    "fr": "Remplacement de gateway",
+                    "en": "Gateway Replacement"
+                },
+                {
+                    "value": 30,
+                    "name": "GatewayUninstallation",
+                    "fr": "Désinstallation de gateway",
+                    "en": "Gateway Uninstallation"
+                }
+            ]
+        },
+        {
+            "enum": "OperatorTypeEnum",
+            "values": [
+                {
+                    "value": 0,
+                    "name": "Undefined",
+                    "fr": "Non défini",
+                    "en": "Undefined"
+                },
+                {
+                    "value": 10,
+                    "name": "International",
+                    "fr": "International",
+                    "en": "International"
+                },
+                {
+                    "value": 20,
+                    "name": "Locale",
+                    "fr": "Local",
+                    "en": "Locale"
+                },
+                {
+                    "value": 30,
+                    "name": "Caburn",
+                    "fr": "Caburn",
+                    "en": "Caburn"
+                },
+                {
+                    "value": 40,
+                    "name": "Matooma",
+                    "fr": "Matooma",
+                    "en": "Matooma"
+                }
+            ]
+        },
+        {
+            "enum": "ProviderPlanEnum",
+            "values": [
+                {
+                    "value": 1,
+                    "name": "Default"
+                },
+                {
+                    "value": 2,
+                    "name": "Premium"
+                }
+            ]
+        },
+        {
+            "enum": "ProviderReportEnum",
+            "values": [
+                {
+                    "value": 10,
+                    "name": "TripsAndStops",
+                    "fr": "Trajets et arrêts",
+                    "en": "Trips And Stops"
+                },
+                {
+                    "value": 20,
+                    "name": "EcoDriving",
+                    "fr": "Éco-conduite",
+                    "en": "Eco-Driving"
+                },
+                {
+                    "value": 30,
+                    "name": "Geofence",
+                    "fr": "Geofence",
+                    "en": "Geofence"
+                },
+                {
+                    "value": 40,
+                    "name": "Poi",
+                    "fr": "POI",
+                    "en": "POI"
+                }
+            ]
+        },
+        {
+            "enum": "ProviderTypeEnum",
+            "values": [
+                {
+                    "value": 10,
+                    "name": "TrackingFleeti",
+                    "fr": "Tracking Fleeti",
+                    "en": "Tracking Fleeti"
+                },
+                {
+                    "value": 30,
+                    "name": "Hiboo",
+                    "fr": "Hiboo",
+                    "en": "Hiboo"
+                }
+            ]
+        },
+        {
+            "enum": "ReportStateEnum",
+            "values": [
+                {
+                    "value": 0,
+                    "name": "None",
+                    "fr": "Aucun",
+                    "en": "None"
+                },
+                {
+                    "value": 10,
+                    "name": "Waiting",
+                    "fr": "En attente",
+                    "en": "Waiting"
+                },
+                {
+                    "value": 20,
+                    "name": "Loading",
+                    "fr": "En cours",
+                    "en": "Loading"
+                },
+                {
+                    "value": 30,
+                    "name": "Error",
+                    "fr": "En erreur",
+                    "en": "Error"
+                },
+                {
+                    "value": 100,
+                    "name": "Done",
+                    "fr": "Terminé",
+                    "en": "Done"
+                }
+            ]
+        },
+        {
+            "enum": "ReportTypeEnum",
+            "values": [
+                {
+                    "value": 0,
+                    "name": "Unknown",
+                    "fr": "Inconnu",
+                    "en": "Unknown"
+                },
+                {
+                    "value": 1,
+                    "name": "RmrReport",
+                    "fr": "RMR",
+                    "en": "RMR"
+                },
+                {
+                    "value": 2,
+                    "name": "LocationVisitReport",
+                    "fr": "Visites",
+                    "en": "Location Visits"
+                },
+                {
+                    "value": 3,
+                    "name": "FuelReport",
+                    "fr": "Carburant",
+                    "en": "Fuel"
+                },
+                {
+                    "value": 4,
+                    "name": "RentalReport",
+                    "fr": "Location",
+                    "en": "Rental"
+                }
+            ]
+        },
+        {
+            "enum": "ResultEnum",
+            "values": [
+                {
+                    "value": 1,
+                    "name": "Ok",
+                    "fr": "OK",
+                    "en": "OK"
+                },
+                {
+                    "value": 2,
+                    "name": "NOk",
+                    "fr": "NOk",
+                    "en": "NOk"
+                },
+                {
+                    "value": 3,
+                    "name": "Neutral",
+                    "fr": "Neutre",
+                    "en": "Neutral"
+                }
+            ]
+        },
+        {
+            "enum": "ScenarioActionTypeEnum",
+            "values": [
+                {
+                    "value": 1,
+                    "name": "MailNotification",
+                    "fr": "Email notification",
+                    "en": "Mail Notification"
+                }
+            ]
+        },
+        {
+            "enum": "ScenarioRecurrenceTypeEnum",
+            "values": [
+                {
+                    "value": 0,
+                    "name": "OneTime",
+                    "fr": "Une fois",
+                    "en": "One Time"
+                },
+                {
+                    "value": 10,
+                    "name": "Daily",
+                    "fr": "Journalier",
+                    "en": "Daily"
+                },
+                {
+                    "value": 20,
+                    "name": "Weekly",
+                    "fr": "Hebdomadaire",
+                    "en": "Weekly"
+                },
+                {
+                    "value": 30,
+                    "name": "Monthly",
+                    "fr": "Mensuel",
+                    "en": "Monthly"
+                },
+                {
+                    "value": 40,
+                    "name": "Yearly",
+                    "fr": "Annuel",
+                    "en": "Yearly"
+                }
+            ]
+        },
+        {
+            "enum": "SensorTypeEnum",
+            "values": [
+                {
+                    "value": 0,
+                    "name": "Undefined",
+                    "fr": "Non défini",
+                    "en": "Undefined"
+                },
+                {
+                    "value": 1,
+                    "name": "HardwareMileage",
+                    "fr": "Kilométrage Hardware",
+                    "en": "Hardware Mileage"
+                },
+                {
+                    "value": 2,
+                    "name": "Temperature",
+                    "fr": "Température",
+                    "en": "Temperature"
+                },
+                {
+                    "value": 3,
+                    "name": "FuelBleSensor",
+                    "fr": "Capteur carburant BLE",
+                    "en": "Fuel BLE Sensor"
+                },
+                {
+                    "value": 4,
+                    "name": "CanTotalFuelUsed",
+                    "fr": "CAN : Total carburant consommé",
+                    "en": "CAN: Total Fuel Used"
+                },
+                {
+                    "value": 5,
+                    "name": "CanFuelLevelLitre",
+                    "fr": "CAN : Niveau carburant en L",
+                    "en": "CAN: Fuel Level liter"
+                },
+                {
+                    "value": 6,
+                    "name": "CanRelativeFuelConsumption",
+                    "fr": "CAN : consommation carburant relative",
+                    "en": "CAN: Relative Fuel Consumption"
+                },
+                {
+                    "value": 7,
+                    "name": "CanSpeed",
+                    "fr": "CAN : vitesse",
+                    "en": "CAN: Speed"
+                },
+                {
+                    "value": 8,
+                    "name": "CanMileage",
+                    "fr": "CAN : kilométrage",
+                    "en": "CAN: Mileage"
+                },
+                {
+                    "value": 9,
+                    "name": "CanRelativeMileage",
+                    "fr": "CAN : kilométrage relatif",
+                    "en": "CAN: Relative Mileage"
+                },
+                {
+                    "value": 10,
+                    "name": "CanRpm",
+                    "fr": "CAN : RPM",
+                    "en": "CAN: RPM"
+                },
+                {
+                    "value": 11,
+                    "name": "CanCoolantTemperature",
+                    "fr": "CAN : température liquide de refroidissement",
+                    "en": "CAN: Coolant Temperature"
+                },
+                {
+                    "value": 12,
+                    "name": "CanEngineHours",
+                    "fr": "CAN : compteur d'heures moteur",
+                    "en": "CAN: Engine Hours Counter"
+                },
+                {
+                    "value": 13,
+                    "name": "Ignition",
+                    "fr": "Allumage",
+                    "en": "Ignition"
+                },
+                {
+                    "value": 15,
+                    "name": "FuelWireDigital",
+                    "fr": "Carburant filaire digital",
+                    "en": "Fuel Wire Digital"
+                },
+                {
+                    "value": 16,
+                    "name": "IgnitionOnCounter",
+                    "fr": "Compteur d'heures moteur au démarrage",
+                    "en": "Ignition Engine Hours Counter"
+                },
+                {
+                    "value": 17,
+                    "name": "Humidity",
+                    "fr": "Humidité",
+                    "en": "Humidity"
+                },
+                {
+                    "value": 18,
+                    "name": "FuelWireAnalogic",
+                    "fr": "Carburant filaire analogique",
+                    "en": "Fuel Wire Analogic"
+                },
+                {
+                    "value": 19,
+                    "name": "DoorOpening",
+                    "fr": "Ouverture de porte",
+                    "en": "Door Opening"
+                },
+                {
+                    "value": 20,
+                    "name": "AngleMovement",
+                    "fr": "Angle",
+                    "en": "AngleMovement"
+                },
+                {
+                    "value": 21,
+                    "name": "CanFuelLevelPercent",
+                    "fr": "CAN : Niveau carburant en %",
+                    "en": "CAN: Fuel Level %"
+                },
+                {
+                    "value": 22,
+                    "name": "DigitalOutput",
+                    "fr": "Sortie Digitale",
+                    "en": "Digital Output"
+                }
+            ]
+        },
+        {
+            "enum": "SiteTypeEnum",
+            "values": [
+                {
+                    "value": 0,
+                    "name": "Undefined",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/SiteTypeEnum/Undefined.svg",
+                    "fr": "Non défini",
+                    "en": "Undefined"
+                },
+                {
+                    "value": 10,
+                    "name": "Coldroom",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/SiteTypeEnum/Coldroom.svg",
+                    "fr": "Chambre froide",
+                    "en": "Coldroom"
+                }
+            ]
+        },
+        {
+            "enum": "StorageAccessTierEnum",
+            "values": [
+                {
+                    "value": 1,
+                    "name": "Hot"
+                },
+                {
+                    "value": 2,
+                    "name": "Cool"
+                },
+                {
+                    "value": 3,
+                    "name": "Archive"
+                },
+                {
+                    "value": 4,
+                    "name": "Premium"
+                },
+                {
+                    "value": 5,
+                    "name": "Cold"
+                }
+            ]
+        },
+        {
+            "enum": "StorageCollectionEnum",
+            "values": [
+                {
+                    "value": 1,
+                    "name": "Customers"
+                },
+                {
+                    "value": 2,
+                    "name": "Users"
+                },
+                {
+                    "value": 3,
+                    "name": "Operations"
+                },
+                {
+                    "value": 4,
+                    "name": "Gateways"
+                },
+                {
+                    "value": 5,
+                    "name": "Countries"
+                },
+                {
+                    "value": 6,
+                    "name": "Jobs"
+                },
+                {
+                    "value": 10,
+                    "name": "ReceivedEvent"
+                },
+                {
+                    "value": 11,
+                    "name": "Reports"
+                },
+                {
+                    "value": 12,
+                    "name": "Histories"
+                },
+                {
+                    "value": 20,
+                    "name": "Images"
+                },
+                {
+                    "value": 30,
+                    "name": "Languages"
+                }
+            ]
+        },
+        {
+            "enum": "UserRoleEnum",
+            "values": [
+                {
+                    "value": 10,
+                    "name": "FleetiSuperAdmin",
+                    "fr": "Super admin",
+                    "en": "Super Admin"
+                },
+                {
+                    "value": 20,
+                    "name": "FleetiAdmin",
+                    "fr": "Admin",
+                    "en": "Admin"
+                },
+                {
+                    "value": 25,
+                    "name": "FleetiCustomerServiceAdmin",
+                    "fr": "Service client admin",
+                    "en": "Customer Service Admin"
+                },
+                {
+                    "value": 30,
+                    "name": "FleetiCustomerService",
+                    "fr": "Service client",
+                    "en": "Customer Service"
+                },
+                {
+                    "value": 40,
+                    "name": "FleetiSales",
+                    "fr": "Ventes",
+                    "en": "Sales"
+                },
+                {
+                    "value": 50,
+                    "name": "FleetiOperator",
+                    "fr": "Opérateur",
+                    "en": "Operator"
+                },
+                {
+                    "value": 55,
+                    "name": "FleetiTechnicianAdmin",
+                    "fr": "Technicien admin",
+                    "en": "Technician Admin"
+                },
+                {
+                    "value": 56,
+                    "name": "FleetiTechnician",
+                    "fr": "Technicien",
+                    "en": "Technician"
+                },
+                {
+                    "value": 100,
+                    "name": "Customer",
+                    "fr": "Client",
+                    "en": "Customer"
+                }
+            ]
+        },
+        {
+            "enum": "UserCustomerRoleEnum",
+            "values": [
+                {
+                    "value": 10,
+                    "name": "Admin",
+                    "fr": "Admin",
+                    "en": "Admin"
+                },
+                {
+                    "value": 20,
+                    "name": "Basic",
+                    "fr": "Basic",
+                    "en": "Basic"
+                }
+            ]
+        },
+        {
+            "enum": "VehicleTypeEnum",
+            "values": [
+                {
+                    "value": 0,
+                    "name": "Undefined",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/Undefined.svg",
+                    "fr": "Non défini",
+                    "en": "Undefined"
+                },
+                {
+                    "value": 1,
+                    "name": "Car",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/Car.svg",
+                    "fr": "Voiture",
+                    "en": "Car"
+                },
+                {
+                    "value": 2,
+                    "name": "Boat",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/Boat.svg",
+                    "fr": "Bateau",
+                    "en": "Boat"
+                },
+                {
+                    "value": 3,
+                    "name": "Truck",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/Truck.svg",
+                    "fr": "Camion",
+                    "en": "Truck"
+                },
+                {
+                    "value": 4,
+                    "name": "Heavy",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/Heavy.svg",
+                    "fr": "Poids lourd",
+                    "en": "Heavy"
+                },
+                {
+                    "value": 5,
+                    "name": "Agricultural",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/Agricultural.svg",
+                    "fr": "Agricole",
+                    "en": "Agricultural"
+                },
+                {
+                    "value": 6,
+                    "name": "Minivan",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/Minivan.svg",
+                    "fr": "Monospace",
+                    "en": "Minivan"
+                },
+                {
+                    "value": 7,
+                    "name": "Van",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/Van.svg",
+                    "fr": "Fourgon",
+                    "en": "Van"
+                },
+                {
+                    "value": 9,
+                    "name": "Pickup",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/Pickup.svg",
+                    "fr": "Pick-up",
+                    "en": "Pickup"
+                },
+                {
+                    "value": 10,
+                    "name": "Minibus",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/Minibus.svg",
+                    "fr": "Minibus",
+                    "en": "Minibus"
+                },
+                {
+                    "value": 11,
+                    "name": "Motorbike",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/Motorbike.svg",
+                    "fr": "Moto",
+                    "en": "Motorbike"
+                },
+                {
+                    "value": 12,
+                    "name": "Machine",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/Machine.svg",
+                    "fr": "Engin de chantier",
+                    "en": "Machine"
+                },
+                {
+                    "value": 13,
+                    "name": "Genset",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/Genset.svg",
+                    "fr": "Groupe électrogène",
+                    "en": "Genset"
+                },
+                {
+                    "value": 14,
+                    "name": "Scooter",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/Scooter.svg",
+                    "fr": "Scooter",
+                    "en": "Scooter"
+                },
+                {
+                    "value": 15,
+                    "name": "ColdRoom",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/ColdRoom.svg",
+                    "fr": "Chambre froide",
+                    "en": "ColdRoom"
+                },
+                {
+                    "value": 16,
+                    "name": "Bus",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/Bus.svg",
+                    "fr": "Bus",
+                    "en": "Bus"
+                },
+                {
+                    "value": 17,
+                    "name": "Tricycle",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/Tricycle.svg",
+                    "fr": "Tricycle",
+                    "en": "Tricycle"
+                },
+                {
+                    "value": 18,
+                    "name": "JetSki",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/JetSki.svg",
+                    "fr": "Jet-ski",
+                    "en": "JetSki"
+                },
+                {
+                    "value": 19,
+                    "name": "Buggy",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/Buggy.svg",
+                    "fr": "Buggy",
+                    "en": "Buggy"
+                },
+                {
+                    "value": 20,
+                    "name": "HandlingCart",
+                    "image": "https://stfleeticommon.blob.core.windows.net/images/enums/VehicleTypeEnum/HandlingCart.svg",
+                    "fr": "Chariot de manutention",
+                    "en": "HandlingCart"
+                }
+            ]
+        },
+        {
+            "enum": "VisitStatusEnum",
+            "values": [
+                {
+                    "value": 10,
+                    "name": "Pending",
+                    "fr": "En attente",
+                    "en": "Pending"
+                },
+                {
+                    "value": 20,
+                    "name": "Ongoing",
+                    "fr": "En cours",
+                    "en": "Ongoing"
+                },
+                {
+                    "value": 30,
+                    "name": "Done",
+                    "fr": "Terminé",
+                    "en": "Done"
+                },
+                {
+                    "value": 40,
+                    "name": "Cancelled",
+                    "fr": "Annulé",
+                    "en": "Cancelled"
+                },
+                {
+                    "value": 50,
+                    "name": "MissingReport",
+                    "fr": "Raport manquant",
+                    "en": "Missing Report"
+                }
+            ]
+        }
+    ],
+    "resultsCounted": 45,
+    "isSuccess": true,
+    "httpCode": 200
+}

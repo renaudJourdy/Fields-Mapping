@@ -1,0 +1,339 @@
+provider_name,priority,name,type,group,sub_group,Comment,unit,range_min,range_max,multiplier,description,analysis_source_example,analysis_first_seen_at,analysis_last_seen_at,comments,device_occurrence,Fleeti Field
+avl_io_127,?,Mowing Efficiency,telemetry,to_clarify,-,How does it work? What is the difference in comparison to read the output status?,m2/h,0,4294967295,-,Mowing efficiency,0,2025-10-15T20:25:06Z,2025-10-17T11:57:03Z,JSON,5,[UNCERTAIN] power.immobilizer.active OR io.outputs.*
+avl_io_238,?,User ID,telemetry,to_clarify,-,does it help for drivier identification?,,0,0xffffffffffffffff,-,MAC address of NMEA receiver device connected via Bluetooth,0,2025-10-15T19:39:51Z,2025-10-17T11:57:03Z,JSON,1,[UNCERTAIN] driver.extended_id OR Ignored
+avl_io_243,?,Green driving event duration,telemetry,to_clarify,-,what is the difference with movement telemetry fields?,ms,0,65535,-,Duration of event that did generate Green driving,1855,2025-10-16T14:01:15Z,2025-10-17T11:57:03Z,JSON,2,[UNCERTAIN] motion.instant_movement OR Ignored
+avl_io_207,?,RFID,telemetry,vehicle,usage,to confirm if this is used by customer,,0,0xffffffffffffffff,-,RFID ID,0,2025-10-15T19:58:36Z,2025-10-17T11:57:03Z,JSON,1,[UNCERTAIN] diagnostics.engine.load
+avl_io_303,?,Instant Movement,telemetry,to_clarify,,What this stands for?,,0,1,-,Logic: 0/1 returns movement value,1,2025-10-16T14:24:24Z,2025-10-17T11:57:03Z,JSON,1,[UNCERTAIN] motion.instant_movement_duration OR Ignored
+can_axle_load_1,?,CAN Axle Load 1,telemetry,to_clarify,-,What this stands for?,,,,,,0,2025-10-15T20:02:43Z,2025-10-17T11:46:05Z,JSON,1,diagnostics.axles.weights
+can_axle_load_2,?,CAN Axle Load 2,telemetry,to_clarify,-,What this stands for?,,,,,,0,2025-10-16T14:16:08Z,2025-10-17T11:46:05Z,JSON,1,diagnostics.axles.weights
+can_axle_load_3,?,CAN Axle Load 3,telemetry,to_clarify,-,What this stands for?,,,,,,0,2025-10-16T14:16:08Z,2025-10-17T11:46:05Z,JSON,1,diagnostics.axles.weights
+can_axle_load_4,?,CAN Axle Load 4,telemetry,to_clarify,-,What this stands for?,,,,,,0,2025-10-16T14:16:08Z,2025-10-17T11:46:05Z,JSON,1,diagnostics.axles.weights
+can_axle_load_5,?,CAN Axle Load 5,telemetry,to_clarify,-,What this stands for?,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,1,diagnostics.axles.weights
+avl_io_935,p0,CSF Light Signal,telemetry,sensor,custom,what kind of sensor this is?,,0,1,-,0 - Off 1 - On,0,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,[UNCERTAIN] sensors.custom[] OR specific sensor type
+avl_io_936,p0,CSF Air Conditioning,telemetry,sensor,custom,what kind of sensor this is?,,0,1,-,0 - Off 1 - On,0,2025-10-16T14:11:36Z,2025-10-17T11:57:03Z,JSON,2,[UNCERTAIN] sensors.custom[] OR specific sensor type
+avl_io_941,p0,CSF Front Driver's Seatbelt Fastened,telemetry,analog,-,we still need to confirm prio,,0,1,-,0 - Not fastened 1 - Fastened,0,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,io.analog.values
+avl_io_942,p0,CSF Left Driver's Seatbelt Fastened,telemetry,analog,-,we still need to confirm prio,,0,1,-,0 - Not fastened 1 - Fastened,0,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,io.analog.values
+avl_io_943,p0,CSF Right Driver's Seatbelt Fastened,telemetry,analog,-,we still need to confirm prio,,0,1,-,0 - Not fastened 1 - Fastened,0,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,io.analog.values
+avl_io_944,p0,CSF Centre Driver's Seatbelt Fastened,telemetry,analog,-,we still need to confirm prio,,0,1,-,0 - Not fastened 1 - Fastened,0,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,io.analog.values
+EVENT,p0,Event,event,record,type,,-,0,999,-,"Platform event ID (2=track, 41=power lost, 83=SOS, etc)",2,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,71,debug.provider_payload.*
+avl_io_940,p0,CSF Driver's Seatbelt Fastened,telemetry,io,outputs,,,0,1,-,0 - Not fastened 1 - Fastened,1,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,io.outputs.bitmask
+avl_io_945,p0,CSF Front Passenger Present,telemetry,io,inputs,,,0,1,-,0 - Not present 1 - Present,0,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,io.inputs.bitmask
+avl_io_1,p0,Digital Input 1,telemetry,io,inputs,,,0,1,-,Logic: 0/1,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,56,io.inputs.individual.*
+avl_io_21,p0,GSM Signal,telemetry,connectivity,signal,,,0,5,-,Value in range 1-5 Explanation,5,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,60,connectivity.signal_level
+avl_io_232,p0,CNG Status,telemetry,location,coordinates,,,0,1,-,CNG Status,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,23,location.precision.coordinate_format
+avl_io_239,p0,Ignition,telemetry,vehicle,ignition,,,0,1,-,0 – Ignition Off 1 – Ignition On,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,59,power.ignition
+avl_io_240,p0,Movement,telemetry,vehicle,movement,,,0,1,-,0 – Movement Off 1 – Movement On,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,60,motion.is_moving
+avl_io_960,p0,ISF Battery Not Charging Indicator,telemetry,driver,identification,,,0,1,-,0 - Off 1 - On,0,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,driver.hardware_key.rfid
+ble_beacon_id,p0,BLE Beacon ID,telemetry,other,-,,-,0,1.84467E+19,-,BLE beacon identifier (hex),0D54C06CA38255AAB8FE6A174E2D0055,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,2,nearby_assets[].id
+can_ignition_state,p0,CAN Ignition,telemetry,vehicle,ignition,,-,0,1,-,"Ignition state (0=off, 1=on)",1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,power.ignition
+gsm.signal.csq,p0,GSM Signal CSQ,telemetry,connectivity,signal,,-,0,31,-,"Mobile network signal strength (0-31, 99=unknown)",31,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,70,connectivity.signal_level
+ibutton,p0,iButton ID,telemetry,driver,identification,,-,0,1.84467E+19,-,iButton/Dallas key identifier (hex),BA0000002B4D4E01,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,15,driver.hardware_key.ibutton
+moving,p0,Is Moving,telemetry,vehicle,movement,,-,0,1,-,"Device movement status (0=stationary, 1=moving)",1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,68,motion.is_moving
+obd_dtc_number,p0,OBD DTC Count,telemetry,vehicle,health,,-,0,255,-,Number of diagnostic trouble codes,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,1,diagnostics.health.dtc_count
+raw_mileage,p0,Raw Mileage,telemetry,counter,odometer,,-,0,4294967295,-,Raw odometer value from device,85234424,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,66,counters.odometer
+avl_io_101,p0,Module ID 8B,telemetry,fuel,percent,,,0,0xFFFFFFFFFFFFFFFF,-,Module ID 8 Bytes,0,2025-10-15T19:39:51Z,2025-10-17T11:57:03Z,JSON,13,fuel.levels[].value
+avl_io_306,p0,BLE Fuel Frequency #1,telemetry,fuel,percent,,,0,2147483647,-,Frequency value of BLE fuel sensor #1,0,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,3,fuel.levels[].value
+avl_io_86,p0,BLE Humidity #1,telemetry,fuel,percent,,%RH,0,1000,0.1,Humidity From firmware version 03.28.00 and up: 65535 - sensor not found 65534 - failed sensor data parsing 65533 - abnormal sensor state,78,2025-10-15T19:41:39Z,2025-10-17T11:57:03Z,JSON,4,fuel.levels[].value
+obd_throttle,p0,OBD Throttle,telemetry,driving_behavior,throttle,,%,0,100,-,Throttle position,31,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,1,driving_behavior.throttle_position
+msg_time,p0,metadata,telemetry,record,device_time,,,,,,,2025-10-17T00:50:45.000Z,2025-10-14T14:40:39.697Z,2025-10-17T07:24:10.425Z,JSON,71,"nearby_assets[].detected_at, debug.time.device_time"
+server_time,p0,metadata,telemetry,record,provider_time,,,,,,,2025-10-17T00:50:50.832Z,2025-10-14T14:40:39.697Z,2025-10-17T07:24:10.425Z,JSON,71,debug.time.provider_time
+can_engine_hours_relative,p0,can,telemetry,counter,engine_hours,,,,,,,2697.1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,21,counters.engine_hours
+can_fuel_1,p0,can,telemetry,fuel,liters?,unit to validate,,,,,,86,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,24,fuel.levels[].value
+can_fuel_litres,p0,can,telemetry,fuel,liters,,,,,,,228,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,27,fuel.levels[].value
+can_mileage_relative,p0,can,telemetry,counter,odometer,,,,,,,50569.2,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,34,counters.odometer
+obd_custom_fuel_litres,p0,obd,telemetry,fuel,liters,,,,,,,17,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,1,fuel.levels[].value
+obd_custom_odometer,p0,obd,telemetry,counter,odometer,relative odometer or from installation?,,,,,,9.044,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,1,counters.odometer
+heading,p0,Heading,telemetry,location,heading,,°,0,359,-,Object heading in degrees (0=North),347,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,71,location.heading
+lat,p0,Latitude,telemetry,location,coordinates,,°,-90,90,-,Location latitude coordinate,14.7407,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,71,location.latitude
+lng,p0,Longitude,telemetry,location,coordinates,,°,-180,180,-,Location longitude coordinate,-17.5091,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,71,location.longitude
+avl_io_331,p0,BLE 1 Custom #1,telemetry,sensor,temperature,,,0,,-,Custom IO element for BLE sensor,183,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,1,sensors.temperature
+avl_io_332,p0,BLE 2 Custom #1,telemetry,sensor,temperature,,,0,,-,Custom IO element for BLE sensor,247,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,1,sensors.temperature
+avl_io_333,p0,BLE 3 Custom #1,telemetry,sensor,temperature,,,0,,-,Custom IO element for BLE sensor,183,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,1,sensors.temperature
+avl_io_520,p0,Agricultural State Flags P4,telemetry,sensor,temperature,,,0,0xffffffffffffffff,-,"Agricultural state flags protocol 4, more information click here Flags",0,2025-10-15T20:25:06Z,2025-10-17T11:57:03Z,JSON,5,sensors.temperature
+avl_io_521,p0,Utility State Flags P4,telemetry,sensor,temperature,,,0,0xffffffffffffffff,-,"Utility state flags protocol 4, more information click here Flags",0,2025-10-15T20:25:06Z,2025-10-17T11:57:03Z,JSON,4,sensors.temperature
+avl_io_522,p0,Cistern State Flags P4,telemetry,sensor,temperature,,,0,0xffffffffffffffff,-,"Cistern state flags protocol 4, more information click here Flags",0,2025-10-15T20:25:06Z,2025-10-17T11:57:03Z,JSON,4,sensors.temperature
+avl_io_657,p0,SSF Rear Right Door Open,telemetry,sensor,temperature,,,0,1,-,0 - Closed 1 - Open,1,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,sensors.temperature
+avl_io_658,p0,SSF Trunk Door Open,telemetry,sensor,temperature,,,0,1,-,0 - Closed 1 - Open,0,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,sensors.temperature
+avl_io_72,p0,Dallas Temperature 1,telemetry,sensor,temperature,,°C,-550,1150,0.1,"Degrees ( °C ), -55 - +115, if 850 – Sensor not ready if 2000 – Value read error if 3000 – Not connected if 4000 – ID failed if 5000 – same as 850",185,2025-10-15T19:40:30Z,2025-10-17T11:57:03Z,JSON,8,sensors.temperature
+avl_io_73,p0,Dallas Temperature 2,telemetry,sensor,temperature,,°C,-550,1150,0.1,"Degrees ( °C ), -55 - +115, if 850 – Sensor not ready if 2000 – Value read error if 3000 – Not connected if 4000 – ID failed if 5000 – same as 850",172,2025-10-15T20:09:51Z,2025-10-17T11:57:03Z,JSON,2,sensors.temperature
+ble_temp_sensor_1,p0,BLE Temp 1,telemetry,sensor,temperature,,°C,-55,125,-,BLE temperature sensor 1,-217.5,2025-10-15T19:41:39Z,2025-10-17T11:11:33Z,JSON,5,sensors.temperature
+ble_temp_sensor_2,p0,BLE Temp 2,telemetry,sensor,temperature,,°C,-55,125,-,BLE temperature sensor 2,-181.9,2025-10-15T19:41:39Z,2025-10-17T11:11:33Z,JSON,5,sensors.temperature
+ble_temp_sensor_3,p0,BLE Temp 3,telemetry,sensor,temperature,,°C,-55,125,-,BLE temperature sensor 3,58.4,2025-10-15T19:45:23Z,2025-10-17T10:44:13Z,JSON,2,sensors.temperature
+ble_temp_sensor_4,p0,BLE Temp 4,telemetry,sensor,temperature,,°C,-55,125,-,BLE temperature sensor 4,74.1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,2,sensors.temperature
+ext_temp_sensor_1,p0,External Temp 1,telemetry,sensor,temperature,,°C,-55,125,-,External temperature sensor 1,18.5,2025-10-15T19:40:30Z,2025-10-17T11:42:25Z,JSON,10,sensors.temperature
+ext_temp_sensor_2,p0,External Temp 2,telemetry,sensor,temperature,,°C,-55,125,-,External temperature sensor 2,17.2,2025-10-15T20:09:51Z,2025-10-17T11:34:43Z,JSON,4,sensors.temperature
+ext_temp_sensor_3,p0,External Temp 3,telemetry,sensor,temperature,,°C,-55,125,-,External temperature sensor 3,0,2025-10-16T10:16:07Z,2025-10-17T11:34:43Z,JSON,2,sensors.temperature
+lls_temperature_1,p0,LLS Temperature 1,telemetry,sensor,temperature,,°C,-55,125,-,LLS 1 temperature,32,2025-10-15T20:22:56Z,2025-10-17T11:50:13Z,JSON,4,sensors.temperature
+lls_temperature_2,p0,LLS Temperature 2,telemetry,sensor,temperature,,°C,-55,125,-,LLS 2 temperature,0,2025-10-15T20:02:43Z,2025-10-17T11:12:35Z,JSON,5,sensors.temperature
+temp_sensor,p0,Temperature Sensor,telemetry,sensor,temperature,,°C,-55,125,-,General temperature sensor,51,2025-10-15T20:15:07Z,2025-10-17T11:34:43Z,JSON,7,sensors.temperature
+avl_io_449,p0,Ignition On Counter,telemetry,counter,engine_hours,,s,0,2147483647,-,Duration in seconds which is counted while Ignition state is On,66885400,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,41,counters.engine_hours
+can_engine_hours,p0,CAN Engine Hours,telemetry,counter,engine_hours,,h,0,4294967295,-,Total engine operating hours,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,18,counters.engine_hours
+avl_io_468,p0,BLE 2 Custom #3,telemetry,counter,odometer,,,0,4294967295,-,Custom IO element for BLE sensor,4652896,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,1,counters.odometer
+avl_io_87,p0,Total Mileage,telemetry,counter,odometer,,m,0,4294967295,-,Value in meters,82624000,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,34,counters.odometer
+can_mileage,p0,CAN Mileage,telemetry,counter,odometer,,km,0,4294967295,-,Total distance traveled,82624,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,34,counters.odometer
+hw_mileage,p0,Hardware Mileage,telemetry,counter,odometer,,km,0,4294967295,-,Odometer from device hardware,52963.6,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,64,counters.odometer
+avl_io_180,p0,Digital Output 2,telemetry,asset,speed,,,0,1,-,Logic 0/1,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,30,motion.speed
+avl_io_24,p0,Speed,telemetry,asset,speed,,km/h,0,350,-,GNSS Speed,8,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,57,motion.speed
+avl_io_37,p0,Vehicle Speed,telemetry,asset,speed,,km/h,0,255,-,Vehicle speed,25,2025-10-16T14:20:31Z,2025-10-17T11:57:03Z,JSON,1,motion.speed
+avl_io_389,p0,OBD OEM Total Mileage,telemetry,asset,speed,,km,0,0xffffffff,-,Total mileage received by requesting vehicle specific PID,9044,2025-10-16T14:20:31Z,2025-10-17T11:57:03Z,JSON,1,motion.speed
+can_speed,p0,CAN Speed,telemetry,asset,speed,,km/h,0,250,0.00390625,Vehicle speed from CAN,26,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,35,motion.speed
+obd_speed,p0,OBD Speed,telemetry,asset,speed,,km/h,0,255,-,Vehicle speed from OBD,25,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,1,motion.speed
+speed,p0,Speed,telemetry,asset,speed,,km/h,0,300,-,Speed determined by tracker GPS,8,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,71,motion.speed
+avl_io_210,p0,LLS 3 Fuel Level,telemetry,fuel,liters,,kvants or ltr,-4,32767,-,Fuel level measured by LLS sensor via RS485,0,2025-10-16T14:09:29Z,2025-10-17T11:57:03Z,JSON,1,fuel.levels[].value
+avl_io_212,p0,LLS 4 Fuel Level,telemetry,fuel,liters,,kvants or ltr,-4,32767,-,Fuel level measured by LLS sensor via RS485,0,2025-10-16T14:09:29Z,2025-10-17T11:57:03Z,JSON,1,fuel.levels[].value
+avl_io_270,p0,BLE Fuel Level #1,telemetry,fuel,liters,,,0,65535,-,Fuel Level,4037,2025-10-15T19:39:51Z,2025-10-17T11:57:03Z,JSON,16,fuel.levels[].value
+avl_io_273,p0,BLE Fuel Level #2,telemetry,fuel,liters,,,0,65535,-,Fuel Level,417,2025-10-15T20:17:27Z,2025-10-17T11:57:03Z,JSON,1,fuel.levels[].value
+avl_io_463,p0,BLE 1 Custom #2,telemetry,counter,fuel,,,0,4294967295,-,Custom IO element for BLE sensor,5061,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,1,fuel.consumption.cumulative
+fuel_level,p0,Fuel Level,telemetry,fuel,liters,,L,0,65535,-,Fuel level in liters,0.0271,2025-10-15T20:02:43Z,2025-10-17T11:34:43Z,JSON,3,fuel.levels[].value
+lls_level_1,p0,LLS Level 1,telemetry,fuel,liters,,L,0,65535,-,Liquid level sensor 1 fuel level,111,2025-10-15T20:02:43Z,2025-10-17T11:50:13Z,JSON,7,fuel.levels[].value
+lls_level_2,p0,LLS Level 2,telemetry,fuel,liters,,L,0,65535,-,Liquid level sensor 2 fuel level,0,2025-10-15T20:02:43Z,2025-10-17T11:36:49Z,JSON,8,fuel.levels[].value
+lls_level_3,p0,LLS Level 3,telemetry,fuel,liters,,L,0,65535,-,Liquid level sensor 3 fuel level,0,2025-10-16T14:09:29Z,2025-10-17T11:36:49Z,JSON,1,fuel.levels[].value
+lls_level_4,p0,LLS Level 4,telemetry,fuel,liters,,L,0,65535,-,Liquid level sensor 4 fuel level,0,2025-10-16T14:09:29Z,2025-10-17T11:36:49Z,JSON,1,fuel.levels[].value
+avl_io_105,p0,Total Mileage (counted),telemetry,counter,odometer,,m,0,4294967295,-,Total Vehicle Mileage,50569210,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,34,counters.odometer
+avl_io_16,p0,Total Odometer,telemetry,counter,odometer,,,0,2147483647,-,Total Odometer value in meters,52963570,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,56,counters.odometer
+avl_io_199,p0,Trip Odometer,telemetry,counter,odometer,,m,0,2147483647,-,Trip Odometer value,36,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,55,trip.distance
+avl_io_304,p0,Vehicles Range On Battery,telemetry,vehicle,rpm,,m,0,16777215,-,Vehicle Range on Battery,415000,2025-10-15T20:26:34Z,2025-10-17T11:57:03Z,JSON,3,diagnostics.engine.rpm
+avl_io_42,p0,Runtime since engine start,telemetry,counter,engine_hours,,s,0,65535,-,Runtime since engine start,5793,2025-10-16T14:20:31Z,2025-10-17T11:57:03Z,JSON,1,counters.engine_hours
+ble_lls_level_1,p0,fuel,telemetry,fuel,liters,,,,,,,4037,2025-10-15T19:39:51Z,2025-10-17T11:46:05Z,JSON,16,fuel.levels[].value
+ble_lls_level_2,p0,fuel,telemetry,fuel,liters,,,,,,,417,2025-10-15T20:17:27Z,2025-10-17T11:11:33Z,JSON,1,fuel.levels[].value
+ble_magnet_sensor_1,p0,other,telemetry,sensor,open/close,,,,,,,0,2025-10-15T19:45:23Z,2025-10-17T10:39:21Z,JSON,1,sensors.magnet
+ble_magnet_sensor_2,p0,other,telemetry,sensor,open/close,,,,,,,0,2025-10-15T19:45:23Z,2025-10-17T10:39:21Z,JSON,1,sensors.magnet
+ble_magnet_sensor_3,p0,other,telemetry,sensor,open/close,,,,,,,0,2025-10-15T19:45:23Z,2025-10-17T10:39:21Z,JSON,1,sensors.magnet
+can_consumption_relative,p0,can,telemetry,counter,fuel,,,,,,,50332,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,32,fuel.consumption.cumulative
+avl_io_123,p0/p1,Control State Flags,telemetry,counter,odometer,,,0,4294967295,-,Control state flags,2164334600,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,counters.odometer
+avl_io_653,p1,SSF Handbrake Is Active,event,driver_identification,,,,0,1,-,0 - Handbrake inactive 1 - Handbrake active,1,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,events.driver.ibutton_connected
+avl_io_654,p1,SSF Front Left Door Open,event,driver_identification,,,,0,1,-,0 - Closed 1 - Open,1,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,events.driver.ibutton_disconnected
+avl_io_655,p1,SSF Front Right Door Open,event,driver_identification,,,,0,1,-,0 - Closed 1 - Open,1,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,events.driver.ibutton_new
+avl_io_112,p1,AdBlue Level,event,driving_behavior,,,l,0,65535,0.1,AdBlue level,0,2025-10-15T20:11:55Z,2025-10-17T11:57:03Z,JSON,2,driving_behavior.daily_summary.event_counts.*
+avl_io_114,p1,Engine Load,event,driving_behavior,,,%,0,130,-,Engine Load,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,3,driving_behavior.daily_summary.event_counts.*
+avl_io_119,p1,Axle 2 Load,event,driving_behavior,,,kg,0,32768,-,Axle 2 load,0,2025-10-16T14:16:08Z,2025-10-17T11:57:03Z,JSON,1,driving_behavior.daily_summary.event_counts.*
+acceleration,p1,Acceleration,event,driving_behavior,,,g,0,10,-,Acceleration force magnitude,4.116,2025-10-15T18:07:19Z,2025-10-17T11:44:11Z,JSON,13,[UNCERTAIN] Events stream OR driving_behavior.acceleration
+braking,p1,Braking,event,driving_behavior,,,g,0,10,-,Braking force magnitude,3.626,2025-10-15T18:07:19Z,2025-10-17T11:55:28Z,JSON,19,[UNCERTAIN] Events stream OR driving_behavior.braking
+cornering,p1,Cornering,event,driving_behavior,,,g,0,10,-,Cornering force magnitude,4.018,2025-10-15T19:41:30Z,2025-10-17T11:55:15Z,JSON,21,[UNCERTAIN] Events stream OR driving_behavior.cornering
+cornering_rad,p1,Cornering Radius,event,driving_behavior,,,rad,0,10,-,Cornering radius in radians,0.58,2025-10-15T19:40:20Z,2025-10-17T11:04:59Z,JSON,4,[UNCERTAIN] Events stream OR driving_behavior.cornering_rad
+towing,p1,Towing,event,towing,,,-,0,1,-,"Towing detection status (0=no, 1=yes)",1,2025-10-15T20:02:43Z,2025-10-17T10:52:01Z,JSON,3,events.towing
+avl_io_111,p1,AdBlue Level,event,packet_information,,,%,0,100,-,AdBlue,0,2025-10-15T20:09:32Z,2025-10-17T11:57:03Z,JSON,3,debug.provider_payload.*
+event_code,p1,Event Code,event,packet_information,,,-,0,999,-,"Event type identifier (2=track, 11-18=input, 111-118=output, etc)",78,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,63,debug.provider_payload.navixy.code
+sub_event_code,p1,Sub Event Code,event,packet_information,,,-,0,255,-,Sub-event type identifier,30_68,2025-10-16T10:16:07Z,2025-10-17T11:34:43Z,JSON,2,debug.provider_payload.navixy.sub_code
+avl_io_108,p1,BLE Humidity #4,event,driving,-,,%RH,0,1000,0.1,Humidity From firmware version 03.28.00 and up: 65535 - sensor not found 65534 - failed sensor data parsing 65533 - abnormal sensor state,93,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,3,driving_behavior.eco_score.event_type
+avl_io_110,p1,Fuel Rate,telemetry,driver,identification,,l/h,0,32768,0.1,Fuel rate,0,2025-10-15T20:09:32Z,2025-10-17T11:57:03Z,JSON,9,driver.id
+avl_io_118,p1,Axle 1 Load,telemetry,io,output,,kg,0,32768,-,Axle 1 load,0,2025-10-16T14:16:08Z,2025-10-17T11:57:03Z,JSON,1,io.outputs.individual.*
+avl_io_152,p1,HV Battery Level,telemetry,io,output,,%,0,100,-,Battery level in percent,73,2025-10-15T20:21:08Z,2025-10-17T11:57:03Z,JSON,5,io.outputs.individual.*
+avl_io_43,p1,Distance Traveled MIL On,telemetry,vehicle,health,,km,0,65535,-,Distance ormattin MIL on,0,2025-10-16T14:20:31Z,2025-10-17T11:57:03Z,JSON,1,diagnostics.health.mil_status
+outputs,p1,Output Status,telemetry,io,output,,-,0,255,-,Output status bitmask,2,2025-10-15T20:09:23Z,2025-10-17T11:56:02Z,JSON,65,io.outputs.bitmask
+avl_io_385,p1,Beacon,telemetry,sensor,humidity,,,0,1024,-,List of Beacon IDs,-1,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,2,sensors.humidity
+avl_io_388,p1,Module ID 17B,telemetry,sensor,humidity,,,0,0x7FFFFFFFFFFFFFFF,-,Module ID 17 Bytes,-1,2025-10-15T19:39:51Z,2025-10-17T11:57:03Z,JSON,18,sensors.humidity
+can_throttle,p1,CAN Throttle,telemetry,driving_behavior,throttle,,%,0,100,0.4,Accelerator pedal position,87,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,30,driving_behavior.throttle_position
+humidity_1,p1,Humidity 1,telemetry,sensor,humidity,,%,0,100,-,Humidity sensor 1,0,2025-10-16T10:16:07Z,2025-10-17T11:34:43Z,JSON,2,sensors.humidity
+humidity_2,p1,Humidity 2,telemetry,sensor,humidity,,%,0,100,-,Humidity sensor 2,0,2025-10-16T10:16:07Z,2025-10-17T11:34:43Z,JSON,2,sensors.humidity
+adc,p1,analog,telemetry,analog,-,,,,,,,"[0.087, 0.087]",2025-10-14T14:40:39.697Z,2025-10-17T07:24:10.425Z,JSON,71,io.analog.values
+can_engine_state,p1,can,telemetry,to_clarify,-,is it like ignition?,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,[UNCERTAIN] power.ignition OR diagnostics.engine.state
+can_low_tire_pressure,p1,can,telemetry,vehicle,health,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.health.low_tire_pressure_warning
+can_seat_belt_driver_state,p1,can,telemetry,driver,security,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.body.belts.*
+avl_io_390,p1,OBD OEM Fuel Level,telemetry,vehicle,health,,l,0,0xffffffff,0.1,Fuel level in litres received by requesting vehicle specific PID,170,2025-10-16T14:20:31Z,2025-10-17T11:57:03Z,JSON,1,diagnostics.engine.temperature
+can_engine_temp,p1,CAN Engine Temp,telemetry,vehicle,health,,°C,-40,210,-,Engine coolant temperature,86,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,18,diagnostics.engine.coolant_temperature
+avl_io_471,p1,BLE 3 Custom #2,telemetry,fuel,consumption,,,0,4294967295,-,Custom IO element for BLE sensor,2084,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,1,fuel.consumption.rate
+can_fuel_rate,p1,CAN Fuel Rate,telemetry,fuel,consumption,,L/h,0,3212,0.05,Instantaneous fuel consumption rate,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,9,fuel.consumption.rate
+avl_io_6,p1,Analog Input 2,telemetry,analog,-,,V,0,65535,0.001,Voltage,86,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,25,io.analog.values
+avl_io_66,p1,External Voltage,telemetry,device,power,,V,0,65535,0.001,Voltage,12888,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,54,device.power.voltage
+avl_io_9,p1,Analog Input 1,telemetry,analog,,,V,0,65535,0.001,Voltage,86,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,33,io.analog.values
+obd_time_since_engine_start,p1,OBD Engine Runtime,telemetry,counter,engine_hours,to confirm if it reset every trip,s,0,65535,-,Time since engine start,5793,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,1,trip.duration
+board_voltage,p1,External Voltage,telemetry,device,power,,V,0,30,-,External power supply voltage,12.888,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,62,"power.battery.voltage, device.power.voltage"
+ble_pitch_1,p1,other,telemetry,sensor,inertial,,,,,,,216,2025-10-15T19:45:23Z,2025-10-17T10:39:21Z,JSON,1,sensors.inertial[].pitch
+ble_pitch_2,p1,other,telemetry,sensor,inertial,,,,,,,70,2025-10-15T19:45:23Z,2025-10-17T10:39:21Z,JSON,1,sensors.inertial[].pitch
+ble_roll_1,p1,other,telemetry,sensor,inertial,,,,,,,-130,2025-10-15T19:45:23Z,2025-10-17T10:39:21Z,JSON,1,sensors.inertial[].roll
+ble_roll_2,p1,other,telemetry,sensor,inertial,,,,,,,-160,2025-10-15T19:45:23Z,2025-10-17T10:39:21Z,JSON,1,sensors.inertial[].roll
+can_consumption,p1,can,telemetry,fuel,consumption,,,,,,,211000,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,2,fuel.consumption.cumulative
+avl_io_2,p1/p2,Digital Input 2,telemetry,io,inputs,,,0,1,-,Logic: 0/1,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,io.inputs.individual.*
+can_battery_level,p1/p2,can,telemetry,vehicle,battery,,,,,,,73,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,5,power.battery.level
+can_brake_pad_wear,p2,CAN Brake Pad Wear,telemetry,vehicle,warning,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.brakes.pad_wear
+can_electronics_power_control,p2,CAN Electronics Power Control,telemetry,vehicle,warning,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,[UNCERTAIN] diagnostics.health.electronics_power_control OR diagnostics.warnings.*
+avl_io_126,p2,Area of Harvest,event,driving_behavior,,,m2,0,4294967295,-,Area of harvest in square meters,0,2025-10-15T20:25:06Z,2025-10-17T11:57:03Z,JSON,5,events.crash
+avl_io_759,p2,Fuel Type,event,driving_behavior,,,,0,255,-,0 Not available 1 Gasoline 2 Methanol 3 Ethanol 4 Diesel 5 LPG 6 CNG 7 Propane 8 Electric 9 Bifuel running Gasoline 10 Bifuel running Methanol 11 Bifuel running Ethanol 12 Bifuel running LPG 13 Bifuel running CNG 14 Bifuel running Propane 15 Bifuel running Electricity 16 Bifuel running electric and combustion engine 17 Hybrid gasoline 18 Hybrid Ethanol 19 Hybrid Diesel 20 Hybrid Electric 21 Hybrid running electric and combustion engine 22 Hybrid Regenerative 23 Bifuel running diesel,1,2025-10-16T14:20:31Z,2025-10-17T11:57:03Z,JSON,1,events.crash
+avl_io_125,p2,Towing Detection,event,towing,,,-,0,1,-,Towing event detection,0,2025-10-15T20:25:06Z,2025-10-17T11:57:03Z,JSON | Not in FMB140 spec,5,events.towing
+avl_io_252,p2,Unplug,event,device_security,,,,0,1,-,0 – battery present 1 – battery unplugged,1,2025-10-15T20:22:22Z,2025-10-17T11:57:03Z,JSON,11,events.device_unplugged
+avl_io_30,p2,Number of DTC,event,device_security,,,,0,255,-,Number of DTC,0,2025-10-16T14:20:31Z,2025-10-17T11:57:03Z,JSON,1,events.device_unplugged
+avl_io_208,p2,Geofence zone 33,event,driving_behavior,overspeed,,,0,3,-,0 – target left zone 1 – target entered zone 2 – over speeding end 3 – over speeding start,1,2025-10-15T20:08:09Z,2025-10-17T11:57:03Z,JSON,2,driving_behavior.daily_summary.event_counts.*
+can_warning,p2,CAN Warning,telemetry,vehicle,warning,,-,0,1,-,"General CAN warning indicator (0=no warning, 1=warning)",0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,[UNCERTAIN] diagnostics.health.general_warning OR diagnostics.warnings.* OR Bitmask
+obd_mil_status,p2,OBD MIL Status,telemetry,vehicle,warning,,-,0,1,-,"Malfunction Indicator Lamp status (0=off, 1=on)",1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.health.mil_status
+avl_io_131,p2,Gap Under Harvesting Drum,telemetry,device,power,,mm,0,255,-,Gap under harvesting drum,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,6,device.battery.charging_state
+avl_io_132,p2,Security State Flags,telemetry,vehicle,identification,,,0,0xFFFFFFFFFFFFFFFF,-,Security state flags,3.60288E+16,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.identification.vin
+avl_io_14,p2,ICCID2,telemetry,connectivity,sim,,,0,0xFFFFFFFFFFFFFFFF,-,"Value of SIM ICCID, LSB",8247569,2025-10-15T20:10:35Z,2025-10-17T11:57:03Z,JSON,7,connectivity.sim.imsi
+avl_io_179,p2,Digital Output 1,telemetry,location,reliability,,,0,1,-,Logic: 0/1,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,43,location.satellites
+avl_io_241,p2,Active GSM Operator,telemetry,connectivity,operator,,,0,4294967295,-,Currently used GSM Operator code,60801,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,59,connectivity.operator
+avl_io_25,p2,BLE Temperature #1,telemetry,io,inputs,,°C,-4000,12500,0.01,"Degrees ( °C ), -40 - +125; Error codes: 4000 - abnormal sensor state 3000 - sensor not found 2000 - failed sensor data parsing From firmware version 03.28.00 and up: 32767 - sensor not found 32766 - failed sensor data parsing 32765 - abnormal sensor state",3000,2025-10-15T19:40:30Z,2025-10-17T11:57:03Z,JSON,6,io.inputs.individual.*
+avl_io_253,p2,Green driving type,telemetry,connectivity,status,,,1,3,-,1 – harsh acceleration 2 – harsh braking 3 – harsh cornering,2,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,connectivity.connection_state
+avl_io_26,p2,BLE Temperature #2,telemetry,io,inputs,,°C,-4000,12500,0.01,"Degrees ( °C ), -40 - +125; Error codes: 4000 - abnormal sensor state 3000 - sensor not found 2000 - failed sensor data parsing From firmware version 03.28.00 and up: 32767 - sensor not found 32766 - failed sensor data parsing 32765 - abnormal sensor state",3000,2025-10-15T19:40:30Z,2025-10-17T11:57:03Z,JSON,6,io.inputs.individual.*
+avl_io_27,p2,BLE Temperature #3,telemetry,io,inputs,,°C,-4000,12500,0.01,"Degrees ( °C ), -40 - +125; Error codes: 4000 - abnormal sensor state 3000 - sensor not found 2000 - failed sensor data parsing From firmware version 03.28.00 and up: 32767 - sensor not found 32766 - failed sensor data parsing 32765 - abnormal sensor state",3000,2025-10-15T19:40:30Z,2025-10-17T11:57:03Z,JSON,5,io.inputs.individual.*
+avl_io_28,p2,BLE Temperature #4,telemetry,io,inputs,,°C,-4000,12500,0.01,"Degrees ( °C ), -40 - +125; Error codes: 4000 - abnormal sensor state 3000 - sensor not found 2000 - failed sensor data parsing From firmware version 03.28.00 and up: 32767 - sensor not found 32766 - failed sensor data parsing 32765 - abnormal sensor state",3000,2025-10-15T19:40:30Z,2025-10-17T11:57:03Z,JSON,4,io.inputs.individual.*
+avl_io_3,p2,Digital Input 3,telemetry,io,inputs,,,0,1,-,Logic: 0/1,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,27,io.inputs.individual.*
+avl_io_4,p2,Pulse Counter Din1,telemetry,io,inputs,,,0,4294967295,-,"Counts pulses, count is reset when records are saved",1,2025-10-15T19:40:30Z,2025-10-17T11:57:03Z,JSON,1,io.inputs.individual.*
+avl_io_90,p2,Door Status,telemetry,vehicle,doors,,-,0,1,-,"0: Closed, 1: Open",512,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON | Not in FMB140 spec,32,diagnostics.body.doors.*
+external_power_state,p2,External Power,telemetry,device,power,,-,0,1,-,"External power state (0=disconnected, 1=connected)",1,2025-10-15T20:02:43Z,2025-10-17T10:52:01Z,JSON,3,device.power.connected
+hdop,p2,HDOP,telemetry,location,reliability,,-,-1,20,-,"Horizontal Dilution of Precision (1=excellent, 20=poor, -1=unknown)",1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,9,location.hdop
+satellites,p2,Satellites,telemetry,location,reliability,,-,-1,32,-,Number of connected satellites (-1=unknown/LBS),15,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,71,location.satellites
+avl_io_104,p2,BLE Humidity #2,telemetry,vehicle,battery,,%RH,0,1000,0.1,Humidity From firmware version 03.28.00 and up: 65535 - sensor not found 65534 - failed sensor data parsing 65533 - abnormal sensor state,75,2025-10-15T19:41:39Z,2025-10-17T11:57:03Z,JSON,5,power.battery.level
+avl_io_20,p2,BLE Battery #2,telemetry,sensor,battery,,%,0,100,-,Battery level of sensor #2,69,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,3,sensors.battery
+avl_io_22,p2,BLE Battery #3,telemetry,sensor,battery,,%,0,100,-,Battery level of sensor #3,72,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,2,sensors.battery
+avl_io_23,p2,BLE Battery #4,telemetry,sensor,battery,,%,0,100,-,Battery level of sensor #4,61,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,2,sensors.battery
+avl_io_391,p2,Private mode,telemetry,driving_behavior,throttle,,,0,255,-,Private mode state: 0 - Private mode off 1 - Private mode on,1,2025-10-16T14:18:48Z,2025-10-17T11:57:03Z,JSON,1,driving_behavior.throttle_position
+avl_io_465,p2,BLE 1 Custom #4,telemetry,vehicle,adblue,,,0,4294967295,-,Custom IO element for BLE sensor,0,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,1,diagnostics.fluids.adblue_level
+avl_io_517,p2,Security State Flags P4,telemetry,sensor,battery,,,0,0xffffffffffffffff,-,"Security state flags protocol 4, more information click here Flags",61,2025-10-15T19:39:51Z,2025-10-17T11:57:03Z,JSON,26,sensors.battery
+avl_io_947,p2,CSF Front Differential Locked,telemetry,device,battery,,,0,1,-,0 - Unlocked 1 - Locked,0,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,device.battery.level
+battery_level,p2,Battery Level,telemetry,device,battery,,%,0,100,-,Internal battery level percentage,81,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,55,device.battery.level
+ble_battery_level_2,p2,BLE Battery 2,telemetry,sensor,battery,,%,0,100,-,BLE sensor 2 battery level,69,2025-10-15T19:45:23Z,2025-10-17T10:59:28Z,JSON,3,sensors.battery
+ble_battery_level_3,p2,BLE Battery 3,telemetry,sensor,battery,,%,0,100,-,BLE sensor 3 battery level,72,2025-10-15T19:45:23Z,2025-10-17T10:44:13Z,JSON,2,sensors.battery
+ble_battery_level_4,p2,BLE Battery 4,telemetry,sensor,battery,,%,0,100,-,BLE sensor 4 battery level,61,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,2,sensors.battery
+ble_humidity_1,p2,BLE Humidity 1,telemetry,sensor,humidity,,%,0,100,-,BLE humidity sensor 1,7.8,2025-10-15T19:41:39Z,2025-10-17T10:44:47Z,JSON,4,sensors.humidity
+ble_humidity_2,p2,BLE Humidity 2,telemetry,sensor,humidity,,%,0,100,-,BLE humidity sensor 2,7.5,2025-10-15T19:41:39Z,2025-10-17T10:44:47Z,JSON,4,sensors.humidity
+can_adblue_level,p2,CAN AdBlue Level,telemetry,vehicle,adblue,,%,0,100,-,DEF/AdBlue tank level,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,3,diagnostics.fluids.adblue_level
+pdop,p2,PDOP,telemetry,location,reliability,,,,,,Indicates the current state of the electric power steering (EPS) system.,0.9,2025-10-14T15:44:18.684Z,2025-10-17T05:52:03.154Z,JSON,1,location.pdop
+can_front_right_door,p2,can,telemetry,vehicle,doors,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,32,diagnostics.body.doors.*
+can_low_fuel,p2,can,telemetry,vehicle,warning,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,[UNCERTAIN] diagnostics.health.low_fuel_warning OR fuel.levels[].warning OR diagnostics.warnings.*
+can_oil_pressure_or_level,p2,vehicle_health,telemetry,vehicle,health,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,[UNCERTAIN] diagnostics.fluids.oil_pressure OR diagnostics.fluids.oil_level OR Both
+can_rear_left_door,p2,can,telemetry,vehicle,doors,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,32,diagnostics.body.doors.*
+can_rear_right_door,p2,can,telemetry,vehicle,doors,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,32,diagnostics.body.doors.*
+can_trunk_state,p2,can,telemetry,vehicle,doors,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,32,diagnostics.body.doors.*
+avl_io_124,p2,Agricultural Machinery Flags,telemetry,vehicle,health,,,0,0xFFFFFFFFFFFFFFFF,-,Agricultural machinery flags,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,24,diagnostics.engine.coolant_temperature
+avl_io_464,p2,BLE 1 Custom #3,telemetry,vehicle,maintenance,,,0,4294967295,-,Custom IO element for BLE sensor,14221182,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,1,diagnostics.maintenance.service_distance
+avl_io_472,p2,BLE 3 Custom #3,telemetry,fuel,consumption,to clarify if it is from last ignition?,,0,4294967295,-,Custom IO element for BLE sensor,16121856,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,1,fuel.consumption.trip.value
+avl_io_107,p2,Fuel Consumed (counted),telemetry,fuel,consumption,,l,0,2147483647,0.1,Total Fuel Consumed,50332,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,32,fuel.consumption.rate
+alt,p2,Altitude,telemetry,location,coordinates,,m,-500,10000,-,Location altitude in meters,17,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,71,location.altitude
+avl_io_68,p2,Battery Current,telemetry,device,battery,,A,0,65535,0.001,Current,40,2025-10-15T20:12:18Z,2025-10-17T11:57:03Z,JSON,7,device.battery.current
+battery_current,p2,Battery Current,telemetry,device,battery,,mA,-32768,32767,-,Internal battery charge/discharge current,0.04,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,1,device.battery.current
+avl_io_67,p2,Battery Voltage,telemetry,device,battery,,V,0,65535,0.001,Voltage,3930,2025-10-15T20:08:09Z,2025-10-17T11:57:03Z,JSON,21,device.battery.voltage
+avl_io_36,p2,Engine RPM,telemetry,vehicle,rpm,,rpm,0,16384,-,Engine RPM,793,2025-10-16T14:20:31Z,2025-10-17T11:57:03Z,JSON,1,diagnostics.engine.rpm
+avl_io_85,p2,Engine RPM,telemetry,vehicle,rpm,,rpm,0,32767,-,Engine revolutions per minute,1252,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON | Not in FMB140 spec,32,diagnostics.engine.rpm
+can_rpm,p2,CAN Engine RPM,telemetry,vehicle,rpm,,rpm,0,8031,0.125,Engine speed in RPM,1252,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,32,diagnostics.engine.rpm
+obd_rpm,p2,OBD RPM,telemetry,vehicle,rpm,,rpm,0,16383,-,Engine revolutions per minute,793,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,1,diagnostics.engine.rpm
+avl_io_916,p2,SSF Electric Engine State,telemetry,driving_behavior,time,,,0,1,-,0 - Off 1 - On,1,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,driving_behavior.daily_summary.driving_duration
+battery_voltage,p2,Battery Voltage,telemetry,device,battery,,V,0,30,-,Internal battery voltage,4.05,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,24,device.battery.voltage
+ble_humidity_3,p2,other,telemetry,sensor,humidity,,,,,,,9.7,2025-10-15T19:45:23Z,2025-10-17T10:44:13Z,JSON,2,sensors.humidity
+ble_humidity_4,p2,other,telemetry,sensor,humidity,,,,,,,9.3,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,2,sensors.humidity
+can_coolant_temp_or_level,p2,vehicle_health,telemetry,vehicle,health,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,[UNCERTAIN] diagnostics.engine.coolant_temperature OR diagnostics.fluids.coolant_level OR Both
+can_door_state,p2,can,telemetry,vehicle,doors,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,32,diagnostics.body.doors.*
+avl_io_120,p2/p3,Axle 3 Load,event,driving_behavior,,,kg,0,32768,-,Axle 3 load,0,2025-10-16T14:16:08Z,2025-10-17T11:57:03Z,JSON,1,driving_behavior.daily_summary.event_counts.*
+avl_io_467,p3,BLE 2 Custom #2,telemetry,fuel,consumption,,,0,4294967295,-,Custom IO element for BLE sensor,16102,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,1,fuel.consumption.economy
+avl_io_83,p3,Fuel Consumed,telemetry,fuel,consumption,,l,0,2147483647,0.1,Value in liters,2110005,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,19,fuel.consumption.economy
+avl_io_84,p3,Fuel Level,telemetry,fuel,consumption,,l,0,65535,0.1,Value in liters,228,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,27,fuel.consumption.economy
+can_automatic_retarder,p3,CAN Automatic Retarder,telemetry,vehicle,usage,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.brakes.retarder_automatic
+can_central_diff_4hi_locked,p3,CAN Central Diff 4HI Locked,telemetry,vehicle,usage,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,17,diagnostics.drivetrain.central_differential_4hi_locked
+can_central_diff_4lo_locked,p3,CAN Central Diff 4LO Locked,telemetry,vehicle,usage,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,17,diagnostics.drivetrain.central_differential_4lo_locked
+can_clutch_state,p3,CAN Clutch State,telemetry,vehicle,usage,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,26,diagnostics.drivetrain.clutch_state
+avl_io_250,p3,Trip,event,trip,,,,0,1,-,0 – trip stop 1 – trip start From 01.00.24 fw version available with BT app new values: 2 – Business Status 3 – Private Status 4-9 – Custom Statuses,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,43,events.trip
+avl_io_251,p3,Idling,event,driving_behavior,idling,,,0,1,-,0 – moving 1 – idling,1,2025-10-15T19:40:20Z,2025-10-17T11:57:03Z,JSON,6,events.idling
+avl_io_656,p3,SSF Rear Left Door Open,event,driver,identification,,,0,1,-,0 - Closed 1 - Open,1,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,events.driver.ibutton_hold
+avl_io_234,p3,CNG Level,event,driving_behavior,,,%,0,100,-,CNG Level,0,2025-10-15T19:39:51Z,2025-10-17T11:57:03Z,JSON,1,events.eco_driving
+avl_io_966,p3,ISF Low Tire Pressure Indicator,event,other,,,,0,1,-,0 - Off 1 - On,0,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,events.datalink
+avl_io_128,p3,Grain Mown Volume,event,device_security,,,kg,0,4294967295,-,Mown volume,0,2025-10-15T20:25:06Z,2025-10-17T11:57:03Z,JSON,5,events.gnss_jamming
+avl_io_907,p3,SSF Engine Lock Active,event,counters,trip,,,0,1,-,0 - Inactive 1 - Active,0,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,counters.trip_count
+avl_io_908,p3,SSF Request To Lock Engine,event,driving_behavior,idling,,,0,1,-,0 - Off 1 - On,0,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,driving_behavior.daily_summary.event_counts.excessive_idling
+avl_io_910,p3,SSF Footbrake Is Active,event,driving_behavior,overspeed,,,0,1,-,0 - Footbrake inactive 1 - Footbrake active,1,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,driving_behavior.daily_summary.event_counts.overspeed
+avl_io_913,p3,SSF Engine Cover Open,event,driving_behavior,harsh,,,0,1,-,0 - Closed 1 - Open,0,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,driving_behavior.daily_summary.event_counts.harsh_acceleration
+avl_io_914,p3,SSF Charging Wire Plugged,event,driving_behavior,harsh,,,0,1,-,0 - Unplugged 1 - Plugged,0,2025-10-16T14:11:36Z,2025-10-17T11:57:03Z,JSON,2,driving_behavior.daily_summary.event_counts.harsh_braking
+avl_io_915,p3,SSF Batttery Charging,event,driving_behavior,harsh,,,0,1,-,0 - Not charging 1 - Charging,0,2025-10-16T14:11:36Z,2025-10-17T11:57:03Z,JSON,2,driving_behavior.daily_summary.event_counts.harsh_cornering
+avl_io_130,p3,Harvesting Drum RPM,event,driving_behavior,overspeed,,rpm,0,65535,-,Harvesting drum rpm,0,2025-10-15T20:25:06Z,2025-10-17T11:57:03Z,JSON,4,driving_behavior.overspeed_threshold
+avl_io_248,p3,Immobilizer,telemetry,other,,,,0,2,-,0 – iButton not connected 1 – iButton connected (Immobilizer) 2 – iButton connected (Authorized Driving),1,2025-10-15T19:39:51Z,2025-10-17T11:57:03Z,JSON,14,nearby_assets[].detected
+avl_io_263,p3,BT Status,telemetry,device,ble,,,0,4,-,"0 - BT is disabled 1 - BT Enabled, not device connected 2 - Device connected, BTv3 Only 3 - Device connected, BLE only 4 - Device connected, BLE + BT",1,2025-10-15T20:22:56Z,2025-10-17T11:57:03Z,JSON,1,device.bluetooth.status
+avl_io_380,p3,Digital output 3,telemetry,to_clarify,,from where does it come from?,,0,1,-,Logic: 0/1,0,2025-10-15T19:41:04Z,2025-10-17T11:57:03Z,JSON,5,[UNCERTAIN] driver.authorized OR status.authorized_driving OR Ignored
+can_front_diff_locked,p3,CAN Front Diff Locked,telemetry,vehicle,health,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,17,diagnostics.drivetrain.front_differential_locked
+can_front_fog_lights,p3,CAN Front Fog Lights,telemetry,vehicle,lights,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,17,diagnostics.body.lights.*
+can_front_left_door,p3,CAN Front Left Door,telemetry,vehicle,doors,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,32,diagnostics.body.doors.*
+can_hood_state,p3,CAN Hood State,telemetry,vehicle,doors,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,32,diagnostics.body.doors.*
+can_manual_retarder,p3,CAN Manual Retarder,telemetry,vehicle,usage,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.brakes.retarder_manual
+can_rear_diff_locked,p3,CAN Rear Diff Locked,telemetry,vehicle,usage,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,17,diagnostics.drivetrain.rear_differential_locked
+can_trailer_axle_lift_active_2,p3,CAN Trailer Axle Lift Active 2,telemetry,vehicle,vehicle,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,17,diagnostics.trailer.axle_lift_active[]
+can_webasto_state,p3,CAN Webasto State,telemetry,vehicle,usage,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.engine.webasto_state
+obd_mil_activated_distance,p3,OBD MIL Activated Distance,telemetry,vehicle,usage,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,1,diagnostics.health.mil_activated_distance
+can_pto_state,p3,CAN PTO State,telemetry,vehicle,usage,,,,,,,0,2025-10-15T19:39:51Z,2025-10-17T11:55:15Z,JSON,17,diagnostics.engine.pto_state
+can_trailer_axle_lift_active_1,p3,CAN Trailer Axle Lift Active 1,telemetry,vehicle,usage,,,,,,,0,2025-10-15T19:39:51Z,2025-10-17T11:55:15Z,JSON,17,diagnostics.trailer.axle_lift_active[]
+raw_can_15,p3,Raw CAN 15,telemetry,to_clarify,-,,,,,,,0,2025-10-16T14:11:36Z,2025-10-17T11:40:19Z,JSON,2,other.raw_can
+raw_can_16,p3,Raw CAN 16,telemetry,to_clarify,-,,,,,,,0,2025-10-16T14:11:36Z,2025-10-17T11:40:19Z,JSON,2,other.raw_can
+raw_can_1,p3,Raw CAN 1,telemetry,to_clarify,-,,,,,,,0,2025-10-16T14:12:14Z,2025-10-17T11:40:19Z,JSON,1,other.raw_can
+raw_can_11,p3,Raw CAN 11,telemetry,to_clarify,-,,,,,,,1,2025-10-16T14:12:14Z,2025-10-17T11:40:19Z,JSON,1,other.raw_can
+raw_can_14,p3,Raw CAN 14,telemetry,to_clarify,-,,,,,,,0,2025-10-16T14:12:14Z,2025-10-17T11:40:19Z,JSON,1,other.raw_can
+raw_can_17,p3,Raw CAN 17,telemetry,to_clarify,-,,,,,,,1,2025-10-16T14:12:14Z,2025-10-17T11:40:19Z,JSON,1,other.raw_can
+raw_can_3,p3,Raw CAN 3,telemetry,to_clarify,-,,,,,,,1,2025-10-16T14:12:14Z,2025-10-17T11:40:19Z,JSON,1,other.raw_can
+raw_can_8,p3,Raw CAN 8,telemetry,to_clarify,-,,,,,,,0,2025-10-16T14:12:14Z,2025-10-17T11:40:19Z,JSON,1,other.raw_can
+raw_can_9,p3,Raw CAN 9,telemetry,to_clarify,-,,,,,,,0,2025-10-16T14:12:14Z,2025-10-17T11:40:19Z,JSON,1,other.raw_can
+avl_io_205,p3,GSM Cell ID,telemetry,other,,,,0,65535,-,GSM base station ID,24393,2025-10-16T14:16:08Z,2025-10-17T11:57:03Z,JSON,1,diagnostics.axles.weights
+avl_io_206,p3,GSM Area Code,telemetry,other,,,,0,65535,-,"Location Area code (LAC), it depends on GSM operator. It provides unique number which assigned to a set of base GSM stations.",6,2025-10-16T14:16:08Z,2025-10-17T11:57:03Z,JSON,1,diagnostics.axles.total_weight
+can_engine_load,p3,CAN Engine Load,telemetry,can,-,,%,0,100,-,Engine load percentage,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,3,diagnostics.engine.load
+can_abs_state,p3,CAN ABS State,telemetry,vehicle,abs,,-,0,1,-,"Anti-lock braking system status (0=inactive, 1=active)",1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.brakes.abs_active
+can_eps_state,p3,EPS State,telemetry,vehicle,other,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.steering.eps_state
+avl_io_102,p3,Fuel Temperature,telemetry,fuel,temperature,,°C,-40,125,-,Fuel temperature,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON | Not in FMB140 spec,18,fuel.temperature
+avl_io_201,p3,LLS 1 Fuel Level,telemetry,vehicle,wheel_speed,,kvants or ltr,-4,32767,-,Fuel level measured by LLS sensor via RS232/RS485,65532,2025-10-15T19:58:36Z,2025-10-17T11:57:03Z,JSON,6,diagnostics.wheels.front_left.speed
+avl_io_202,p3,LLS 1 Temperature,telemetry,vehicle,wheel_speed,,°C,-128,127,-,Fuel temperature measured by LLS via RS232/RS485,32,2025-10-15T20:22:56Z,2025-10-17T11:57:03Z,JSON,5,diagnostics.wheels.front_right.speed
+avl_io_203,p3,LLS 2 Fuel Level,telemetry,vehicle,wheel_speed,,kvants or ltr,-4,32767,-,Fuel level measured by LLS sensor via RS485,65532,2025-10-15T20:22:56Z,2025-10-17T11:57:03Z,JSON,4,diagnostics.wheels.rear_left.speed
+avl_io_204,p3,LLS 2 Temperature,telemetry,vehicle,wheel_speed,,°C,-128,127,-,Fuel temperature measured by LLS via RS485,-128,2025-10-16T14:14:10Z,2025-10-17T11:57:03Z,JSON,1,diagnostics.wheels.rear_right.speed
+can_additional_front_fog_lights,p3,can,telemetry,vehicle,lights,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,17,diagnostics.body.lights.*
+can_additional_rear_lights,p3,can,telemetry,vehicle,lights,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,17,diagnostics.body.lights.*
+can_air_conditioning,p3,can,telemetry,vehicle,usage,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.climate.air_conditioning
+can_airbag_state,p3,can,telemetry,vehicle,warning,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.safety.airbag_state
+avl_io_100,p3,Program Number,telemetry,device,firmware,,-,0,4294967295,-,Device firmware version identifier,12181,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON | Not in FMB140 spec,32,device.firmware.version
+avl_io_106,p3,BLE Humidity #3,telemetry,driving_behavior,ecoscore,,%RH,0,1000,0.1,Humidity From firmware version 03.28.00 and up: 65535 - sensor not found 65534 - failed sensor data parsing 65533 - abnormal sensor state,97,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,3,driving_behavior.eco_score.value
+avl_io_11,p3,ICCID1,telemetry,connectivity,sim,,,0,0xffffffffffffffff,-,"Value of SIM ICCID, MSB",8.93204E+12,2025-10-15T20:10:35Z,2025-10-17T11:57:03Z,JSON,7,connectivity.sim.iccid
+avl_io_115,p3,Engine Temperature,telemetry,connectivity,type,,°C,-600,1270,0.1,Engine Temperature,860,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,18,connectivity.network_type
+avl_io_121,p3,Axle 4 Load,telemetry,driving_behavior,ecoscore,,kg,0,32768,-,Axle 4 load,0,2025-10-16T14:16:08Z,2025-10-17T11:57:03Z,JSON,1,driving_behavior.eco_score.green_driving_type
+avl_io_122,p3,Axle 5 Load,telemetry,driving_behavior,ecoscore,,kg,0,32768,-,Axle 5 load,0,2025-10-16T14:16:08Z,2025-10-17T11:57:03Z,JSON,1,driving_behavior.eco_score.green_driving_value
+avl_io_129,p3,Grain Moisture,telemetry,driving_behavior,autopilot,,%,0,100,-,Grain moisture,0,2025-10-15T20:25:06Z,2025-10-17T11:57:03Z,JSON,5,driving_behavior.autopilot.active
+avl_io_15,p3,Eco Score,telemetry,driving_behavior,ecoscore,,,0,65535,0.01,Average amount of events on some distance,1000,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,3,driving_behavior.eco_score.daily_value
+avl_io_155,p3,Geofence zone 01,telemetry,geofence,-,,,0,3,-,0 – target left zone 1 – target entered zone 2 – over speeding end 3 – over speeding start,3,2025-10-16T13:53:31Z,2025-10-17T11:57:03Z,JSON,1,geofence.zone_id
+avl_io_175,p3,Auto Geofence,telemetry,geofence,-,,,0,1,-,0 – target left zone 1 – target entered zone,0,2025-10-15T20:08:09Z,2025-10-17T11:57:03Z,JSON,2,geofence.auto_status
+avl_io_181,p3,GNSS PDOP,telemetry,location,reliability,,,0,500,0.1,"Coefficient, calculation formula",10,2025-10-16T14:16:08Z,2025-10-17T11:57:03Z,JSON,1,location.pdop
+avl_io_182,p3,GNSS HDOP,telemetry,location,reliability,,,0,500,0.1,"Coefficient, calculation formula",6,2025-10-16T14:16:08Z,2025-10-17T11:57:03Z,JSON,1,location.hdop
+avl_io_200,p3,Sleep Mode,telemetry,device,configuration,,,0,4,-,0 - No Sleep 1 – GPS Sleep 2 – Deep Sleep 3 – Online Sleep 4 - Ultra Sleep,3,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,17,device.sleep_mode
+avl_io_254,p3,Green Driving Value,telemetry,connectivity,status,,G or rad,0,255,acc and braking: 0.01,Depending on green driving type: if harsh acceleration or braking – g*100 (value 123 -> 1.23g). If Green driving source is „GPS“ – harsh cornering value is rad/s*100. If source is „Accelerometer“ – g*100.,37,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,connectivity.registration_state
+avl_io_466,p3,BLE 1 Custom #5,telemetry,vehicle,brake,,,0,4294967295,-,Custom IO element for BLE sensor,0,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,1,diagnostics.brakes.parking_brake
+avl_io_652,p3,SSF KeyInIgnitionLock,telemetry,driver,identification,,,0,1,-,0 - No key in lock 1 - Key in lock,0,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,driver.ibutton_count
+avl_io_69,p3,GNSS Status,telemetry,location,reliability,,,0,3,-,"0 - GNSS OFF 1 – GNSS ON with fix 2 - GNSS ON without fix 3 - GNSS sleep 4 - GNSS ON with fix, invalid data",1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,60,location.precision.fix_quality
+avl_io_76,p3,Dallas Temperature ID 1,telemetry,sensor,identification,,,0,0xffffffffffffffff,-,Dallas sensor ID,8.86308E+18,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,4,sensors[].id
+avl_io_77,p3,Dallas Temperature ID 2,telemetry,sensor,identification,,,0,0xffffffffffffffff,-,Dallas sensor ID,2.73819E+18,2025-10-15T20:09:51Z,2025-10-17T11:57:03Z,JSON,1,sensors[].id
+avl_io_78,p3,iButton,telemetry,sensor,identification,,,0,0xffffffffffffffff,-,iButton ID,9.40975E+16,2025-10-15T19:39:51Z,2025-10-17T11:57:03Z,JSON,23,sensors[].id
+avl_io_80,p3,Data Mode,telemetry,connectivity,status,,-,0,4,-,Device data mode (Home On Stop/Roaming/Unknown),5,2025-10-15T20:12:18Z,2025-10-17T11:57:03Z,JSON | Not in FMB140 spec,3,connectivity.data_mode
+avl_io_81,p3,Vehicle Speed,telemetry,connectivity,network,,km/h,0,255,-,Vehicle Speed,26,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,35,connectivity.cell.id
+avl_io_82,p3,Accelerator Pedal Position,telemetry,connectivity,network,,%,0,102,-,Value in percentages,87,2025-10-15T19:39:51Z,2025-10-17T11:57:03Z,JSON,30,connectivity.cell.lac
+avl_io_898,p3,SSF Ignition,telemetry,fota,-,,,0,1,-,0 - No 1 - Yes,1,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,[IGNORED] FOTA update fields - device management only
+avl_io_900,p3,SSF Engine Working,telemetry,fota,-,,,0,1,-,0 - No 1 - Yes,0,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,[IGNORED] FOTA update fields - device management only
+avl_io_902,p3,SSF Ready To Drive,telemetry,fota,-,,,0,1,-,0 - No 1 - Yes,1,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,[IGNORED] FOTA update fields - device management only
+can_hand_brake_state,p3,CAN Hand Brake,telemetry,vehicle,brake,,-,0,1,-,"Hand/parking brake state (0=released, 1=engaged)",1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.brakes.parking_brake
+impulse_counter_1,p3,Impulse Counter 1,telemetry,to_clarify,-,What this stands for?,-,0,4294967295,-,Impulse/frequency counter 1,7,2025-10-15T19:40:30Z,2025-10-17T11:12:35Z,JSON,6,other.impulse_counters
+impulse_counter_2,p3,Impulse Counter 2,telemetry,to_clarify,-,What this stands for?,-,0,4294967295,-,Impulse/frequency counter 2,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,5,other.impulse_counters
+status,p3,Status,telemetry,to_clarify,-,useful?,-,0,65535,-,Device status bitmap,10240,2025-10-15T20:15:07Z,2025-10-17T11:12:35Z,JSON,5,[UNCERTAIN] device.status_bitmap OR debug.device_status OR Ignored
+avl_io_1086,p3,CSF Start Stop System Inactive,telemetry,sensor,potentiometer,,,0,1,-,0 - No 1 - Yes,0,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,sensors.potentiometer[]
+avl_io_113,p3,Battery Level,telemetry,device,battery,,%,0,100,-,Battery capacity level,81,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,43,device.battery.level
+avl_io_41,p3,Throttle Position,telemetry,driving_behavior,throttle,,%,0,100,-,Throttle position,31,2025-10-16T14:20:31Z,2025-10-17T11:57:03Z,JSON,1,driving_behavior.throttle_position
+avl_io_473,p3,BLE 3 Custom #4,telemetry,driving_behavior,brake,,,0,4294967295,-,Custom IO element for BLE sensor,0,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,1,driving_behavior.brake_position
+can_footbrake_state,p3,CAN Footbrake State,telemetry,driving_behavior,brake,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,driving_behavior.brake_active
+can_front_passenger_presence,p3,CAN Front Passenger Presence,telemetry,vehicle,passenger,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,17,diagnostics.occupancy.front_passenger
+can_full_beam_headlights,p3,CAN Full Beam Headlights,telemetry,vehicle,lights,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.body.lights.*
+can_glow_plug_indicator,p3,CAN Glow Plug Indicator,telemetry,vehicle,health,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.engine.glow_plug_active
+can_light_signal,p3,CAN Light Signal,telemetry,vehicle,lights,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,17,diagnostics.body.lights.*
+can_lights_failure,p3,CAN Lights Failure,telemetry,vehicle,lights,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.body.lights.*
+can_parking_lights,p3,CAN Parking Lights,telemetry,vehicle,lights,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.body.lights.*
+can_ready_to_drive,p3,CAN Ready to Drive,telemetry,vehicle,-,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.engine.ready_to_drive
+can_rear_centre_seat_belt_state,p3,CAN Rear Centre Seat Belt State,telemetry,vehicle,belt,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,17,diagnostics.body.belts.*
+can_rear_fog_lights,p3,CAN Rear Fog Lights,telemetry,vehicle,lights,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.body.lights.*
+can_rear_left_seat_belt_state,p3,CAN Rear Left Seat Belt State,telemetry,vehicle,belt,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,17,diagnostics.body.belts.*
+can_rear_right_seat_belt_state,p3,CAN Rear Right Seat Belt State,telemetry,vehicle,belt,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,17,diagnostics.body.belts.*
+can_roof_state,p3,CAN Roof State,telemetry,vehicle,doors,,,,,,,0,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.body.doors.*
+can_seat_belt_passenger_state,p3,CAN Passenger Seat Belt State,telemetry,vehicle,belt,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.body.belts.*
+avl_io_89,p3,Fuel level,telemetry,device,temperature,,%,0,100,-,Value in percentages,86,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,24,device.temperature
+avl_io_518,p3,Control State Flags P4,telemetry,sensor,signal,,,0,0xffffffffffffffff,-,"Control state flags protocol 4, more information click here Flags",4096,2025-10-15T19:39:51Z,2025-10-17T11:57:03Z,JSON,17,sensors.signal
+avl_io_519,p3,Indicator State Flags P4,telemetry,sensor,signal,,,0,0xffffffffffffffff,-,"Indicator state flags protocol 4, more information click here Flags",262,2025-10-15T19:39:51Z,2025-10-17T11:57:03Z,JSON,19,sensors.signal[].tx_power
+freq_1,p3,Frequency 1,telemetry,sensor,frequency,,Hz,0,65535,-,Frequency input 1,7,2025-10-15T20:15:07Z,2025-10-17T11:12:35Z,JSON,5,sensors.frequency[]
+freq_2,p3,Frequency 2,telemetry,sensor,frequency,,Hz,0,65535,-,Frequency input 2,1,2025-10-15T20:15:07Z,2025-10-17T11:12:35Z,JSON,5,sensors.frequency[]
+avl_io_469,p3,BLE 2 Custom #4,telemetry,vehicle,axle,,,0,4294967295,-,Custom IO element for BLE sensor,0,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,1,diagnostics.axles.weights
+avl_io_470,p3,BLE 2 Custom #5,telemetry,vehicle,axle,,,0,4294967295,-,Custom IO element for BLE sensor,0,2025-10-15T19:45:23Z,2025-10-17T11:57:03Z,JSON,1,diagnostics.axles.weights
+avl_io_103,p3,Fuel Used GPS,telemetry,fuel,consumption,,L,0,4294967295,0.1,Fuel consumed calculated by GPS,161826,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON | Not in FMB140 spec,21,fuel.consumption.cumulative
+avl_io_948,p3,CSF Rear Differential Locked,telemetry,device,capacity,,,0,1,-,0 - Unlocked 1 - Locked,0,2025-10-16T14:12:14Z,2025-10-17T11:57:03Z,JSON,1,device.battery.capacity
+avl_io_17,p3,Axis X,telemetry,device,acceleration,,mG,-8000,8000,-,X axis value,-34,2025-10-16T14:16:08Z,2025-10-17T11:57:03Z,JSON,1,[IGNORED] Alternate raw accelerometer fields
+avl_io_18,p3,Axis Y,telemetry,driving,acceleration,,mG,-8000,8000,-,Y axis value,55,2025-10-16T14:16:08Z,2025-10-17T11:57:03Z,JSON,1,[IGNORED] Alternate raw accelerometer fields
+avl_io_19,p3,Axis Z,telemetry,driving,acceleration,,mG,-8000,8000,-,Z axis value,-71,2025-10-16T14:16:08Z,2025-10-17T11:57:03Z,JSON,1,[IGNORED] Alternate raw accelerometer fields
+axis_x,p3,Axis X,telemetry,driving,acceleration,,mg,-4000,4000,-,X-axis acceleration (milligravity),-34,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,1,[IGNORED] Raw accelerometer values - prefer calculated events
+axis_y,p3,Axis Y,telemetry,driving,acceleration,,mg,-4000,4000,-,Y-axis acceleration (milligravity),55,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,1,[IGNORED] Raw accelerometer values - prefer calculated events
+axis_z,p3,Axis Z,telemetry,driving,acceleration,,mg,-4000,4000,-,Z-axis acceleration (milligravity),-71,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,1,[IGNORED] Raw accelerometer values - prefer calculated events
+avl_io_235,p3,Oil Level,telemetry,driving_behavior,duration,,,0,1,-,Engine Oil Level Indicator Status,1,2025-10-15T19:39:51Z,2025-10-17T11:57:03Z,JSON,17,driving_behavior.eco_score.duration
+ble_frequency_1,p3,BLE Frequency 1,telemetry,sensor,frequency,,,,,,,0,2025-10-15T19:45:23Z,2025-10-17T10:47:53Z,JSON,3,sensors.frequency[]
+can_cruise_control,p3,CAN Cruise Control,telemetry,driving_behavior,autopilot,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,driving_behavior.autopilot.active
+can_dipped_headlights,p3,CAN Dipped Headlights,telemetry,vehicle,lights,,,,,,,1,2025-10-15T18:07:19Z,2025-10-17T11:57:03Z,JSON,29,diagnostics.body.lights.*
