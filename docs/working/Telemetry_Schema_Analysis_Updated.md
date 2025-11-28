@@ -212,14 +212,66 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 ```json
 {
   "status": {
-    "top_status": { "family": "transit", "code": "in_transit", "updated_at": "ISO8601" },
+    "top_status": {
+      "family": "transit",
+      "code": "in_transit",
+      "updated_at": "ISO8601"
+    },
     "statuses": [
-      { "family": "connectivity", "code": "online", "compatible": true, "updated_at": "ISO8601" }
+      {
+        "family": "connectivity",
+        "code": "online",
+        "compatible": true,
+        "updated_at": "ISO8601"
+      },
+      {
+        "family": "immobilization",
+        "code": "free",
+        "compatible": true,
+        "updated_at": "ISO8601"
+      },
+      {
+        "family": "engine",
+        "code": "running",
+        "compatible": true,
+        "updated_at": "ISO8601"
+      },
+      {
+        "family": "transit",
+        "code": "in_transit",
+        "compatible": true,
+        "updated_at": "ISO8601"
+      }
     ]
   },
-  "geofences": [...],
-  "trip": { "id": "uuid", "started_at": "ISO8601", "distance": { "value": 45.2, "unit": "km" } },
-  "nearby_assets": [...]
+  "geofences": [
+    {
+      "geofence_id": 42,
+      "geofence_name": "Warehouse"
+    },
+    {
+      "geofence_id": 15,
+      "geofence_name": "Service Area"
+    }
+  ],
+  "trip": {
+    "id": "uuid",
+    "started_at": "ISO8601",
+    "distance": { "value": 45.2, "unit": "km" },
+    "duration": { "value": 3600, "unit": "s" },
+    "start_location": { "lat": 5.3561, "lng": -4.0083 },
+    "current_location": { "lat": 5.4123, "lng": -4.0156 }
+  },
+  "nearby_assets": [
+    {
+      "id": "ble_beacon_id_hex",
+      "name": "Asset Name"
+    },
+    {
+      "id": "asset_uuid_123",
+      "name": "Nearby Vehicle"
+    }
+  ]
 }
 ```
 
@@ -252,14 +304,12 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
     "altitude": "meters above sea level",
     "heading": "degrees (0-359, 0=North)",
     "cardinal_direction": "string (N, NE, E, SE, S, SW, W, NW)",
-    "satellites": "integer (0-32)",
-    "hdop": "decimal (-1 to 20, -1=unknown)",
-    "pdop": "decimal",
     "geocoded_address": "string",
     "precision": {
-      "hdop": "decimal",
+      "hdop": "decimal (-1 to 20, -1=unknown)",
       "pdop": "decimal",
-      "fix_quality": "integer (0=no fix, 1=fix)"
+      "fix_quality": "integer (0=no fix, 1=fix)",
+      "satellites": "integer (0-32)"
     }
   }
 }
@@ -274,13 +324,11 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 | `location.altitude` | P2 | Navixy: `alt` (Altitude) | Altitude in meters |
 | `location.heading` | P0 | Navixy: `heading` (Heading) | Heading in degrees (0-359) |
 | `location.cardinal_direction` | P1 | **Computed:** Derived from `location.heading` | Cardinal direction (N, NE, E, SE, S, SW, W, NW) |
-| `location.satellites` | P2 | Navixy: `satellites` (Satellites) | Number of satellites in fix |
-| `location.hdop` | P2 | Navixy: `avl_io_182` (GNSS HDOP), `hdop` (HDOP) | Horizontal Dilution of Precision |
-| `location.pdop` | P2 | Navixy: `avl_io_181` (GNSS PDOP), `pdop` (PDOP) | Position Dilution of Precision |
 | `location.geocoded_address` | P1 | **Computed:** Reverse geocoding (server-side) | Single string representation of the location |
 | `location.precision.fix_quality` | P2 | Navixy: `avl_io_69` (GNSS Status) | 0 - GNSS OFF 1 – GNSS ON with fix 2 - GNSS ON without fix 3 - GNSS sleep 4 - GNSS ON with fix, invalid data |
-| `location.precision.hdop` | P2 | Navixy: `avl_io_182` (GNSS HDOP), `hdop` (HDOP) | Horizontal Dilution of Precision (precision sub-object) |
-| `location.precision.pdop` | P2 | Navixy: `avl_io_181` (GNSS PDOP), `pdop` (PDOP) | Position Dilution of Precision (precision sub-object) |
+| `location.precision.hdop` | P2 | Navixy: `avl_io_182` (GNSS HDOP), `hdop` (HDOP) | Horizontal Dilution of Precision |
+| `location.precision.pdop` | P2 | Navixy: `avl_io_181` (GNSS PDOP), `pdop` (PDOP) | Position Dilution of Precision |
+| `location.precision.satellites` | P2 | Navixy: `satellites` (Satellites) | Number of satellites in fix |
 
 ---
 
@@ -346,7 +394,7 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 | `motion.accelerometer.x` | P2 | Navixy: `avl_io_17` (Axis X), `axis_x` (Axis X) | X axis value |
 | `motion.accelerometer.y` | P2 | Navixy: `avl_io_18` (Axis Y), `axis_y` (Axis Y) | Y axis value |
 | `motion.accelerometer.z` | P2 | Navixy: `avl_io_19` (Axis Z), `axis_z` (Axis Z) | Z axis value |
-| `motion.instant_movement` | P2 | Navixy: `avl_io_303` (Instant Movement) | Logic: 0/1 returns movement value |
+| `motion.instant_movement` | P2 | Navixy: `avl_io_303` (Instant Movement) | **REQUIRES CLARIFICATION:** Semantic distinction from `motion.is_moving` unclear. Both are boolean movement indicators. Need to confirm with Navixy/GPS provider: What does "Instant Movement" represent vs. standard Movement detection? |
 | `motion.is_moving` | P2 | Navixy: `avl_io_240` (Movement), `moving` (Is Moving) | 0 – Movement Off 1 – Movement On |
 | `motion.speed` | P0 | Navixy: `can_speed` (CAN Speed), `obd_speed` (OBD Speed), `avl_io_24` (Speed), `avl_io_37` (Vehicle Speed), `avl_io_81` (Vehicle Speed), `speed` (Speed) | GNSS Speed |
 
@@ -354,60 +402,60 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 
 ## 6. Power
 
-**Purpose:** Power source status, ignition state, and battery health (asset/vehicle battery).
+**Purpose:** Power source status, canonical ignition state, and battery health (asset/vehicle battery). Includes low-voltage electrical system and EV/hybrid traction battery systems.
 
 ### Structure
 ```json
 {
   "power": {
     "ignition": "boolean",
-    "battery": {
-      "level": { "value": "number", "unit": "%" }
+    "low_voltage_battery": {
+      "level": { "value": "number", "unit": "%" },
+      "charging": "boolean"
+    },
+    "ev": {
+      "traction_battery": {
+        "level": { "value": "number", "unit": "%" }
+      },
+      "charging": {
+        "active": "boolean",
+        "cable_plugged": "boolean"
+      },
+      "motor": {
+        "active": "boolean"
+      },
+      "range": {
+        "estimated_distance": { "value": "number", "unit": "km" }
+      }
     }
-  },
-  "engine": {
-    "ignition_on": "boolean",
-    "running": "boolean"
-  },
-  "ev": {
-    "battery": {
-      "level": { "value": "number", "unit": "%" }
-    },
-    "charging": {
-      "active": "boolean",
-      "cable_plugged": "boolean"
-    },
-    "motor": {
-      "active": "boolean"
-    },
-    "range": {
-      "estimated_distance": { "value": "number", "unit": "m" }
-    },
-    "ready_to_drive": "boolean"
   }
 }
 ```
+
+**Notes:**
+- **`power.ignition`**: Canonical ignition state computed from multiple sources (ignition cable, CAN signals, RPM, or AVL combined sources). This is the primary ignition field used by the rest of the Fleeti system for status computation and business logic.
+- **`power.low_voltage_battery.*`**: Represents the vehicle's low-voltage electrical system battery (starter/board battery). Voltage level depends on the vehicle (12V, 24V, 48V, etc.).
+- **`power.ev.traction_battery.*`**: Represents the high-voltage traction battery used for propulsion on EVs and hybrids. Only populated when the vehicle exposes these signals.
+- **Raw engine diagnostic fields** (`engine.ignition_on`, `engine.running`) are documented in Section 11 (Diagnostics) as they represent raw CAN/diagnostic signals, not the canonical power state.
 
 ### Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
-| `ev.battery.level` | P2 | Navixy: `avl_io_152` (HV Battery Level) | Battery level in percent |
-| `ev.charging.active` | P2 | Navixy: `avl_io_915` (SSF Batttery Charging) | 0 - Not charging 1 - Charging |
-| `ev.charging.cable_plugged` | P2 | Navixy: `avl_io_914` (SSF Charging Wire Plugged) | 0 - Unplugged 1 - Plugged |
-| `ev.motor.active` | P2 | Navixy: `avl_io_916` (SSF Electric Engine State) | 0 - Off 1 - On |
-| `ev.range.estimated_distance` | P2 | Navixy: `avl_io_304` (Vehicles Range On Battery) | Vehicle Range on Battery |
-| `ev.ready_to_drive` | P2 | Navixy: `avl_io_902` (SSF Ready To Drive) | 0 - No 1 - Yes |
-| `power.battery.level` | P0 | Navixy: `can_battery_level` | can |
-| `power.ignition` | P0 | Navixy: `can_engine_state`, `can_ignition_state` (CAN Ignition), `avl_io_239` (Ignition) | 0 – Ignition Off 1 – Ignition On |
-| `engine.ignition_on` | P2 | Navixy: `avl_io_898` (SSF Ignition) | 0 - No 1 - Yes |
-| `engine.running` | P2 | Navixy: `avl_io_900` (SSF Engine Working) | 0 - No 1 - Yes |
+| `power.ignition` | P0 | **Logic:** Prefer `avl_io_898` (SSF Ignition); else `can_ignition_state`; else `can_engine_state`; else `avl_io_239` (Ignition) | Canonical ignition state computed from multiple sources (ignition cable, CAN, RPM, or AVL combined). Used by status computation and business logic. |
+| `power.low_voltage_battery.level` | P0 | Navixy: `can_battery_level` | Board/system battery level (%) – 12V, 24V, etc. |
+| `power.low_voltage_battery.charging` | P0 | Navixy: `avl_io_915` (SSF Battery Charging) | 0 = not charging, 1 = charging (alternator / DC-DC) |
+| `power.ev.traction_battery.level` | P2 | Navixy: `avl_io_152` (HV Battery Level) | HV / drive battery SOC in % |
+| `power.ev.charging.cable_plugged` | P2 | Navixy: `avl_io_914` (SSF Charging Wire Plugged) | 0 = unplugged, 1 = plugged. Indicates charging cable is physically connected to the vehicle. |
+| `power.ev.charging.active` | P2 | **Computed:** `cable_plugged = true` AND `traction_battery.level` is increasing over time | True when EV is actively charging (cable plugged AND battery level increasing). Note: Logic to be implemented in transformation pipeline based on battery level trend analysis. |
+| `power.ev.motor.active` | P2 | Navixy: `avl_io_916` (SSF Electric Engine State) | 0 = off, 1 = electric motor active |
+| `power.ev.range.estimated_distance` | P2 | Navixy: `avl_io_304` (Vehicles Range On Battery) | Remaining range on battery |
 
 ---
 
 ## 7. Fuel
 
-**Purpose:** Fuel system data including levels, consumption, and temperature.
+**Purpose:** Fuel system data including levels and consumption.
 
 ### Structure
 ```json
@@ -421,11 +469,7 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
       "rate": { "value": "number", "unit": "l/h" }
     },
     "energy": {
-      "cng_status": "boolean"
-    }
-  },
-  "vehicle": {
-    "energy": {
+      "cng_status": "boolean",
       "fuel_type_code": "integer (0-255)"
     }
   }
@@ -436,11 +480,11 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
-| `fuel.consumption.cumulative` | P0 | Navixy: `can_consumption`, `can_consumption_relative`, `avl_io_103` (Fuel Used GPS), `avl_io_107` (Fuel Consumed (counted)), `avl_io_83` (Fuel Consumed) | Same concept as 102: total engine motor hours. Some models use 102, others 103. |
+| `fuel.consumption.cumulative` | P0 | Navixy: `can_consumption`, `can_consumption_relative`, `avl_io_103` (Fuel Used GPS), `avl_io_107` (Fuel Consumed (counted)), `avl_io_83` (Fuel Consumed) | Total fuel consumed (cumulative). Measured in liters. Sources include CAN consumption, GPS-calculated fuel used, and counted fuel consumed. |
 | `fuel.consumption.rate` | P0 | Navixy: `can_fuel_rate` (CAN Fuel Rate), `avl_io_110` (Fuel Rate) | Fuel rate |
 | `fuel.energy.cng_status` | P2 | Navixy: `avl_io_232` (CNG Status) | CNG Status |
 | `fuel.levels[].value` | P0 | Navixy: `can_fuel_1`, `can_fuel_litres`, `avl_io_390` (OBD OEM Fuel Level), `obd_custom_fuel_litres`, `avl_io_201` (LLS 1 Fuel Level), `avl_io_203` (LLS 2 Fuel Level), `avl_io_210` (LLS 3 Fuel Level), `avl_io_212` (LLS 4 Fuel Level), `avl_io_234` (CNG Level), `avl_io_270` (BLE Fuel Level #1), `avl_io_273` (BLE Fuel Level #2), `avl_io_84` (Fuel Level), `avl_io_89` (Fuel level), `ble_lls_level_1` (fuel), `ble_lls_level_2` (fuel), `fuel_level` (Fuel Level), `lls_level_1` (LLS Level 1), `lls_level_2` (LLS Level 2), `lls_level_3` (LLS Level 3), `lls_level_4` (LLS Level 4) | Fuel level measured by LLS sensor via RS232/RS485 |
-| `vehicle.energy.fuel_type_code` | P2 | Navixy: `avl_io_759` (Fuel Type) | 0 Not available 1 Gasoline 2 Methanol 3 Ethanol 4 Diesel 5 LPG 6 CNG 7 Propane 8 Electric 9 Bifuel running Gasoline 1... |
+| `fuel.energy.fuel_type_code` | P2 | Navixy: `avl_io_759` (Fuel Type) | 0 Not available 1 Gasoline 2 Methanol 3 Ethanol 4 Diesel 5 LPG 6 CNG 7 Propane 8 Electric 9 Bifuel running Gasoline 1... |
 
 ---
 
@@ -622,6 +666,8 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
       "battery_not_charging": "boolean"
     },
     "engine": {
+      "ignition_on": "boolean",
+      "running": "boolean",
       "coolant_temperature": "number",
       "glow_plug_active": "boolean",
       "load": { "value": "number", "unit": "%" },
@@ -696,11 +742,13 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 | `diagnostics.drivetrain.front_differential_locked` | P0 | Navixy: `can_front_diff_locked` (CAN Front Diff Locked), `avl_io_947` (CSF Front Differential Locked) | 0 - Unlocked 1 - Locked |
 | `diagnostics.drivetrain.rear_differential_locked` | P0 | Navixy: `can_rear_diff_locked` (CAN Rear Diff Locked), `avl_io_948` (CSF Rear Differential Locked) | 0 - Unlocked 1 - Locked |
 | `diagnostics.electrical.battery_not_charging` | P2 | Navixy: `avl_io_960` (ISF Battery Not Charging Indicator) | 0 - Off 1 - On |
+| `diagnostics.engine.ignition_on` | P2 | Navixy: `avl_io_898` (SSF Ignition) | Raw CAN ignition signal. Note: This is diagnostic data; use `power.ignition` for canonical ignition state. |
+| `diagnostics.engine.running` | P2 | Navixy: `avl_io_900` (SSF Engine Working) | Engine actually running (motor state). Note: This is diagnostic data; may differ from `power.ignition` if ignition cable is not connected to motor level. |
 | `diagnostics.engine.coolant_temperature` | P0 | Navixy: `can_coolant_temp_or_level` (vehicle_health) | vehicle_health |
 | `diagnostics.engine.glow_plug_active` | P0 | Navixy: `can_glow_plug_indicator` (CAN Glow Plug Indicator) | CAN Glow Plug Indicator |
 | `diagnostics.engine.load` | P0 | Navixy: `can_engine_load` (CAN Engine Load), `avl_io_114` (Engine Load) | Engine Load |
 | `diagnostics.engine.pto_state` | P0 | Navixy: `can_pto_state` (CAN PTO State) | CAN PTO State |
-| `diagnostics.engine.ready_to_drive` | P0 | Navixy: `can_ready_to_drive` (CAN Ready to Drive) | CAN Ready to Drive |
+| `diagnostics.engine.ready_to_drive` | P0 | Navixy: `can_ready_to_drive` (CAN Ready to Drive), `avl_io_902` (SSF Ready To Drive) | CAN Ready to Drive. Present on EV/hybrid and some modern ICE vehicles. |
 | `diagnostics.engine.rpm` | P0 | Navixy: `can_rpm` (CAN Engine RPM), `obd_rpm` (OBD RPM), `avl_io_36` (Engine RPM), `avl_io_85` (Engine RPM) | Engine RPM |
 | `diagnostics.engine.start_stop_inactive` | P2 | Navixy: `avl_io_1086` (CSF Start Stop System Inactive) | 0 - No 1 - Yes |
 | `diagnostics.engine.temperature` | P0 | Navixy: `can_engine_temp` (CAN Engine Temp), `avl_io_115` (Engine Temperature) | Engine Temperature |

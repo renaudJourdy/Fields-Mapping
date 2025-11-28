@@ -56,7 +56,91 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
     "name": "string",
     "type": 10,
     "subtype": 110,
-    // ... (see original document for complete structure)
+    "group": { "id": "uuid", "name": "string" },
+    "customer_ref": "2010-010",
+    "immobilizer_capable": true,
+    "accessories": [
+      {
+        "id": "uuid",
+        "type_id": 1,
+        "type_code": "immobilizer",
+        "connection": "wire",
+        "label": "Main immobilizer relay"
+      },
+      {
+        "id": "uuid",
+        "type_id": 2,
+        "type_code": "temperature",
+        "connection": "bluetooth",
+        "label": "Cold room sensor",
+        "sensors": [
+          { "type": "temperature", "position": 1 },
+          { "type": "humidity", "position": 1 }
+        ]
+      },
+      {
+        "id": "uuid",
+        "type_id": 3,
+        "type_code": "fuel_level",
+        "connection": "wire",
+        "label": "Fuel probe 1",
+        "serial_number": "LLS-00933",
+        "sensors": [
+          { "type": "fuel_level", "position": 1 }
+        ]
+      }
+    ],
+    "installation": {
+      "ignition_input_number": 1,
+      "immobilizer_output_number": 2,
+      "initial_odometer": { "value": 154000, "unit": "km" },
+      "initial_engine_hours": { "value": 4200, "unit": "h" }
+    },
+    "properties": {
+      "vehicle": {
+        "serial_number": "string",
+        "brand": "string",
+        "model": "string",
+        "license_plate": "string",
+        "vin": "string",
+        "powertrain": {
+          "primary_energy": "diesel|gasoline|electric|hybrid|cng|lng|hydrogen|other",
+          "fuel_tank_capacity": { "value": 600, "unit": "l" },
+          "battery_capacity": { "value": 120, "unit": "kwh" },
+          "theoretical_consumption": { "value": 32.5, "unit": "l/100km" },
+          "theoretical_consumption_kwh": { "value": 24.3, "unit": "kwh/100km" }
+        }
+      },
+      "equipment": {
+        "serial_number": "string",
+        "brand": "string",
+        "model": "string",
+        "rated_power": { "value": 180, "unit": "kw" },
+        "energy_source": "diesel|electric|hybrid"
+      },
+      "phone": {
+        "platform": "ios|android|unknown",
+        "platform_version": "17.2",
+        "employee_id": "string",
+        "employee_name": "string"
+      },
+      "site": {
+        "site_type": "cold_room",
+        "name": "Abidjan Coldroom West",
+        "address": {
+          "line1": "Zone industrielle",
+          "city": "Abidjan",
+          "country": "CI"
+        },
+        "location": {
+          "latitude": 5.3561,
+          "longitude": -4.0083
+        },
+        "surface": { "value": 120, "unit": "m2" },
+        "capacity_units": 450,
+        "temperature_range": { "min": { "value": -25, "unit": "°C" }, "max": { "value": 5, "unit": "°C" } }
+      }
+    }
   }
 }
 ```
@@ -70,9 +154,53 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 | `asset.id` | Fleeti Asset service | Primary asset identifier |
 | `asset.name` | Fleeti Asset service | Human-friendly asset label |
 | `asset.type` | Fleeti Asset service | Type enum (vehicle, equipment, site, phone) |
-| `asset.properties.vehicle.vin` | Navixy: `avl_io_132` (Security State Flags) | ⚠️ **Needs verification:** VIN mapping from Security State Flags seems incorrect. |
+| `asset.subtype` | Fleeti Asset service | Subtype enum (car, truck, cold_room, etc.) |
+| `asset.group.id` | Asset grouping service | Primary group identifier |
+| `asset.group.name` | Asset grouping service | Primary group name |
+| `asset.customer_ref` | Customer registry | Reference code identifying the customer/tenant (e.g., `2010-010`) |
+| `asset.immobilizer_capable` | Installation metadata | Whether immobilizer wiring exists |
+| `asset.accessories[].id` | Accessory registry | Unique accessory identifier |
+| `asset.accessories[].type_id` | Accessory registry | Accessory type numeric ID |
+| `asset.accessories[].type_code` | Accessory registry | Accessory type code (immobilizer, temperature, fuel_level, etc.) |
+| `asset.accessories[].connection` | Installation metadata | Connection type (wire, bluetooth, wifi) |
+| `asset.accessories[].label` | Installation metadata | Human-readable accessory label |
+| `asset.accessories[].serial_number` | Installation metadata | Accessory serial number |
+| `asset.accessories[].sensors[]` | Installation metadata | Array of sensor types/positions this accessory exposes |
+| `asset.installation.ignition_input_number` | Installation metadata | Digital input wired to ignition switch |
+| `asset.installation.immobilizer_output_number` | Installation metadata | Digital output controlling immobilizer relay |
+| `asset.installation.initial_odometer` | Installation metadata | Odometer reading at time of installation (offset) - `{ value: number, unit: "km" }` |
+| `asset.installation.initial_engine_hours` | Installation metadata | Engine hours reading at time of installation (offset) - `{ value: number, unit: "h" }` |
+| `asset.properties.vehicle.serial_number` | Fleeti catalog | OEM/installer serial number |
+| `asset.properties.vehicle.brand` | Fleeti catalog | Vehicle manufacturer brand |
+| `asset.properties.vehicle.model` | Fleeti catalog | Vehicle model name |
+| `asset.properties.vehicle.license_plate` | Fleeti catalog | Registration plate displayed to users |
+| `asset.properties.vehicle.vin` | Fleeti catalog | Vehicle identification number (VIN) - **Metadata only, no Navixy AVL ID available** |
+| `asset.properties.vehicle.powertrain.primary_energy` | Fleeti catalog | Primary energy source (diesel/gasoline/electric/hybrid/CNG/LNG/hydrogen/other) |
+| `asset.properties.vehicle.powertrain.fuel_tank_capacity` | Fleeti catalog | Nominal fuel tank size - `{ value: number, unit: "l" }` |
+| `asset.properties.vehicle.powertrain.battery_capacity` | Fleeti catalog | Battery capacity (for electric/hybrid vehicles) - `{ value: number, unit: "kwh" }` |
+| `asset.properties.vehicle.powertrain.theoretical_consumption` | Fleeti catalog | Expected fuel consumption baseline - `{ value: number, unit: "l/100km" }` |
+| `asset.properties.vehicle.powertrain.theoretical_consumption_kwh` | Fleeti catalog | Expected energy consumption baseline - `{ value: number, unit: "kwh/100km" }` |
+| `asset.properties.equipment.serial_number` | Fleeti catalog | Equipment serial number |
+| `asset.properties.equipment.brand` | Fleeti catalog | Equipment manufacturer brand |
+| `asset.properties.equipment.model` | Fleeti catalog | Equipment model name |
+| `asset.properties.equipment.rated_power` | Fleeti catalog | Equipment rated power - `{ value: number, unit: "kw" }` |
+| `asset.properties.equipment.energy_source` | Fleeti catalog | Equipment energy source (diesel/electric/hybrid) |
+| `asset.properties.phone.platform` | Fleeti catalog | Mobile platform (ios/android/unknown) |
+| `asset.properties.phone.platform_version` | Fleeti catalog | Platform version (e.g., `17.2`) |
+| `asset.properties.phone.employee_id` | Fleeti catalog | Associated employee identifier (not yet available) |
+| `asset.properties.phone.employee_name` | Fleeti catalog | Associated employee name (not yet available) |
+| `asset.properties.site.site_type` | Fleeti catalog | Site family (cold_room/warehouse/yard/other) |
+| `asset.properties.site.name` | Fleeti catalog | Site name |
+| `asset.properties.site.address.line1` | Fleeti catalog | Address line 1 |
+| `asset.properties.site.address.city` | Fleeti catalog | City name |
+| `asset.properties.site.address.country` | Fleeti catalog | Country code (ISO) |
+| `asset.properties.site.location.latitude` | Fleeti catalog | Site latitude for map display |
+| `asset.properties.site.location.longitude` | Fleeti catalog | Site longitude for map display |
+| `asset.properties.site.surface` | Fleeti catalog | Site surface area - `{ value: number, unit: "m2" }` |
+| `asset.properties.site.capacity_units` | Fleeti catalog | Site capacity (units depend on site type) |
+| `asset.properties.site.temperature_range` | Fleeti catalog | Expected min/max temperature range (especially for cold rooms) - `{ min: { value: number, unit: "°C" }, max: { value: number, unit: "°C" } }` |
 
-| **Note:** Most asset metadata fields come from Fleeti catalog. ⚠️ **Needs verification:** The VIN field (`asset.properties.vehicle.vin`) is currently mapped from `avl_io_132` (Security State Flags), which appears to be semantically incorrect. Please verify the correct AVL ID for VIN.
+| **Note:** Most asset metadata fields come from Fleeti catalog. The VIN field (`asset.properties.vehicle.vin`) is metadata only and sourced from the Fleeti catalog. No Navixy AVL ID is available for VIN. The `avl_io_132` field correctly maps to `other.flags.security_state` (Security State Flags) in Section 17.
 
 ---
 
@@ -119,7 +247,20 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 ```json
 {
   "location": {
-    // Field structure based on mappings below
+    "latitude": "decimal degrees (-90 to 90)",
+    "longitude": "decimal degrees (-180 to 180)",
+    "altitude": "meters above sea level",
+    "heading": "degrees (0-359, 0=North)",
+    "cardinal_direction": "string (N, NE, E, SE, S, SW, W, NW)",
+    "satellites": "integer (0-32)",
+    "hdop": "decimal (-1 to 20, -1=unknown)",
+    "pdop": "decimal",
+    "geocoded_address": "string",
+    "precision": {
+      "hdop": "decimal",
+      "pdop": "decimal",
+      "fix_quality": "integer (0=no fix, 1=fix)"
+    }
   }
 }
 ```
@@ -128,14 +269,18 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
-| `location.altitude` | P2 | Navixy: `alt` (Altitude) | Altitude |
-| `location.hdop` | P2 | Navixy: `avl_io_182` (GNSS HDOP), `hdop` (HDOP) | Coefficient, calculation formula |
-| `location.heading` | P2 | Navixy: `heading` (Heading) | Heading |
-| `location.latitude` | P2 | Navixy: `lat` (Latitude) | Latitude |
-| `location.longitude` | P2 | Navixy: `lng` (Longitude) | Longitude |
-| `location.pdop` | P2 | Navixy: `avl_io_181` (GNSS PDOP), `pdop` (PDOP) | Coefficient, calculation formula |
+| `location.latitude` | P0 | Navixy: `lat` (Latitude) | Latitude in decimal degrees |
+| `location.longitude` | P0 | Navixy: `lng` (Longitude) | Longitude in decimal degrees |
+| `location.altitude` | P2 | Navixy: `alt` (Altitude) | Altitude in meters |
+| `location.heading` | P0 | Navixy: `heading` (Heading) | Heading in degrees (0-359) |
+| `location.cardinal_direction` | P1 | **Computed:** Derived from `location.heading` | Cardinal direction (N, NE, E, SE, S, SW, W, NW) |
+| `location.satellites` | P2 | Navixy: `satellites` (Satellites) | Number of satellites in fix |
+| `location.hdop` | P2 | Navixy: `avl_io_182` (GNSS HDOP), `hdop` (HDOP) | Horizontal Dilution of Precision |
+| `location.pdop` | P2 | Navixy: `avl_io_181` (GNSS PDOP), `pdop` (PDOP) | Position Dilution of Precision |
+| `location.geocoded_address` | P1 | **Computed:** Reverse geocoding (server-side) | Single string representation of the location |
 | `location.precision.fix_quality` | P2 | Navixy: `avl_io_69` (GNSS Status) | 0 - GNSS OFF 1 – GNSS ON with fix 2 - GNSS ON without fix 3 - GNSS sleep 4 - GNSS ON with fix, invalid data |
-| `location.satellites` | P2 | Navixy: `satellites` (Satellites) | Satellites |
+| `location.precision.hdop` | P2 | Navixy: `avl_io_182` (GNSS HDOP), `hdop` (HDOP) | Horizontal Dilution of Precision (precision sub-object) |
+| `location.precision.pdop` | P2 | Navixy: `avl_io_181` (GNSS PDOP), `pdop` (PDOP) | Position Dilution of Precision (precision sub-object) |
 
 ---
 
@@ -147,7 +292,16 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 ```json
 {
   "connectivity": {
-    // Field structure based on mappings below
+    "signal_level": "integer (0-31, 99=unknown)",
+    "operator": "string or integer code",
+    "data_mode": "integer (0-255)",
+    "cell": {
+      "id": "integer (0-65535)",
+      "lac": "integer (0-65535)"
+    },
+    "sim": {
+      "iccid": ["string"]
+    }
   }
 }
 ```
@@ -173,7 +327,14 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 ```json
 {
   "motion": {
-    // Field structure based on mappings below
+    "speed": { "value": "number", "unit": "km/h" },
+    "is_moving": "boolean",
+    "instant_movement": "boolean",
+    "accelerometer": {
+      "x": "number (mG)",
+      "y": "number (mG)",
+      "z": "number (mG)"
+    }
   }
 }
 ```
@@ -194,6 +355,38 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 ## 6. Power
 
 **Purpose:** Power source status, ignition state, and battery health (asset/vehicle battery).
+
+### Structure
+```json
+{
+  "power": {
+    "ignition": "boolean",
+    "battery": {
+      "level": { "value": "number", "unit": "%" }
+    }
+  },
+  "engine": {
+    "ignition_on": "boolean",
+    "running": "boolean"
+  },
+  "ev": {
+    "battery": {
+      "level": { "value": "number", "unit": "%" }
+    },
+    "charging": {
+      "active": "boolean",
+      "cable_plugged": "boolean"
+    },
+    "motor": {
+      "active": "boolean"
+    },
+    "range": {
+      "estimated_distance": { "value": "number", "unit": "m" }
+    },
+    "ready_to_drive": "boolean"
+  }
+}
+```
 
 ### Field Sources & Logic
 
@@ -220,7 +413,21 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 ```json
 {
   "fuel": {
-    // Field structure based on mappings below
+    "levels": [
+      { "value": "number", "unit": "%" | "l" }
+    ],
+    "consumption": {
+      "cumulative": { "value": "number", "unit": "l" },
+      "rate": { "value": "number", "unit": "l/h" }
+    },
+    "energy": {
+      "cng_status": "boolean"
+    }
+  },
+  "vehicle": {
+    "energy": {
+      "fuel_type_code": "integer (0-255)"
+    }
   }
 }
 ```
@@ -241,6 +448,20 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 
 **Purpose:** Accumulated counters for odometer and engine hours.
 
+### Structure
+```json
+{
+  "counters": {
+    "odometer": { "value": "number", "unit": "km" },
+    "engine_hours": {
+      "value": "number",
+      "unit": "s",
+      "total": { "value": "number", "unit": "h" }
+    }
+  }
+}
+```
+
 ### Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
@@ -254,6 +475,34 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 ## 9. Driving Behavior
 
 **Purpose:** Daily aggregated driving metrics and eco-driving scores.
+
+### Structure
+```json
+{
+  "driving_behavior": {
+    "brake_active": "boolean",
+    "throttle_position": { "value": "number", "unit": "%" },
+    "privacy_mode": "boolean",
+    "daily_summary": {
+      "driving_duration": { "value": "number", "unit": "s" },
+      "event_counts": {
+        "excessive_idling": "integer",
+        "harsh_acceleration": "integer",
+        "harsh_braking": "integer",
+        "harsh_cornering": "integer",
+        "overspeed": "integer"
+      }
+    },
+    "eco_score": {
+      "value": "number",
+      "daily_value": "number",
+      "event_duration": { "value": "number", "unit": "ms" },
+      "green_driving_type": "integer (1-3)",
+      "green_driving_value": "number"
+    }
+  }
+}
+```
 
 ### Field Sources & Logic
 
@@ -285,7 +534,26 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 ```json
 {
   "sensors": {
-    // Field structure based on mappings below
+    "battery": { "value": "number", "unit": "%" },
+    "temperature": { "value": "number", "unit": "°C" },
+    "humidity": { "value": "number", "unit": "%" },
+    "humidity": [
+      { "value": "number", "unit": "%" }
+    ],
+    "frequency": [
+      "number"
+    ],
+    "custom": [
+      "string | number"
+    ],
+    "inertial": [
+      {
+        "pitch": "number",
+        "roll": "number"
+      }
+    ],
+    "magnet": "number",
+    "id": ["string"]
   }
 }
 ```
@@ -315,7 +583,87 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 ```json
 {
   "diagnostics": {
-    // Field structure based on mappings below
+    "agricultural": {
+      "area_harvested": { "value": "number", "unit": "m2" },
+      "grain_moisture": { "value": "number", "unit": "%" },
+      "grain_volume": { "value": "number", "unit": "kg" },
+      "harvest_duration": { "value": "number", "unit": "s" },
+      "harvesting_drum_gap": { "value": "number", "unit": "mm" },
+      "harvesting_drum_rpm": { "value": "number", "unit": "rpm" },
+      "mowing_efficiency": { "value": "number", "unit": "m2/h" }
+    },
+    "axles": {
+      "weights": [{ "value": "number", "unit": "kg" }]
+    },
+    "body": {
+      "belts": {},
+      "doors": {},
+      "lights": {}
+    },
+    "brakes": {
+      "abs_active": "boolean",
+      "pad_wear": "number",
+      "parking_brake": "boolean",
+      "retarder_automatic": "boolean",
+      "retarder_manual": "boolean"
+    },
+    "climate": {
+      "air_conditioning": "boolean"
+    },
+    "drivetrain": {
+      "central_differential_4hi_locked": "boolean",
+      "central_differential_4lo_locked": "boolean",
+      "clutch_state": "boolean",
+      "cruise_control_active": "boolean",
+      "front_differential_locked": "boolean",
+      "rear_differential_locked": "boolean"
+    },
+    "electrical": {
+      "battery_not_charging": "boolean"
+    },
+    "engine": {
+      "coolant_temperature": "number",
+      "glow_plug_active": "boolean",
+      "load": { "value": "number", "unit": "%" },
+      "pto_state": "boolean",
+      "ready_to_drive": "boolean",
+      "rpm": { "value": "number", "unit": "rpm" },
+      "start_stop_inactive": "boolean",
+      "temperature": { "value": "number", "unit": "°C" },
+      "webasto_state": "boolean"
+    },
+    "fluids": {
+      "adblue": {
+        "level_liters": { "value": "number", "unit": "l" }
+      },
+      "adblue_level": { "value": "number", "unit": "%" },
+      "oil_level": "boolean",
+      "oil_pressure_or_level": "number"
+    },
+    "health": {
+      "can_warning": "boolean",
+      "dtc_count": "integer",
+      "electronics_power_control": "boolean",
+      "low_fuel_warning": "boolean",
+      "low_tire_pressure_warning": "boolean",
+      "mil_activated_distance": { "value": "number", "unit": "km" },
+      "mil_status": "integer"
+    },
+    "ignition": {
+      "key_inserted": "boolean"
+    },
+    "occupancy": {
+      "front_passenger": "boolean"
+    },
+    "safety": {
+      "airbag_state": "boolean"
+    },
+    "steering": {
+      "eps_state": "boolean"
+    },
+    "trailer": {
+      "axle_lift_active": ["boolean"]
+    }
   }
 }
 ```
@@ -384,7 +732,16 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 ```json
 {
   "io": {
-    // Field structure based on mappings below
+    "analog": {
+      "values": "number"
+    },
+    "inputs": {
+      "individual": {}
+    },
+    "outputs": {
+      "bitmask": "integer",
+      "individual": {}
+    }
   }
 }
 ```
@@ -408,7 +765,14 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 ```json
 {
   "driver": {
-    // Field structure based on mappings below
+    "authorization": {
+      "state": "integer (0-2)"
+    },
+    "extended_id": "string",
+    "hardware_key": {
+      "ibutton": "string",
+      "rfid": "string"
+    }
   }
 }
 ```
@@ -432,7 +796,28 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 ```json
 {
   "device": {
-    // Field structure based on mappings below
+    "battery": {
+      "current": { "value": "number", "unit": "A" },
+      "level": { "value": "number", "unit": "%" },
+      "voltage": { "value": "number", "unit": "V" }
+    },
+    "bluetooth": {
+      "status": "integer (0-4)"
+    },
+    "power": {
+      "connected": "boolean",
+      "external_voltage": { "value": "number", "unit": "V" },
+      "voltage": { "value": "number", "unit": "V" }
+    },
+    "sleep_mode": "integer (0-4)",
+    "status_bitmap": "integer",
+    "firmware": {
+      "version": "integer"
+    },
+    "identification": {
+      "module_id_17b": "string",
+      "module_id_8b": "string"
+    }
   }
 }
 ```
@@ -457,6 +842,28 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 
 **Purpose:** Event-specific data (TBD in separate specification).
 
+### Structure
+```json
+{
+  "events": {
+    "device_unplugged": "boolean",
+    "harsh_acceleration": {
+      "force": "number"
+    },
+    "harsh_braking": {
+      "force": "number"
+    },
+    "harsh_cornering": {
+      "force": "number",
+      "radius": "number"
+    },
+    "idling": "boolean",
+    "towing": "boolean",
+    "trip": "integer (0-9)"
+  }
+}
+```
+
 ### Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
@@ -476,6 +883,21 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 
 **Purpose:** Geofence zone information (Device-side).
 
+### Structure
+```json
+{
+  "geofence": {
+    "auto_status": "integer (0-1)",
+    "zone_id": "integer (0-3)",
+    "device_zones": [
+      {
+        "inside": "integer (0-3)"
+      }
+    ]
+  }
+}
+```
+
 ### Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
@@ -489,6 +911,30 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 ## 17. Other
 
 **Purpose:** Miscellaneous fields and raw CAN data.
+
+### Structure
+```json
+{
+  "other": {
+    "flags": {
+      "agricultural_state": "integer | hex",
+      "cistern_state": "integer | hex",
+      "control_state": "integer | hex",
+      "indicator_state": "integer | hex",
+      "security_state": "integer | hex",
+      "utility_state": "integer | hex"
+    },
+    "impulse_counters": ["integer"],
+    "raw_can": ["string | number"]
+  },
+  "security": {
+    "immobilizer": {
+      "engine_lock_active": "boolean",
+      "request_lock_engine": "boolean"
+    }
+  }
+}
+```
 
 ### Field Sources & Logic
 
@@ -510,6 +956,30 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 ## 18. Packet Metadata
 
 **Purpose:** Metadata about the telemetry packet itself.
+
+### Structure
+```json
+{
+  "device": {
+    "firmware": {
+      "version": "integer"
+    },
+    "identification": {
+      "module_id_17b": "string",
+      "module_id_8b": "string"
+    }
+  },
+  "provider": {
+    "event": "string",
+    "event_code": "integer",
+    "event_subcode": "integer",
+    "time": {
+      "device_time": "ISO8601",
+      "provider_time": "ISO8601"
+    }
+  }
+}
+```
 
 ### Field Sources & Logic
 
