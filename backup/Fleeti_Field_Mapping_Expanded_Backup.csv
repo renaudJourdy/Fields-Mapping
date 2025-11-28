@@ -5,14 +5,14 @@ location.altitude,data,alt,Altitude,,,,,,,
 io.inputs.individual.*,data,avl_io_1,Digital Input 1,1,Unsigned,0,1,,,Logic: 0/1
 device.firmware.version,data,avl_io_100,Program Number,1,Unsigned,0,255,1,n/a,CAN program / profile ID used by LV-CAN/ALL-CAN adapters to decode vehicle signals.
 device.identification.module_id_8b,data,avl_io_101,Module ID 8B,8,Unsigned,0,0xFFFFFFFFFFFFFFFF,,,Module ID 8 Bytes
-fuel.temperature,data,avl_io_102,Engine Worktime,4,Unsigned,0,4 294 967 295,1 or 0.001 (device-dependent),seconds or hours,Total engine work time from CAN (motor hours).
+counters.engine_hours.total,data,avl_io_102,Engine Worktime,4,Unsigned,0,4 294 967 295,1 or 0.001 (device-dependent),seconds or hours,Total engine work time from CAN (motor hours).
 fuel.consumption.cumulative,data,avl_io_103,Fuel Used GPS,4,Unsigned,0,4 294 967 295,1 or 0.001,seconds or hours,"Same concept as 102: total engine motor hours. Some models use 102, others 103."
 sensors.humidity[],data,avl_io_104,BLE Humidity #2,2,Unsigned,0,1000,0.1*,%RH,Humidity From firmware version 03.28.00 and up: 65535 - sensor not found 65534 - failed sensor data parsing 65533 - abnormal sensor state
 counters.odometer,data,avl_io_105,Total Mileage (counted),4,Unsigned,0,4294967295,,m,Total Vehicle Mileage
 sensors.humidity[],data,avl_io_106,BLE Humidity #3,2,Unsigned,0,1000,0.1*,%RH,Humidity From firmware version 03.28.00 and up: 65535 - sensor not found 65534 - failed sensor data parsing 65533 - abnormal sensor state
 fuel.consumption.cumulative,data,avl_io_107,Fuel Consumed (counted),4,Unsigned,0,2147483647,0.1,l,Total Fuel Consumed
 sensors.humidity[],data,avl_io_108,BLE Humidity #4,2,Unsigned,0,1000,0.1*,%RH,Humidity From firmware version 03.28.00 and up: 65535 - sensor not found 65534 - failed sensor data parsing 65533 - abnormal sensor state
-diagnostics.engine.start_stop_active,data,avl_io_1086,CSF Start Stop System Inactive,1,Unsigned,0,1,,,0 - No 1 - Yes
+diagnostics.engine.start_stop_inactive,data,avl_io_1086,CSF Start Stop System Inactive,1,Unsigned,0,1,,,0 - No 1 - Yes
 connectivity.sim.iccid[],data,avl_io_11,ICCID1,8,Unsigned,0,0xffffffffffffffff,,,"Value of SIM ICCID, MSB"
 fuel.consumption.rate,data,avl_io_110,Fuel Rate,2,Unsigned,0,32768,0.1,l/h,Fuel rate
 diagnostics.fluids.adblue_level,data,avl_io_111,AdBlue Level,1,Unsigned,0,100,,%,AdBlue
@@ -27,9 +27,9 @@ diagnostics.axles.weights,data,avl_io_121,Axle 4 Load,2,Unsigned,0,32768,,kg,Axl
 diagnostics.axles.weights,data,avl_io_122,Axle 5 Load,2,Unsigned,0,32768,,kg,Axle 5 load
 other.flags.control_state,data,avl_io_123,Control State Flags,4,Unsigned,0,4294967295,,,Control state flags
 other.flags.agricultural_state,data,avl_io_124,Agricultural Machinery Flags,8,Unsigned,0,0xFFFFFFFFFFFFFFFF,,,Agricultural machinery flags
-events.towing,event,avl_io_125,Harvest Duration,4,Unsigned,0,4 294 967 295,1,seconds,Duration of harvesting activity (agricultural CAN signal).
+diagnostics.agricultural.harvest_duration,event,avl_io_125,Harvest Duration,4,Unsigned,0,4 294 967 295,1,seconds,Duration of harvesting activity (agricultural CAN signal).
 diagnostics.agricultural.area_harvested,data,avl_io_126,Area of Harvest,4,Unsigned,0,4294967295,,m2,Area of harvest in square meters
-other.harvest.mowing_efficiency,data,avl_io_127,Mowing Efficiency,4,Unsigned,0,4294967295,,m2/h,Mowing efficiency
+diagnostics.agricultural.mowing_efficiency,data,avl_io_127,Mowing Efficiency,4,Unsigned,0,4294967295,,m2/h,Mowing efficiency
 diagnostics.agricultural.grain_volume,data,avl_io_128,Grain Mown Volume,4,Unsigned,0,4294967295,,kg,Mown volume
 diagnostics.agricultural.grain_moisture,data,avl_io_129,Grain Moisture,2,Unsigned,0,100,,%,Grain moisture
 diagnostics.agricultural.harvesting_drum_rpm,data,avl_io_130,Harvesting Drum RPM,2,Unsigned,0,65535,,rpm,Harvesting drum rpm
@@ -37,7 +37,7 @@ diagnostics.agricultural.harvesting_drum_gap,data,avl_io_131,Gap Under Harvestin
 other.flags.security_state,data,avl_io_132,Security State Flags,8,Unsigned,0,0xFFFFFFFFFFFFFFFF,,,Security state flags
 connectivity.sim.iccid[],data,avl_io_14,ICCID2,8,Unsigned,0,0xFFFFFFFFFFFFFFFF,,,"Value of SIM ICCID, LSB"
 driving_behavior.eco_score.value,data,avl_io_15,Eco Score,2,Unsigned,0,65535,0.01,,Average amount of events on some distance
-power.battery.level,data,avl_io_152,HV Battery Level,1,Unsigned,0,100,,%,Battery level in percent
+ev.battery.level,data,avl_io_152,HV Battery Level,1,Unsigned,0,100,,%,Battery level in percent
 geofence.zone_id,data,avl_io_155,Geofence zone 01,1,Unsigned,0,3,,,0 – target left zone 1 – target entered zone 2 – over speeding end 3 – over speeding start
 counters.odometer,data,avl_io_16,Total Odometer,4,Unsigned,0,2147483647,,,Total Odometer value in meters
 motion.accelerometer.x,data,avl_io_17,Axis X,2,Signed,-8000,8000,,mG,X axis value
@@ -73,7 +73,7 @@ power.ignition,data,avl_io_239,Ignition,1,Unsigned,0,1,,,0 – Ignition Off 1 �
 motion.speed,data,avl_io_24,Speed,2,Unsigned,0,350,,km/h,GNSS Speed
 motion.is_moving,data,avl_io_240,Movement,1,Unsigned,0,1,,,0 – Movement Off 1 – Movement On
 connectivity.operator,data,avl_io_241,Active GSM Operator,4,Unsigned,0,4294967295,,,Currently used GSM Operator code
-motion.instant_movement_duration,data,avl_io_243,Green driving event duration,2,Unsigned,0,65535,,ms,Duration of event that did generate Green driving
+driving_behavior.eco_score.event_duration,data,avl_io_243,Green driving event duration,2,Unsigned,0,65535,,ms,Duration of event that did generate Green driving
 driver.authorization.state,data,avl_io_248,Immobilizer,1,Unsigned,0,2,,,0 – iButton not connected 1 – iButton connected (Immobilizer) 2 – iButton connected (Authorized Driving)
 sensors.temperature,data,avl_io_25,BLE Temperature #1,2,Signed,-4000,12500,0.01*,°C,"Degrees ( °C ), -40 - +125; Error codes: 4000 - abnormal sensor state 3000 - sensor not found 2000 - failed sensor data parsing From firmware version 03.28.00 and up: 32767 - sensor not found 32766 - failed sensor data parsing 32765 - abnormal sensor state"
 events.trip,event,avl_io_250,Trip,1,Unsigned,0,1,,,0 – trip stop 1 – trip start From 01.00.24 fw version available with BT app new values: 2 – Business Status 3 – Private Status 4-9 – Custom Statuses
@@ -90,7 +90,7 @@ sensors.temperature,data,avl_io_28,BLE Temperature #4,2,Signed,-4000,12500,0.01*
 io.inputs.individual.*,data,avl_io_3,Digital Input 3,1,Unsigned,0,1,,,Logic: 0/1
 diagnostics.health.dtc_count,data,avl_io_30,Number of DTC,1,Unsigned,0,255,,,Number of DTC
 motion.instant_movement,data,avl_io_303,Instant Movement,1,Unsigned,0,1,,,Logic: 0/1 returns movement value
-power.battery.range,data,avl_io_304,Vehicles Range On Battery,4,Unsigned,0,16777215,,m,Vehicle Range on Battery
+ev.range.estimated_distance,data,avl_io_304,Vehicles Range On Battery,4,Unsigned,0,16777215,,m,Vehicle Range on Battery
 sensors.frequency[],data,avl_io_306,BLE Fuel Frequency #1,4,Unsigned,0,2147483647,,,Frequency value of BLE fuel sensor #1
 sensors.custom[],data,avl_io_331,BLE 1 Custom #1,Variable,HEX,0,,,,Custom IO element for BLE sensor
 sensors.custom[],data,avl_io_332,BLE 2 Custom #1,Variable,HEX,0,,,,Custom IO element for BLE sensor
@@ -204,7 +204,7 @@ sensors.temperature,data,ble_temp_sensor_1,BLE Temp 1,,,,,,,
 sensors.temperature,data,ble_temp_sensor_2,BLE Temp 2,,,,,,,
 sensors.temperature,data,ble_temp_sensor_3,BLE Temp 3,,,,,,,
 sensors.temperature,data,ble_temp_sensor_4,BLE Temp 4,,,,,,,
-power.battery.voltage,data,board_voltage,External Voltage,,,,,,,
+device.power.external_voltage,data,board_voltage,External Voltage,,,,,,,
 events.harsh_braking.force,event,braking,Braking,,,,,,,
 diagnostics.brakes.abs_active,data,can_abs_state,CAN ABS State,,,,,,,
 diagnostics.fluids.adblue_level,data,can_adblue_level,CAN AdBlue Level,,,,,,,
@@ -226,7 +226,7 @@ diagnostics.drivetrain.clutch_state,data,can_clutch_state,CAN Clutch State,,,,,,
 fuel.consumption.cumulative,data,can_consumption,can,,,,,,,
 fuel.consumption.cumulative,data,can_consumption_relative,can,,,,,,,
 diagnostics.engine.coolant_temperature,data,can_coolant_temp_or_level,vehicle_health,,,,,,,
-driving_behavior.autopilot.active,data,can_cruise_control,CAN Cruise Control,,,,,,,
+diagnostics.drivetrain.cruise_control_active,data,can_cruise_control,CAN Cruise Control,,,,,,,
 diagnostics.body.lights.*,data,can_dipped_headlights,CAN Dipped Headlights,,,,,,,
 diagnostics.body.doors.*,data,can_door_state,can,,,,,,,
 diagnostics.health.electronics_power_control,data,can_electronics_power_control,CAN Electronics Power Control,,,,,,,
