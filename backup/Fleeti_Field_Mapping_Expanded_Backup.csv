@@ -143,13 +143,13 @@ vehicle.energy.fuel_type_code,data,avl_io_759,Fuel Type,1,Unsigned,0,255,,,0 Not
 sensors[].id,data,avl_io_76,Dallas Temperature ID 1,8,Unsigned,0,0xffffffffffffffff,,,Dallas sensor ID
 sensors[].id,data,avl_io_77,Dallas Temperature ID 2,8,Unsigned,0,0xffffffffffffffff,,,Dallas sensor ID
 driver.hardware_key.ibutton,data,avl_io_78,iButton,8,Unsigned,0,0xffffffffffffffff,,,iButton ID
-connectivity.data_mode,data,avl_io_80,Data Mode,1,Unsigned,0,255,1,n/a,Used differently across models. Most commonly: GSM/LTE network mode / roaming status. Sometimes appears as “Data Mode” in Teltonika scenarios.
+connectivity.data_mode,data,avl_io_80,Data Mode,1,Unsigned,0,255,1,n/a,Used differently across models. Most commonly: GSM/LTE network mode / roaming status. Sometimes appears as ï¿½Data Modeï¿½ in Teltonika scenarios.
 motion.speed,data,avl_io_81,Vehicle Speed,Unsigned,Unsigned,0,255,,km/h,Vehicle Speed
 driving_behavior.throttle_position,data,avl_io_82,Accelerator Pedal Position,0,Unsigned,0,102,,%,Value in percentages
 fuel.consumption.cumulative,data,avl_io_83,Fuel Consumed,255,Unsigned,0,2147483647,0.1,l,Value in liters
 fuel.levels[].value,data,avl_io_84,Fuel Level,1,Unsigned,0,65535,0.1,l,Value in liters
 diagnostics.engine.rpm,data,avl_io_85,Engine RPM,2,Unsigned,0,65535,1,rpm,Engine speed from CAN (Revolutions Per Minute).
-sensors.humidity[],data,avl_io_86,BLE Humidity #1,Used differently across models. Most commonly: GSM/LTE network mode / roaming status. Sometimes appears as “Data Mode” in Teltonika scenarios.,Unsigned,0,1000,0.1*,%RH,Humidity From firmware version 03.28.00 and up: 65535 - sensor not found 65534 - failed sensor data parsing 65533 - abnormal sensor state
+sensors.humidity[],data,avl_io_86,BLE Humidity #1,Used differently across models. Most commonly: GSM/LTE network mode / roaming status. Sometimes appears as ï¿½Data Modeï¿½ in Teltonika scenarios.,Unsigned,0,1000,0.1*,%RH,Humidity From firmware version 03.28.00 and up: 65535 - sensor not found 65534 - failed sensor data parsing 65533 - abnormal sensor state
 counters.odometer,data,avl_io_87,Total Mileage,4,Unsigned,0,4294967295,,m,Value in meters
 fuel.levels[].value,data,avl_io_89,Fuel level,1,Unsigned,0,100,,%,Value in percentages
 engine.ignition_on,data,avl_io_898,SSF Ignition,1,Unsigned,0,1,,,0 - No 1 - Yes
