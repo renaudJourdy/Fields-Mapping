@@ -358,7 +358,7 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 |--------------|----------|----------------|-------------|
 | `connectivity.cell.id` | P2 | Navixy: `avl_io_205` (GSM Cell ID) | GSM base station ID |
 | `connectivity.cell.lac` | P2 | Navixy: `avl_io_206` (GSM Area Code) | Location Area Code (LAC). Depends on GSM operator. Provides unique number assigned to a set of base GSM stations. Used for cell tower identification. |
-| `connectivity.data_mode` | P2 | Navixy: `avl_io_80` (Data Mode) | Used differently across models. Most commonly: GSM/LTE network mode / roaming status. Sometimes appears as "Data Mode" or network type indicator. Interpretation depends on device model and firmware version. | �Data Mode... |
+| `connectivity.data_mode` | P2 | Navixy: `avl_io_80` (Data Mode) | Used differently across models. Most commonly: GSM/LTE network mode / roaming status. Sometimes appears as "Data Mode" or network type indicator. Interpretation depends on device model and firmware version. |
 | `connectivity.operator` | P2 | Navixy: `avl_io_241` (Active GSM Operator) | Currently used GSM Operator code |
 | `connectivity.signal_level` | P2 | Navixy: `avl_io_21` (GSM Signal), `gsm.signal.csq` (GSM Signal CSQ) | Value in range 1-5 Explanation |
 | `connectivity.sim.iccid[]` | P2 | Navixy: `avl_io_11` (ICCID1), `avl_io_14` (ICCID2) | Value of SIM ICCID, MSB |
