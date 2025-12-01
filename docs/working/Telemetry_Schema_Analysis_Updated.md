@@ -198,7 +198,7 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 | `asset.properties.site.capacity_units` | Fleeti catalog | Site capacity (units depend on site type) |
 | `asset.properties.site.temperature_range` | Fleeti catalog | Expected min/max temperature range (especially for cold rooms) - `{ min: { value: number, unit: "°C" }, max: { value: number, unit: "°C" } }` |
 
-| **Note:** Most asset metadata fields come from Fleeti catalog. The VIN field (`asset.properties.vehicle.vin`) is metadata only and sourced from the Fleeti catalog. No Navixy AVL ID is available for VIN. The `avl_io_132` field correctly maps to `other.flags.security_state` (Security State Flags) in Section 17.
+| **Note:** Most asset metadata fields come from Fleeti catalog. The VIN field (`asset.properties.vehicle.vin`) is metadata only and sourced from the Fleeti catalog. No Navixy AVL ID is available for VIN. The `avl_io_132` field correctly maps to `diagnostics.security.state_flags` (Security State Flags) in Section 11.
 
 ---
 
@@ -357,8 +357,8 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
 | `connectivity.cell.id` | P2 | Navixy: `avl_io_205` (GSM Cell ID) | GSM base station ID |
-| `connectivity.cell.lac` | P2 | Navixy: `avl_io_206` (GSM Area Code) | Location Area code (LAC), it depends on GSM operator. It provides unique number which assigned to a set of base GSM s... |
-| `connectivity.data_mode` | P2 | Navixy: `avl_io_80` (Data Mode) | Used differently across models. Most commonly: GSM/LTE network mode / roaming status. Sometimes appears as �Data Mode... |
+| `connectivity.cell.lac` | P2 | Navixy: `avl_io_206` (GSM Area Code) | Location Area Code (LAC). Depends on GSM operator. Provides unique number assigned to a set of base GSM stations. Used for cell tower identification. |
+| `connectivity.data_mode` | P2 | Navixy: `avl_io_80` (Data Mode) | Used differently across models. Most commonly: GSM/LTE network mode / roaming status. Sometimes appears as "Data Mode" or network type indicator. Interpretation depends on device model and firmware version. | �Data Mode... |
 | `connectivity.operator` | P2 | Navixy: `avl_io_241` (Active GSM Operator) | Currently used GSM Operator code |
 | `connectivity.signal_level` | P2 | Navixy: `avl_io_21` (GSM Signal), `gsm.signal.csq` (GSM Signal CSQ) | Value in range 1-5 Explanation |
 | `connectivity.sim.iccid[]` | P2 | Navixy: `avl_io_11` (ICCID1), `avl_io_14` (ICCID2) | Value of SIM ICCID, MSB |
@@ -544,8 +544,7 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 | `driving_behavior.brake_active` | P0 | Navixy: `can_footbrake_state` (CAN Footbrake State), `avl_io_910` (SSF Footbrake Is Active) | 0 - Footbrake inactive 1 - Footbrake active |
 | `driving_behavior.daily_summary.driving_duration` | P0 | Navixy: `Computed` | **Computed:** Cumulative time when the vehicle was actually moving (not just ignition on). Computed by backend based on motion data. Full implementation details will be documented in dedicated pages. |
 | `driving_behavior.daily_summary.idling_duration` | P0 | Navixy: `Computed` | **Computed:** Cumulative time when the vehicle was idling (ignition on, not moving). Full implementation details and thresholds will be documented in dedicated pages. |
-| `driving_behavior.daily_summary.event_counts.*` | P0 | Navixy: `Computed`, `Computed`, `Computed`, `Computed`, `Computed` | **Computed:** Total count of harsh driving and behavior events for the period. Individual event definitions and computation logic will be documented in dedicated pages. |
-| `driving_behavior.daily_summary.event_counts.excessive_idling` | P0 | Navixy: `Computed` | **Computed:** Count of excessive idling events. The “excessive” threshold is configurable (for example, idling longer than X minutes). Full implementation details will be documented in dedicated pages. |
+| `driving_behavior.daily_summary.event_counts.excessive_idling` | P0 | Navixy: `Computed` | **Computed:** Count of excessive idling events. The "excessive" threshold is configurable (for example, idling longer than X minutes). Full implementation details will be documented in dedicated pages. |
 | `driving_behavior.daily_summary.event_counts.harsh_acceleration` | P0 | Navixy: `Computed` | **Computed:** Number of harsh acceleration events. Device and/or backend detect harsh accelerations based on thresholds and aggregate the count for the period. Detailed logic will be documented separately. |
 | `driving_behavior.daily_summary.event_counts.harsh_braking` | P0 | Navixy: `Computed` | **Computed:** Number of harsh braking events aggregated over the period. Full threshold and detection logic will be documented in dedicated pages. |
 | `driving_behavior.daily_summary.event_counts.harsh_cornering` | P0 | Navixy: `Computed` | **Computed:** Number of harsh cornering events aggregated over the period. Full threshold and detection logic will be documented in dedicated pages. |
@@ -614,7 +613,7 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 | `sensors.environment[].humidity` | P2 | Navixy: `avl_io_86` (BLE Humidity #1), `avl_io_104` (BLE Humidity #2), `avl_io_106` (BLE Humidity #3), `avl_io_108` (BLE Humidity #4), `ble_humidity_1` (BLE Humidity 1), `ble_humidity_2` (BLE Humidity 2), `ble_humidity_3`, `ble_humidity_4`, `humidity_1` (Humidity 1), `humidity_2` (Humidity 2) | Relative humidity readings from environmental sensors (BLE probes, LLS/external humidity sensors, or other accessories). Measured in percent (%). |
 | `sensors.environment[].battery` | P2 | Navixy: `avl_io_20` (BLE Battery #2), `avl_io_22` (BLE Battery #3), `avl_io_23` (BLE Battery #4), `ble_battery_level_2` (BLE Battery 2), `ble_battery_level_3` (BLE Battery 3), `ble_battery_level_4` (BLE Battery 4) | Battery level of BLE environmental sensors. Measured in percentage. |
 | `sensors.environment[].frequency` | P2 | Navixy: `avl_io_306` (BLE Fuel Frequency #1), `ble_frequency_1` (BLE Frequency 1), `freq_1` (Frequency 1), `freq_2` (Frequency 2) | Frequency readings from BLE sensors. Measured in Hz. |
-| `sensors.magnet[].value` | P2 | Navixy: `ble_magnet_sensor_1` (BLE Magnet Sensor 1), `ble_magnet_sensor_2` (BLE Magnet Sensor 2), `ble_magnet_sensor_3` (BLE Magnet Sensor 3) | Magnetic field sensor readings. Value represents sensor state. |
+| `sensors.magnet[].value` | P2 | Navixy: `ble_magnet_sensor_1` (BLE Magnet Sensor 1), `ble_magnet_sensor_2` (BLE Magnet Sensor 2), `ble_magnet_sensor_3` (BLE Magnet Sensor 3) | Magnetic field sensor readings. Value represents sensor state (typically 0 = no magnetic field detected, 1 = magnetic field detected). Used for door/window position detection or security applications. |
 | `sensors.inertial[].pitch` | P2 | Navixy: `ble_pitch_1` (BLE Pitch 1), `ble_pitch_2` (BLE Pitch 2) | Pitch angle from inertial sensors. Measured in degrees. |
 | `sensors.inertial[].roll` | P2 | Navixy: `ble_roll_1` (BLE Roll 1), `ble_roll_2` (BLE Roll 2) | Roll angle from inertial sensors. Measured in degrees. |
 | `sensors.custom[].values[]` | P2 | Navixy: `avl_io_331` (BLE 1 Custom #1), `avl_io_332` (BLE 2 Custom #1), `avl_io_333` (BLE 3 Custom #1), `avl_io_463` (BLE 1 Custom #2), `avl_io_464` (BLE 1 Custom #3), `avl_io_465` (BLE 1 Custom #4), `avl_io_466` (BLE 1 Custom #5), `avl_io_467` (BLE 2 Custom #2), `avl_io_468` (BLE 2 Custom #3), `avl_io_469` (BLE 2 Custom #4), `avl_io_470` (BLE 2 Custom #5), `avl_io_471` (BLE 3 Custom #2), `avl_io_472` (BLE 3 Custom #3), `avl_io_473` (BLE 3 Custom #4) | Custom IO element values from BLE sensors. Can be numeric or string depending on sensor configuration. |
@@ -688,7 +687,7 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
     },
     "brakes": {
       "abs_active": "boolean",
-      "pad_wear": "number",
+      "pad_wear": { "value": "number", "unit": "%" },
       "parking_brake": "boolean",
       "retarder_automatic": "boolean",
       "retarder_manual": "boolean"
@@ -749,7 +748,11 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
       "state_flags": "integer | hex"
     },
     "security": {
-      "state_flags": "integer | hex"
+      "state_flags": "integer | hex",
+      "immobilizer": {
+        "engine_lock_active": "boolean",
+        "request_lock_engine": "boolean"
+      }
     },
     "steering": {
       "eps_state": "boolean"
@@ -758,7 +761,7 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
       "state_flags": "integer | hex"
     },
     "trailer": {
-      "axle_lift_active": ["boolean"]
+      "axle_lift_active": "boolean[]"
     }
   }
 }
@@ -780,7 +783,7 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 | `diagnostics.body.doors.*` | P0 | Navixy: `can_door_state` (CAN Door State), `can_front_left_door` (CAN Front Left Door), `can_front_right_door` (CAN Front Right Door), `can_hood_state` (CAN Hood State), `can_rear_left_door` (CAN Rear Left Door), `can_rear_right_door` (CAN Rear Right Door), `can_roof_state` (CAN Roof State), `can_trunk_state` (CAN Trunk State), `avl_io_90` (Door Status), `avl_io_654` (SSF Front Left Door Open), `avl_io_655` (SSF Front Right Door Open), `avl_io_656` (SSF Rear Left Door Open), `avl_io_657` (SSF Rear Right Door Open), `avl_io_658` (SSF Trunk Door Open), `avl_io_913` (SSF Engine Cover Open) | Door/hatch/cover open/closed status. Includes front doors (left, right), rear doors (left, right), trunk, hood, roof, and engine cover. Values: 0 = closed, 1 = open. |
 | `diagnostics.body.lights.*` | P0 | Navixy: `can_additional_front_fog_lights` (CAN Additional Front Fog Lights), `can_additional_rear_lights` (CAN Additional Rear Lights), `can_dipped_headlights` (CAN Dipped Headlights), `can_front_fog_lights` (CAN Front Fog Lights), `can_full_beam_headlights` (CAN Full Beam Headlights), `can_light_signal` (CAN Light Signal), `can_lights_failure` (CAN Lights Failure), `can_parking_lights` (CAN Parking Lights), `can_rear_fog_lights` (CAN Rear Fog Lights), `avl_io_935` (CSF Light Signal) | Vehicle lighting system status. Includes headlights (dipped, full beam), fog lights (front, rear, additional), parking lights, light signal, and lights failure indicator. Values: 0 = off, 1 = on. |
 | `diagnostics.brakes.abs_active` | P0 | Navixy: `can_abs_state` (CAN ABS State) | CAN ABS State |
-| `diagnostics.brakes.pad_wear` | P0 | Navixy: `can_brake_pad_wear` (CAN Brake Pad Wear) | CAN Brake Pad Wear |
+| `diagnostics.brakes.pad_wear` | P0 | Navixy: `can_brake_pad_wear` (CAN Brake Pad Wear) | Brake pad wear level from CAN bus. Measured in percentage (0-100%). Indicates remaining brake pad thickness. Lower values indicate more wear. |
 | `diagnostics.brakes.parking_brake` | P0 | Navixy: `can_hand_brake_state` (CAN Hand Brake), `avl_io_653` (SSF Handbrake Is Active) | 0 - Handbrake inactive 1 - Handbrake active |
 | `diagnostics.brakes.retarder_automatic` | P0 | Navixy: `can_automatic_retarder` (CAN Automatic Retarder) | CAN Automatic Retarder |
 | `diagnostics.brakes.retarder_manual` | P0 | Navixy: `can_manual_retarder` (CAN Manual Retarder) | CAN Manual Retarder |
@@ -811,11 +814,11 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 | `diagnostics.health.electronics_power_control` | P0 | Navixy: `can_electronics_power_control` (CAN Electronics Power Control) | CAN Electronics Power Control |
 | `diagnostics.health.low_fuel_warning` | P0 | Navixy: `can_low_fuel` (CAN Low Fuel) | Low fuel warning indicator from CAN bus. Values: 0 = normal, 1 = low fuel warning. |
 | `diagnostics.health.low_tire_pressure_warning` | P0 | Navixy: `can_low_tire_pressure`, `avl_io_966` (ISF Low Tire Pressure Indicator) | 0 - Off 1 - On |
-| `diagnostics.health.mil_activated_distance` | P1 | Navixy: `obd_mil_activated_distance` (OBD MIL Activated Distance), `avl_io_43` (Distance Traveled MIL On) | Distance ormattin MIL on |
+| `diagnostics.health.mil_activated_distance` | P1 | Navixy: `obd_mil_activated_distance` (OBD MIL Activated Distance), `avl_io_43` (Distance Traveled MIL On) | Distance traveled with MIL (Malfunction Indicator Lamp) activated. Measured in kilometers (km). Indicates how far the vehicle has traveled since the MIL was triggered. |
 | `diagnostics.health.mil_status` | P1 | Navixy: `obd_mil_status` (OBD MIL Status) | OBD MIL Status |
 | `diagnostics.ignition.key_inserted` | P2 | Navixy: `avl_io_652` (SSF KeyInIgnitionLock) | 0 - No key in lock 1 - Key in lock |
 | `diagnostics.occupancy.front_passenger` | P0 | Navixy: `can_front_passenger_presence` (CAN Front Passenger Presence), `avl_io_945` (CSF Front Passenger Present) | 0 - Not present 1 - Present |
-| `diagnostics.safety.airbag_state` | P0 | Navixy: `can_airbag_state` | can |
+| `diagnostics.safety.airbag_state` | P0 | Navixy: `can_airbag_state` (CAN Airbag State) | Airbag system state from CAN bus. Values: 0 = airbag system inactive/normal, 1 = airbag system active/warning. Indicates airbag system status and potential safety issues. |
 | `diagnostics.steering.eps_state` | P0 | Navixy: `can_eps_state` (EPS State) | EPS State |
 | `diagnostics.trailer.axle_lift_active[]` | P0 | Navixy: `can_trailer_axle_lift_active_1` (CAN Trailer Axle Lift Active 1), `can_trailer_axle_lift_active_2` (CAN Trailer Axle Lift Active 2) | CAN Trailer Axle Lift Active 1 |
 | `diagnostics.agricultural.state_flags` | P2 | Navixy: `avl_io_124` (Agricultural Machinery Flags), `avl_io_520` (Agricultural State Flags P4) | Agricultural machinery state flags (bitmask). Encodes various agricultural equipment states. Format: integer or hex depending on source. |
@@ -823,6 +826,8 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 | `diagnostics.body.indicators.state_flags` | P2 | Navixy: `avl_io_519` (Indicator State Flags P4) | Vehicle indicator state flags (bitmask, Protocol 4). Encodes various indicator states. Format: integer or hex. |
 | `diagnostics.control.state_flags` | P2 | Navixy: `avl_io_123` (Control State Flags), `avl_io_518` (Control State Flags P4) | Vehicle control system state flags (bitmask). Encodes control system states. Format: integer or hex depending on source. |
 | `diagnostics.security.state_flags` | P2 | Navixy: `avl_io_132` (Security State Flags), `avl_io_517` (Security State Flags P4) | Security system state flags (bitmask). Encodes security-related states. Format: integer or hex depending on source. |
+| `diagnostics.security.immobilizer.engine_lock_active` | P0 | Navixy: `avl_io_907` (SSF Engine Lock Active) | Engine lock active status. Values: 0 = inactive, 1 = active. Indicates whether the engine is currently locked by the immobilizer system. Used for immobilization status computation. |
+| `diagnostics.security.immobilizer.request_lock_engine` | P0 | Navixy: `avl_io_908` (SSF Request To Lock Engine) | Request to lock engine status. Values: 0 = off, 1 = on. Indicates a request/command to lock the engine has been sent. Used for immobilization status computation. |
 | `diagnostics.utility.state_flags` | P2 | Navixy: `avl_io_521` (Utility State Flags P4) | Utility vehicle/equipment state flags (bitmask, Protocol 4). Encodes utility equipment states. Format: integer or hex. |
 
 ---
@@ -1073,18 +1078,11 @@ I/O values are used elsewhere in the Fleeti application to compute semantic fiel
 
 **Purpose:** Metadata about the telemetry packet itself.
 
+**Note:** Device identification (`device.identification.*`) and firmware version (`device.firmware.version`) are documented in Section 14 (Device), as they represent current device state rather than packet-specific metadata.
+
 ### Structure
 ```json
 {
-  "device": {
-    "firmware": {
-      "version": "integer"
-    },
-    "identification": {
-      "module_id_17b": "string",
-      "module_id_8b": "string"
-    }
-  },
   "provider": {
     "event": "string",
     "event_code": "integer",
@@ -1101,9 +1099,6 @@ I/O values are used elsewhere in the Fleeti application to compute semantic fiel
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
-| `device.firmware.version` | P2 | Navixy: `avl_io_100` (Program Number) | CAN program / profile ID used by LV-CAN/ALL-CAN adapters to decode vehicle signals. |
-| `device.identification.module_id_17b` | P2 | Navixy: `avl_io_388` (Module ID 17B) | Module ID 17 Bytes |
-| `device.identification.module_id_8b` | P2 | Navixy: `avl_io_101` (Module ID 8B) | Module ID 8 Bytes |
 | `provider.event` | P2 | Navixy: `EVENT` (Event) | Event |
 | `provider.event_code` | P2 | Navixy: `event_code` (Event Code) | Event Code |
 | `provider.event_subcode` | P2 | Navixy: `sub_event_code` (Sub Event Code) | Sub Event Code |
