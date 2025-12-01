@@ -3,7 +3,7 @@
 ## Summary Statistics
 
 - **Total Navixy fields in CSV:** 338
-- **Total Navixy fields found in markdown:** 340
+- **Total Navixy fields found in markdown:** 341
 - **Missing fields:** 0
 - **Coverage:** 100.00%
 
@@ -22,6 +22,7 @@
 
 The following Navixy fields appear in the markdown but are not in the CSV:
 
+- `din`
 - `ileage`
 - `onsumed`
 
