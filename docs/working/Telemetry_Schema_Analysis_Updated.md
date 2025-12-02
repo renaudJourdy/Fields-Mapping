@@ -919,7 +919,7 @@ I/O values are used elsewhere in the Fleeti application to compute semantic fiel
 
 - **Unknown drivers**: When a new hardware key is detected that isn't in the catalog, `driver.id` and `driver.name` will be `null`. Fleet managers can then create a new driver object in the Fleeti catalog and associate it with the hardware key.
 
-- **Extended ID**: `hardware_key.extended_id` represents the MAC address of an NMEA receiver device connected via Bluetooth. The usefulness of this field for driver identification is still being evaluated (TBD).
+- **Extended ID**: `hardware_key.extended_id`. The usefulness of this field for driver identification is still being evaluated (TBD).
 
 - **Authorization state**: `authorization.state` indicates iButton connection status in the context of immobilizer authorization (0 = no key, 1 = key connected but immobilizer active, 2 = key connected and authorized for driving).
 
