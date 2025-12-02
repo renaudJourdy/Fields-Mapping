@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-Validation script to ensure all Navixy fields from CSV are documented in the markdown schema.
+Validation script to ensure all Navixy fields from the reference catalog are documented in the Fleeti telemetry schema specification.
+
+Uses docs/reference/navixy-field-catalog.csv as the authoritative source of truth for Navixy field inventory.
 """
 
 import csv
@@ -39,7 +41,7 @@ def extract_navixy_fields_from_csv(csv_path):
     with open(csv_path, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            navixy_field = row.get('Navixy Field', '').strip()
+            navixy_field = row.get('provider_name', '').strip()
             if not navixy_field or navixy_field.lower() == 'computed':
                 continue
             
@@ -48,9 +50,9 @@ def extract_navixy_fields_from_csv(csv_path):
                 # Store with metadata
                 if field_code not in navixy_fields:
                     navixy_fields[field_code] = {
-                        'name': row.get('Navixy Field Name', '').strip(),
+                        'name': row.get('name', '').strip(),
                         'fleeti_field': row.get('Fleeti Field', '').strip(),
-                        'telemetry_type': row.get('Telemetry Type', '').strip(),
+                        'telemetry_type': row.get('type', '').strip(),
                     }
     
     return navixy_fields
@@ -196,7 +198,7 @@ def generate_report(csv_fields, md_fields, missing_fields, output_path):
     print(f"  Coverage: {coverage:.2f}%")
 
 if __name__ == '__main__':
-    csv_path = Path('docs/legacy/navixy-to-fleeti-mapping-legacy.csv')
+    csv_path = Path('docs/reference/navixy-field-catalog.csv')
     md_path = Path('working/fleeti-telemetry-schema-specification.md')
     output_path = Path('Scripts/navixy_fields_completeness_check.md')
     
