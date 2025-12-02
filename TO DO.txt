@@ -1,3 +1,5 @@
 * Add last_updated_at
 * Add last_changed_at
 * Add telemetry field name for debug purpoes
+* calibration table disclamer
+* telemetry unmapped?script?

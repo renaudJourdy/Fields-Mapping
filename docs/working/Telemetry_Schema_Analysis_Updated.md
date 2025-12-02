@@ -56,7 +56,6 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
     "subtype": 110,
     "group": { "id": "uuid", "name": "string" },
     "customer_ref": "2010-010",
-    "immobilizer_capable": true,
     "accessories": [
       {
         "id": "uuid",
@@ -156,7 +155,6 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 | `asset.group.id` | Asset grouping service | Primary group identifier |
 | `asset.group.name` | Asset grouping service | Primary group name |
 | `asset.customer_ref` | Customer registry | Reference code identifying the customer/tenant (e.g., `2010-010`) |
-| `asset.immobilizer_capable` | Installation metadata | Whether immobilizer wiring exists |
 | `asset.accessories[].id` | Accessory registry | Unique accessory identifier |
 | `asset.accessories[].type_id` | Accessory registry | Accessory type numeric ID |
 | `asset.accessories[].type_code` | Accessory registry | Accessory type code (immobilizer, temperature, fuel_level, etc.) |
@@ -198,7 +196,9 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 | `asset.properties.site.capacity_units` | Fleeti catalog | Site capacity (units depend on site type) |
 | `asset.properties.site.temperature_range` | Fleeti catalog | Expected min/max temperature range (especially for cold rooms) - `{ min: { value: number, unit: "°C" }, max: { value: number, unit: "°C" } }` |
 
-| **Note:** Most asset metadata fields come from Fleeti catalog. The VIN field (`asset.properties.vehicle.vin`) is metadata only and sourced from the Fleeti catalog. No Navixy AVL ID is available for VIN. The `avl_io_132` field correctly maps to `diagnostics.security.state_flags` (Security State Flags) in Section 11.
+**Note:** Immobilizer capability is derived from the `accessories[]` array. If any accessory has `type_code === "immobilizer"`, the asset is immobilizer-capable. Use `asset.accessories?.some(acc => acc.type_code === "immobilizer") ?? false` to check capability. This ensures a single source of truth and avoids data consistency issues.
+
+| **Note:** Most asset metadata fields come from Fleeti catalog. 
 
 ---
 
@@ -680,9 +680,18 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
         "light_signal": "boolean",
         "lights_failure": "boolean"
       },
-      "cistern_state_flags": "integer | hex",
       "indicators": {
-        "state_flags": "integer | hex"
+        "state_flags": "integer | hex",
+        "cistern_state_flags": "integer | hex"
+      },
+      "occupancy": {
+        "front_passenger": "boolean"
+      },
+      "safety": {
+        "airbag_state": "boolean"
+      },
+      "climate": {
+        "air_conditioning": "boolean"
       }
     },
     "brakes": {
@@ -692,9 +701,6 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
       "retarder_automatic": "boolean",
       "retarder_manual": "boolean"
     },
-    "climate": {
-      "air_conditioning": "boolean"
-    },
     "drivetrain": {
       "central_differential_4hi_locked": "boolean",
       "central_differential_4lo_locked": "boolean",
@@ -702,9 +708,6 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
       "cruise_control_active": "boolean",
       "front_differential_locked": "boolean",
       "rear_differential_locked": "boolean"
-    },
-    "electrical": {
-      "battery_not_charging": "boolean"
     },
     "engine": {
       "ignition_on": "boolean",
@@ -717,7 +720,8 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
       "rpm": { "value": "number", "unit": "rpm" },
       "start_stop_inactive": "boolean",
       "temperature": { "value": "number", "unit": "°C" },
-      "webasto_state": "boolean"
+      "webasto_state": "boolean",
+      "key_inserted": "boolean"
     },
     "fluids": {
       "adblue_level": { "value": "number", "unit": "l | %" },
@@ -729,23 +733,12 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
       "can_warning": "boolean",
       "dtc_count": "integer",
       "electronics_power_control": "boolean",
+      "battery_not_charging": "boolean",
       "low_fuel_warning": "boolean",
       "low_oil_warning": "boolean",
       "low_tire_pressure_warning": "boolean",
       "mil_activated_distance": { "value": "number", "unit": "km" },
       "mil_status": "integer"
-    },
-    "ignition": {
-      "key_inserted": "boolean"
-    },
-    "occupancy": {
-      "front_passenger": "boolean"
-    },
-    "safety": {
-      "airbag_state": "boolean"
-    },
-    "control": {
-      "state_flags": "integer | hex"
     },
     "security": {
       "state_flags": "integer | hex",
@@ -754,14 +747,19 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
         "request_lock_engine": "boolean"
       }
     },
-    "steering": {
-      "eps_state": "boolean"
-    },
-    "utility": {
-      "state_flags": "integer | hex"
-    },
-    "trailer": {
-      "axle_lift_active": "boolean[]"
+    "systems": {
+      "steering": {
+        "eps_state": "boolean"
+      },
+      "trailer": {
+        "axle_lift_active": "boolean[]"
+      },
+      "control": {
+        "state_flags": "integer | hex"
+      },
+      "utility": {
+        "state_flags": "integer | hex"
+      }
     }
   }
 }
@@ -787,14 +785,13 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 | `diagnostics.brakes.parking_brake` | P0 | Navixy: `can_hand_brake_state` (CAN Hand Brake), `avl_io_653` (SSF Handbrake Is Active) | 0 - Handbrake inactive 1 - Handbrake active |
 | `diagnostics.brakes.retarder_automatic` | P0 | Navixy: `can_automatic_retarder` (CAN Automatic Retarder) | CAN Automatic Retarder |
 | `diagnostics.brakes.retarder_manual` | P0 | Navixy: `can_manual_retarder` (CAN Manual Retarder) | CAN Manual Retarder |
-| `diagnostics.climate.air_conditioning` | P0 | Navixy: `can_air_conditioning`, `avl_io_936` (CSF Air Conditioning) | 0 - Off 1 - On |
+| `diagnostics.body.climate.air_conditioning` | P0 | Navixy: `can_air_conditioning`, `avl_io_936` (CSF Air Conditioning) | 0 - Off 1 - On |
 | `diagnostics.drivetrain.central_differential_4hi_locked` | P0 | Navixy: `can_central_diff_4hi_locked` (CAN Central Diff 4HI Locked) | CAN Central Diff 4HI Locked |
 | `diagnostics.drivetrain.central_differential_4lo_locked` | P0 | Navixy: `can_central_diff_4lo_locked` (CAN Central Diff 4LO Locked) | CAN Central Diff 4LO Locked |
 | `diagnostics.drivetrain.clutch_state` | P0 | Navixy: `can_clutch_state` (CAN Clutch State) | CAN Clutch State |
 | `diagnostics.drivetrain.cruise_control_active` | P0 | Navixy: `can_cruise_control` (CAN Cruise Control) | CAN Cruise Control |
 | `diagnostics.drivetrain.front_differential_locked` | P0 | Navixy: `can_front_diff_locked` (CAN Front Diff Locked), `avl_io_947` (CSF Front Differential Locked) | 0 - Unlocked 1 - Locked |
 | `diagnostics.drivetrain.rear_differential_locked` | P0 | Navixy: `can_rear_diff_locked` (CAN Rear Diff Locked), `avl_io_948` (CSF Rear Differential Locked) | 0 - Unlocked 1 - Locked |
-| `diagnostics.electrical.battery_not_charging` | P2 | Navixy: `avl_io_960` (ISF Battery Not Charging Indicator) | 0 - Off 1 - On |
 | `diagnostics.engine.ignition_on` | P2 | Navixy: `avl_io_898` (SSF Ignition) | Raw CAN ignition signal. Note: This is diagnostic data; use `power.ignition` for canonical ignition state. |
 | `diagnostics.engine.running` | P2 | Navixy: `avl_io_900` (SSF Engine Working) | Engine actually running (motor state). Note: This is diagnostic data; may differ from `power.ignition` if ignition cable is not connected to motor level. |
 | `diagnostics.engine.coolant_temperature` | P0 | Navixy: `can_coolant_temp_or_level` (CAN Coolant Temp or Level) | Engine coolant temperature from cooling system. Measured in degrees Celsius (°C). |
@@ -809,26 +806,27 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 | `diagnostics.fluids.adblue_level` | P0 | Navixy: `can_adblue_level` (CAN AdBlue Level), `avl_io_111` (AdBlue Level), `avl_io_112` (AdBlue Level) | AdBlue/DEF fluid level. May be reported in liters or percentage depending on source. |
 | `diagnostics.fluids.oil.pressure` | P0 | Navixy: `can_oil_pressure_or_level` (CAN Oil Pressure or Level) | Engine oil pressure. Measured in kPa or psi depending on source. |
 | `diagnostics.health.low_oil_warning` | P2 | Navixy: `avl_io_235` (Oil Level) | Low engine oil level warning indicator. Values: 0 = normal, 1 = low oil warning. |
-| `diagnostics.health.can_warning` | P0 | Navixy: `can_warning` (CAN Warning) | CAN Warning |
+| `diagnostics.health.battery_not_charging` | P2 | Navixy: `avl_io_960` (ISF Battery Not Charging Indicator) | Battery not charging warning indicator. Values: 0 = off, 1 = on. Indicates that the low-voltage system battery is not being charged (alternator/DC-DC issue). |
+| `diagnostics.health.can_warning` | P0 | Navixy: `can_warning` (CAN Warning) | CAN bus warning indicator. Values: 0 = no warning, 1 = warning present. Indicates general CAN bus communication or system warnings detected by the vehicle's diagnostic system. Read from CAN bus. |
 | `diagnostics.health.dtc_count` | P1 | Navixy: `obd_dtc_number` (OBD DTC Count), `avl_io_30` (Number of DTC) | Number of DTC |
-| `diagnostics.health.electronics_power_control` | P0 | Navixy: `can_electronics_power_control` (CAN Electronics Power Control) | CAN Electronics Power Control |
+| `diagnostics.health.electronics_power_control` | P0 | Navixy: `can_electronics_power_control` (CAN Electronics Power Control) | Electronics power control state from CAN bus. Values: 0 = normal operation, 1 = power control active. Indicates power management system status (e.g., power saving mode, normal operation, reduced power mode). Interpretation depends on vehicle manufacturer and model. |
 | `diagnostics.health.low_fuel_warning` | P0 | Navixy: `can_low_fuel` (CAN Low Fuel) | Low fuel warning indicator from CAN bus. Values: 0 = normal, 1 = low fuel warning. |
 | `diagnostics.health.low_tire_pressure_warning` | P0 | Navixy: `can_low_tire_pressure`, `avl_io_966` (ISF Low Tire Pressure Indicator) | 0 - Off 1 - On |
 | `diagnostics.health.mil_activated_distance` | P1 | Navixy: `obd_mil_activated_distance` (OBD MIL Activated Distance), `avl_io_43` (Distance Traveled MIL On) | Distance traveled with MIL (Malfunction Indicator Lamp) activated. Measured in kilometers (km). Indicates how far the vehicle has traveled since the MIL was triggered. |
-| `diagnostics.health.mil_status` | P1 | Navixy: `obd_mil_status` (OBD MIL Status) | OBD MIL Status |
-| `diagnostics.ignition.key_inserted` | P2 | Navixy: `avl_io_652` (SSF KeyInIgnitionLock) | 0 - No key in lock 1 - Key in lock |
-| `diagnostics.occupancy.front_passenger` | P0 | Navixy: `can_front_passenger_presence` (CAN Front Passenger Presence), `avl_io_945` (CSF Front Passenger Present) | 0 - Not present 1 - Present |
-| `diagnostics.safety.airbag_state` | P0 | Navixy: `can_airbag_state` (CAN Airbag State) | Airbag system state from CAN bus. Values: 0 = airbag system inactive/normal, 1 = airbag system active/warning. Indicates airbag system status and potential safety issues. |
-| `diagnostics.steering.eps_state` | P0 | Navixy: `can_eps_state` (EPS State) | EPS State |
-| `diagnostics.trailer.axle_lift_active[]` | P0 | Navixy: `can_trailer_axle_lift_active_1` (CAN Trailer Axle Lift Active 1), `can_trailer_axle_lift_active_2` (CAN Trailer Axle Lift Active 2) | CAN Trailer Axle Lift Active 1 |
+| `diagnostics.health.mil_status` | P1 | Navixy: `obd_mil_status` (OBD MIL Status) | Malfunction Indicator Lamp (MIL) status from OBD. Values depend on OBD protocol version. Typically: 0 = MIL off (no faults), 1 = MIL on (fault detected). Related to DTC count (`diagnostics.health.dtc_count`). When MIL is on, diagnostic trouble codes are present and should be checked. |
+| `diagnostics.engine.key_inserted` | P2 | Navixy: `avl_io_652` (SSF KeyInIgnitionLock) | 0 - No key in lock 1 - Key in lock |
+| `diagnostics.body.occupancy.front_passenger` | P0 | Navixy: `can_front_passenger_presence` (CAN Front Passenger Presence), `avl_io_945` (CSF Front Passenger Present) | 0 - Not present 1 - Present |
+| `diagnostics.body.safety.airbag_state` | P0 | Navixy: `can_airbag_state` (CAN Airbag State) | Airbag system state from CAN bus. Values: 0 = airbag system inactive/normal, 1 = airbag system active/warning. Indicates airbag system status and potential safety issues. |
+| `diagnostics.systems.steering.eps_state` | P0 | Navixy: `can_eps_state` (EPS State) | Electric Power Steering (EPS) system state. Values: 0 = inactive/normal, 1 = active/warning. Indicates EPS system operational status. When active, the EPS system is engaged and assisting steering. Warning state may indicate system faults or reduced assistance. Read from CAN bus. |
+| `diagnostics.systems.trailer.axle_lift_active[]` | P0 | Navixy: `can_trailer_axle_lift_active_1` (CAN Trailer Axle Lift Active 1), `can_trailer_axle_lift_active_2` (CAN Trailer Axle Lift Active 2) | Trailer axle lift active status. Array of boolean values, one per trailer axle. Values: false = axle down (normal position), true = axle lifted. Used for load distribution control and to reduce wear on specific axles when trailer is empty or lightly loaded. Read from CAN bus. |
 | `diagnostics.agricultural.state_flags` | P2 | Navixy: `avl_io_124` (Agricultural Machinery Flags), `avl_io_520` (Agricultural State Flags P4) | Agricultural machinery state flags (bitmask). Encodes various agricultural equipment states. Format: integer or hex depending on source. |
-| `diagnostics.body.cistern_state_flags` | P2 | Navixy: `avl_io_522` (Cistern State Flags P4) | Cistern/tank state flags (bitmask, Protocol 4). Encodes cistern-related equipment states. Format: integer or hex. |
-| `diagnostics.body.indicators.state_flags` | P2 | Navixy: `avl_io_519` (Indicator State Flags P4) | Vehicle indicator state flags (bitmask, Protocol 4). Encodes various indicator states. Format: integer or hex. |
-| `diagnostics.control.state_flags` | P2 | Navixy: `avl_io_123` (Control State Flags), `avl_io_518` (Control State Flags P4) | Vehicle control system state flags (bitmask). Encodes control system states. Format: integer or hex depending on source. |
+| `diagnostics.body.indicators.state_flags` | P2 | Navixy: `avl_io_519` (Indicator State Flags P4) | Vehicle indicator state flags (bitmask, Protocol 4). Encodes various indicator states (e.g. turn indicators, warning lamps). Format: integer or hex. |
+| `diagnostics.body.indicators.cistern_state_flags` | P2 | Navixy: `avl_io_522` (Cistern State Flags P4) | Cistern/tank state flags (bitmask, Protocol 4). Encodes cistern-related equipment states. Format: integer or hex. |
+| `diagnostics.systems.control.state_flags` | P2 | Navixy: `avl_io_123` (Control State Flags), `avl_io_518` (Control State Flags P4) | Vehicle control system state flags (bitmask). Encodes control system states. Format: integer or hex depending on source. |
 | `diagnostics.security.state_flags` | P2 | Navixy: `avl_io_132` (Security State Flags), `avl_io_517` (Security State Flags P4) | Security system state flags (bitmask). Encodes security-related states. Format: integer or hex depending on source. |
 | `diagnostics.security.immobilizer.engine_lock_active` | P0 | Navixy: `avl_io_907` (SSF Engine Lock Active) | Engine lock active status. Values: 0 = inactive, 1 = active. Indicates whether the engine is currently locked by the immobilizer system. Used for immobilization status computation. |
 | `diagnostics.security.immobilizer.request_lock_engine` | P0 | Navixy: `avl_io_908` (SSF Request To Lock Engine) | Request to lock engine status. Values: 0 = off, 1 = on. Indicates a request/command to lock the engine has been sent. Used for immobilization status computation. |
-| `diagnostics.utility.state_flags` | P2 | Navixy: `avl_io_521` (Utility State Flags P4) | Utility vehicle/equipment state flags (bitmask, Protocol 4). Encodes utility equipment states. Format: integer or hex. |
+| `diagnostics.systems.utility.state_flags` | P2 | Navixy: `avl_io_521` (Utility State Flags P4) | Utility vehicle/equipment state flags (bitmask, Protocol 4). Encodes utility equipment states. Format: integer or hex. |
 
 ---
 
