@@ -163,7 +163,7 @@ def generate_report(csv_fields, md_fields, missing_fields, output_path):
         report += "\n---\n\n"
         report += "## Recommendations\n\n"
         report += "1. Review each missing field to determine if it should be added to the schema document.\n"
-        report += "2. Add missing fields to the appropriate section in `Telemetry_Schema_Analysis_Updated.md`.\n"
+        report += "2. Add missing fields to the appropriate section in `working/fleeti-telemetry-schema-specification.md`.\n"
         report += "3. Ensure the field is placed in the semantically correct section.\n"
         report += "4. Include priority, source logic, and description for each field.\n"
     
@@ -196,9 +196,9 @@ def generate_report(csv_fields, md_fields, missing_fields, output_path):
     print(f"  Coverage: {coverage:.2f}%")
 
 if __name__ == '__main__':
-    csv_path = Path('docs/reference/Fleeti_Field_Mapping_Expanded.csv')
-    md_path = Path('docs/working/Telemetry_Schema_Analysis_Updated.md')
-    output_path = Path('navixy_fields_completeness_check.md')
+    csv_path = Path('docs/legacy/navixy-to-fleeti-mapping-legacy.csv')
+    md_path = Path('working/fleeti-telemetry-schema-specification.md')
+    output_path = Path('Scripts/navixy_fields_completeness_check.md')
     
     print("Extracting Navixy fields from CSV...")
     csv_fields = extract_navixy_fields_from_csv(csv_path)

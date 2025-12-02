@@ -1,17 +1,21 @@
-# Telemetry Schema Analysis
 
-## 📊 Overview
+### Priority System
 
-This document provides a comprehensive analysis of the complete Fleeti Telemetry structure based on the catalog of 161 telemetry fields extracted from Navixy Data Forwarding.
+Fields in this document are assigned priority levels (P0, P1, P2, P3) to indicate their importance and implementation order:
 
-**Generated from:** Fleeti Field Mapping Expanded CSV  
-**Total Fields Cataloged:** 161  
-**Fields with Multiple Sources:** 59  
-**Date:** 2025-01-28
+- **P0 (Core Fields)**: Essential telemetry fields required for basic fleet management functionality. These fields form the foundation of the Fleeti telemetry system and must be implemented first.
+
+- **P1 (Must-Have)**: Important fields that significantly enhance functionality but are not strictly required for basic operations. These should be implemented after P0 fields.
+
+- **P2 (Nice-to-Have)**: Valuable fields that provide additional insights or features but are not critical for core functionality. These can be implemented as resources allow.
+
+- **P3 (Not-Have)**: Fields that are documented but not currently prioritized for implementation. These may be implemented in future phases or based on specific customer requirements.
+
+Priority assignments help guide development teams in planning implementation phases and resource allocation.
 
 ---
 
-## 🎯 Purpose
+# 🎯 Purpose
 
 This analysis defines the **complete structure** of Fleeti Telemetry objects, mapping all identified fields from provider-specific formats (Navixy) into a provider-agnostic Fleeti telemetry model.
 
@@ -21,11 +25,11 @@ This analysis defines the **complete structure** of Fleeti Telemetry objects, ma
 
 ---
 
-## Root-Level Fields
+# Root-Level Fields
 
 The telemetry object includes a root-level `last_updated_at` field that indicates when Fleeti backend last received any telemetry packet from this asset.
 
-### Root Structure
+## Root Structure
 ```json
 {
   "last_updated_at": "ISO8601",
@@ -37,7 +41,7 @@ The telemetry object includes a root-level `last_updated_at` field that indicate
 }
 ```
 
-### Field Sources & Logic
+## Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
@@ -55,32 +59,11 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 
 ---
 
-## 📋 Table of Contents
-
-1. [Asset Metadata](#1-asset-metadata)
-2. [Telemetry Context](#2-telemetry-context)
-3. [Location](#3-location)
-4. [Connectivity](#4-connectivity)
-5. [Motion](#5-motion)
-6. [Power](#6-power)
-7. [Fuel](#7-fuel)
-8. [Counters](#8-counters)
-9. [Driving Behavior](#9-driving-behavior)
-10. [Sensors](#10-sensors)
-11. [Diagnostics](#11-diagnostics)
-12. [I/O (Inputs/Outputs)](#12-i-o-inputs-outputs)
-13. [Driver](#13-driver)
-14. [Device](#14-device)
-15. [Other](#15-other)
-16. [Packet Metadata](#16-packet-metadata)
-
----
-
-## 1. Asset Metadata
+# 1. Asset Metadata
 
 **Purpose:** Static asset information that does not change per telemetry packet. This includes identity, ownership, groups, accessories, installation configuration, and asset-specific properties.
 
-### Structure
+## Structure
 ```json
 {
   "asset": {
@@ -178,7 +161,7 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 
 | **Note:** This structure represents static asset metadata. From a front-end perspective, not all of these fields will be available or used directly. However, these fields are essential inputs for the transformation pipeline to compute derived telemetry fields.
 
-### Field Sources & Notes
+## Field Sources & Notes
 
 | Fleeti Field | Source | Description |
 |--------------|--------|-------------|
@@ -236,11 +219,11 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 
 ---
 
-## 2. Telemetry Context
+# 2. Telemetry Context
 
 **Purpose:** Computed/derived fields that change per telemetry packet. These are calculated from raw telemetry combined with asset metadata. Includes status families (connectivity, transit, engine, immobilization), current geofence context, and ongoing trip information.
 
-### Structure
+## Structure
 ```json
 {
   "status": {
@@ -307,7 +290,7 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 }
 ```
 
-### Field Sources & Logic
+## Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
@@ -323,15 +306,15 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 
 **Note:** All `last_changed_at` fields are computed by the Fleeti backend by comparing current values with previous telemetry packet values. For status fields, `last_changed_at` updates when the `code` changes (not on every packet). For location, a threshold is applied to filter GPS jitter (only significant position/heading changes trigger updates). These timestamps enable duration calculations and timeline features that improve customer experience.
 
-| **Computation Rules:** See Telemetry Status Rules for definitive logic on status transitions, compatibility matrices, and priority ordering.
+| **Computation Rules:** See `Wiki/telemetry-status-rules.md` for definitive logic on status transitions, compatibility matrices, and priority ordering.
 
 ---
 
-## 3. Location
+# 3. Location
 
 **Purpose:** GPS/GNSS positioning data and location precision metrics.
 
-### Structure
+## Structure
 ```json
 {
   "location": {
@@ -352,7 +335,7 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 }
 ```
 
-### Field Sources & Logic
+## Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
@@ -370,11 +353,11 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 
 ---
 
-## 4. Connectivity
+# 4. Connectivity
 
 **Purpose:** Network and communication status information.
 
-### Structure
+## Structure
 ```json
 {
   "connectivity": {
@@ -392,7 +375,7 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 }
 ```
 
-### Field Sources & Logic
+## Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
@@ -405,11 +388,11 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 
 ---
 
-## 5. Motion
+# 5. Motion
 
 **Purpose:** Dynamic movement data including speed and motion status.
 
-### Structure
+## Structure
 ```json
 {
   "motion": {
@@ -428,7 +411,7 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 }
 ```
 
-### Field Sources & Logic
+## Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
@@ -442,11 +425,11 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 
 ---
 
-## 6. Power
+# 6. Power
 
 **Purpose:** Power source status, canonical ignition state, and battery health (asset/vehicle battery). Includes low-voltage electrical system and EV/hybrid traction battery systems.
 
-### Structure
+## Structure
 ```json
 {
   "power": {
@@ -481,7 +464,7 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 - **`power.ev.traction_battery.*`**: Represents the high-voltage traction battery used for propulsion on EVs and hybrids. Only populated when the vehicle exposes these signals.
 - **Raw engine diagnostic fields** (`engine.ignition_on`, `engine.running`) are documented in Section 11 (Diagnostics) as they represent raw CAN/diagnostic signals, not the canonical power state.
 
-### Field Sources & Logic
+## Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
@@ -497,11 +480,11 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 
 ---
 
-## 7. Fuel
+# 7. Fuel
 
 **Purpose:** Fuel system data including levels and consumption.
 
-### Structure
+## Structure
 ```json
 {
   "fuel": {
@@ -520,7 +503,7 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 }
 ```
 
-### Field Sources & Logic
+## Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
@@ -532,11 +515,11 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 
 ---
 
-## 8. Counters
+# 8. Counters
 
 **Purpose:** Accumulated counters for odometer and engine hours.
 
-### Structure
+## Structure
 ```json
 {
   "counters": {
@@ -546,7 +529,7 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 }
 ```
 
-### Field Sources & Logic
+## Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
@@ -555,11 +538,11 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 
 ---
 
-## 9. Driving Behavior
+# 9. Driving Behavior
 
 **Purpose:** Daily aggregated driving metrics and eco-driving scores.
 
-### Structure
+## Structure
 ```json
 {
   "driving_behavior": {
@@ -583,7 +566,7 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 }
 ```
 
-### Field Sources & Logic
+## Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
@@ -600,11 +583,11 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 
 ---
 
-## 10. Sensors
+# 10. Sensors
 
 **Purpose:** External and internal sensor readings (temperature, humidity, battery, etc.).
 
-### Structure
+## Structure
 ```json
 {
   "sensors": {
@@ -650,7 +633,7 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 }
 ```
 
-### Field Sources & Logic
+## Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
@@ -670,11 +653,11 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 
 ---
 
-## 11. Diagnostics
+# 11. Diagnostics
 
 **Purpose:** Detailed asset diagnostics, including CAN bus data, engine stats, and body sensors.
 
-### Structure
+## Structure
 ```json
 {
   "diagnostics": {
@@ -814,7 +797,7 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 }
 ```
 
-### Field Sources & Logic
+## Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
@@ -880,11 +863,11 @@ For location, a threshold is applied to filter GPS jitter (only significant posi
 
 ---
 
-## 12. I/O (Inputs/Outputs)
+# 12. I/O (Inputs/Outputs)
 
 **Purpose:** Digital and analog input/output states.
 
-### Structure
+## Structure
 ```json
 {
   "io": {
@@ -923,7 +906,7 @@ I/O values are used elsewhere in the Fleeti application to compute semantic fiel
 
 **Important:** In the Fleeti telemetry schema, I/O fields are **interpretable as-is** (raw device values). The semantic mapping (which input/output represents what function) is defined in `asset.installation.*` metadata (Section 1) and is used by the transformation pipeline to compute canonical fields. The I/O section provides the raw, uninterpreted device states for troubleshooting and debugging.
 
-### Field Sources & Logic
+## Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
@@ -939,11 +922,11 @@ I/O values are used elsewhere in the Fleeti application to compute semantic fiel
 
 ---
 
-## 13. Driver
+# 13. Driver
 
 **Purpose:** Driver identification and related events.
 
-### Structure
+## Structure
 ```json
 {
   "driver": {
@@ -979,7 +962,7 @@ I/O values are used elsewhere in the Fleeti application to compute semantic fiel
 
 - **Authorization state**: `authorization.state` indicates iButton connection status in the context of immobilizer authorization (0 = no key, 1 = key connected but immobilizer active, 2 = key connected and authorized for driving).
 
-### Field Sources & Logic
+## Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
@@ -994,11 +977,11 @@ I/O values are used elsewhere in the Fleeti application to compute semantic fiel
 
 ---
 
-## 14. Device
+# 14. Device
 
 **Purpose:** Tracking device status, configuration, and security.
 
-### Structure
+## Structure
 ```json
 {
   "device": {
@@ -1028,7 +1011,7 @@ I/O values are used elsewhere in the Fleeti application to compute semantic fiel
 }
 ```
 
-### Field Sources & Logic
+## Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
@@ -1047,11 +1030,11 @@ I/O values are used elsewhere in the Fleeti application to compute semantic fiel
 
 ---
 
-## 15. Other
+# 15. Other
 
 **Purpose:** Device-side events, geofence data, impulse counters, and raw CAN data. These fields are not part of the core telemetry schema but are included for completeness. Events and geofence data will be handled separately from telemetry in the Fleeti system.
 
-### Structure
+## Structure
 ```json
 {
   "other": {
@@ -1106,7 +1089,7 @@ I/O values are used elsewhere in the Fleeti application to compute semantic fiel
 
 - **Raw CAN**: Unprocessed CAN bus messages. Interpretation and mapping to semantic fields will be defined in a future specification.
 
-### Field Sources & Logic
+## Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|
@@ -1130,13 +1113,13 @@ I/O values are used elsewhere in the Fleeti application to compute semantic fiel
 
 ---
 
-## 16. Packet Metadata
+# 16. Packet Metadata
 
 **Purpose:** Metadata about the telemetry packet itself.
 
 **Note:** Device identification (`device.identification.*`) and firmware version (`device.firmware.version`) are documented in Section 14 (Device), as they represent current device state rather than packet-specific metadata.
 
-### Structure
+## Structure
 ```json
 {
   "provider": {
@@ -1152,7 +1135,7 @@ I/O values are used elsewhere in the Fleeti application to compute semantic fiel
 }
 ```
 
-### Field Sources & Logic
+## Field Sources & Logic
 
 | Fleeti Field | Priority | Source / Logic | Description |
 |--------------|----------|----------------|-------------|

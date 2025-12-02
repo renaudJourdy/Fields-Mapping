@@ -48,7 +48,7 @@ We have completed a Proof of Concept (POC) to validate Data Forwarding:
 
 - **Received all telemetry** from test devices
 - **Validated data integrity**: Compared Data Forwarding packets with Navixy API exports
-- **Field catalog created**: Aggregated all unique telemetry fields found in `docs/reference/Navixy Field Catalog.csv`
+- **Field catalog created**: Aggregated all unique telemetry fields found in `docs/reference/navixy-field-catalog.csv`
 - **Result**: 343 distinct telemetry fields identified from Navixy Data Forwarding
 
 ---
@@ -78,7 +78,7 @@ We have completed a Proof of Concept (POC) to validate Data Forwarding:
 
 - **Source**: White-label GPS tracking platform
 - **Format**: Raw parsed telemetry packets via Data Forwarding
-- **Fields**: 343 identified fields (see `docs/reference/Navixy Field Catalog.csv`)
+- **Fields**: 343 identified fields (see `docs/reference/navixy-field-catalog.csv`)
 - **Protocol**: Teltonika AVL `#D#` packets (forwarded as JSON)
 
 ### 3.2 Future Providers
@@ -111,7 +111,7 @@ We have completed a Proof of Concept (POC) to validate Data Forwarding:
   - **Asset details**: Detailed telemetry view when clicking on an asset
   - **Map markers**: Location-based display (with optional field-based coloring, e.g., temperature on marker)
 
-**Frontend Structure Reference**: Refer to `docs/reference/Telemetry Status Rules.md` for definitive status compatibility/state logic and extend `docs/working/Telemetry Schema Analysis.md` to mirror the LiveMap mobile contract until the legacy LiveMap mapping doc is migrated from the previous project. The frontend expects a specific structure with:
+**Frontend Structure Reference**: Refer to `Wiki/telemetry-status-rules.md` for definitive status compatibility/state logic and extend `working/fleeti-telemetry-schema-specification.md` to mirror the LiveMap mobile contract until the legacy LiveMap mapping doc is migrated from the previous project. The frontend expects a specific structure with:
 - `asset_id`, `asset_type`, `asset_subtype`, `name` - Identity fields
 - `status` object with `top_status`, `statuses[]` array (families: connectivity, immobilization, engine, movement)
 - `location` object with `lat`, `lng`, `heading`, `geofences[]`
@@ -205,7 +205,7 @@ We have completed a Proof of Concept (POC) to validate Data Forwarding:
 
 #### 5.4.2 Frontend Output Considerations
 
-**Important**: Based on the LiveMap requirements captured in `docs/reference/Telemetry Status Rules.md` (and the legacy LiveMap mapping doc to be migrated):
+**Important**: Based on the LiveMap requirements captured in `Wiki/telemetry-status-rules.md` (and the legacy LiveMap mapping doc to be migrated):
 
 - **Fuel Display**: Fuel can appear as either:
   - **Sensor**: `sensors[]` array entry with `type: "fuel"` or `type: "can_fuel_level_litre"`
@@ -436,7 +436,7 @@ field_groups:
 
 **Objective**: Create a **complete catalog** of all possible Fleeti telemetry fields we can produce.
 
-**Current state**: `docs/reference/Navixy Field Catalog.csv` contains 343 fields from Navixy, but we need:
+**Current state**: `docs/reference/navixy-field-catalog.csv` contains 343 fields from Navixy, but we need:
 
 1. **Fleeti Telemetry Fields Catalog**: All possible Fleeti fields (not provider fields)
 2. **Mapping documentation**: Which provider fields map to which Fleeti fields
@@ -608,7 +608,7 @@ Some fields should be **set aside** initially:
 
 ### 12.1 Frontend Structure Requirements
 
-Based on `docs/reference/Telemetry Status Rules.md` (and the legacy LiveMap contract still to be migrated), the frontend expects a specific structure that differs from raw provider telemetry:
+Based on `Wiki/telemetry-status-rules.md` (and the legacy LiveMap contract still to be migrated), the frontend expects a specific structure that differs from raw provider telemetry:
 
 **Key Transformations Needed**:
 1. **Sensor Array Creation**: Raw telemetry fields must be organized into `sensors[]` array
@@ -673,7 +673,7 @@ Fleeti One Frontend / Customer APIs
 2. Document **transformation rules** for calculated fields
 3. Create **configuration file template** with all mappings
 4. Design **watchdog system** for new field detection
-5. **Map frontend structure** to Fleeti telemetry schema (align with the LiveMap contract documented in `docs/reference/Telemetry Status Rules.md`; import the legacy LiveMap spec when available)
+5. **Map frontend structure** to Fleeti telemetry schema (align with the LiveMap contract documented in `Wiki/telemetry-status-rules.md`; import the legacy LiveMap spec when available)
 
 ### 13.3 Integration Tasks
 
@@ -687,9 +687,9 @@ Fleeti One Frontend / Customer APIs
 ## 14. References
 
 ### Internal Documents
-- `docs/reference/Navixy Field Catalog.csv` - Complete catalog of 343 Navixy fields from Data Forwarding
-- `docs/working/Telemetry Schema Analysis.md` - Working analysis of Fleeti telemetry structure
-- `docs/reference/Telemetry Status Rules.md` - Canonical status computation logic for LiveMap and API outputs
+- `docs/reference/navixy-field-catalog.csv` - Complete catalog of 343 Navixy fields from Data Forwarding
+- `working/fleeti-telemetry-schema-specification.md` - Working analysis of Fleeti telemetry structure
+- `Wiki/telemetry-status-rules.md` - Canonical status computation logic for LiveMap and API outputs
 
 ### Related Specifications
 - Legacy documents from the previous project (e.g., `Specifications/Data Model & Mapping.md`, `Specifications/Architecture & Data Flow.md`, validator scripts) remain in the old repository and should be migrated or recreated as needed.
