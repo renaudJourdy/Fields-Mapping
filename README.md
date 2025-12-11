@@ -6,13 +6,30 @@ This repository centralizes the Fleeti telemetry documentation and mapping speci
 
 ```
 .
+├── notion/                    # Notion-synced content
+│   ├── fleeti-fields/              # Fleeti Fields database sync
+│   ├── provider-fields/            # Provider Fields database sync
+│   ├── field-mappings/             # Field Mappings database sync
+│   └── fleeti-fields-telemetry-mapping/  # Wiki skeleton structure
+│       ├── overview-vision/        # Project overview and vision
+│       ├── documentation/          # Specifications, requirements, mappings
+│       ├── developer-resources/    # Developer guides and resources
+│       ├── project-management/     # Status, roadmap, decisions
+│       ├── technical-pages/        # Developer-contributed pages
+│       └── guidelines-standards/   # Documentation standards
+├── configs/                 # YAML configuration files
+├── scripts/                # Automation and utility scripts
+│   ├── notion/                  # Notion sync scripts
+│   ├── validation/              # Validation scripts
+│   └── ai-custom/               # AI-generated custom scripts
 ├── docs/
-│   ├── enums/          # Fleeti API enumeration definitions
-│   ├── legacy/         # Historical/archived mapping documents
-│   └── reference/     # Immutable source-of-truth provider catalogs
-├── Scripts/           # Validation and analysis tools
-├── Wiki/              # Canonical specifications and rules
-└── working/           # Work-in-progress documents
+│   ├── enums/              # Fleeti API enumeration definitions
+│   ├── legacy/             # Historical/archived mapping documents
+│   ├── reference/          # Immutable source-of-truth provider catalogs
+│   └── project/            # Project management documents
+├── Wiki/                   # Canonical specifications and rules
+├── working/                # Work-in-progress documents
+└── notion-wiki/           # Wiki architecture documentation
 ```
 
 ---
@@ -66,15 +83,96 @@ This repository centralizes the Fleeti telemetry documentation and mapping speci
 - **`README.md`**  
   Comprehensive documentation of all enum categories, usage patterns, and integration guidelines.
 
-### Scripts (`Scripts/`) - Validation Tools
+### Notion Sync (`notion/`) - Notion-Synced Content
 
-**Purpose:** Python scripts and analysis tools for validating mapping completeness and consistency.
+**Purpose:** Markdown files that sync bidirectionally with Notion databases and wiki pages.
 
-- **`validate_navixy_completeness.py`**  
-  Validation script to check mapping completeness between Navixy fields and Fleeti schema.
+**Database Sync Folders:**
+- **`notion/README.md`**  
+  Overview of Notion sync system, workflow, and usage guidelines.
 
-- **`navixy_fields_completeness_check.md`**  
-  Results and analysis from completeness validation checks.
+- **`notion/fleeti-fields/`**  
+  Fleeti telemetry field definitions synced with Notion "Fleeti Telemetry Fields" database.
+
+- **`notion/provider-fields/`**  
+  Provider-specific field definitions synced with Notion "Provider Telemetry Fields" database.
+
+- **`notion/field-mappings/`**  
+  Field mapping rules synced with Notion "Field Mappings" database.
+
+**Wiki Skeleton Structure:**
+- **`notion/fleeti-fields-telemetry-mapping/`**  
+  Complete wiki skeleton structure mirroring the Notion wiki. Contains empty README.md files in each section for future content sync:
+  - `overview-vision/` - Project overview, objectives, architecture
+  - `documentation/` - Specifications, requirements, field mappings, reference materials
+  - `developer-resources/` - Getting started, implementation guides, API docs, troubleshooting
+  - `project-management/` - Current status, ongoing work, roadmap, decision records
+  - `technical-pages/` - Developer-contributed technical pages
+  - `guidelines-standards/` - Documentation standards, wiki organization, contribution guidelines
+
+### Configuration Files (`configs/`) - YAML Configurations
+
+**Purpose:** YAML configuration files generated from Notion documentation.
+
+- **`configs/README.md`**  
+  Guide to YAML configuration files and generation workflow.
+
+- **`configs/*.yaml`**  
+  Provider-specific mapping configurations (e.g., `navixy-mapping.yaml`).
+
+### Scripts (`scripts/`) - Automation Tools
+
+**Purpose:** Python and PowerShell scripts for validation, Notion sync, automation, and custom utilities.
+
+- **`scripts/notion/`**  
+  Notion sync scripts:
+  - `sync_to_notion.py` - Push local changes to Notion
+  - `sync_from_notion.py` - Pull Notion changes locally
+  - `detect_conflicts.py` - Detect sync conflicts
+  - `validate_sync.py` - Validate markdown files
+  - `generate_yaml.py` - Generate YAML from Notion content
+
+- **`scripts/validation/`**  
+  Validation scripts:
+  - `validate_navixy_completeness.py` - Check mapping completeness
+  - `navixy_fields_completeness_check.md` - Validation results
+
+- **`scripts/ai-custom/`**  
+  AI-generated custom scripts and utilities:
+  - `create-notion-skeleton.ps1` - PowerShell script to create Notion wiki skeleton structure
+  - Other custom automation scripts
+
+### Project Documents (`docs/project/`) - Project Management
+
+**Purpose:** Project management documents, reorganization guides, and project summaries.
+
+- **`REORGANIZATION_IMPLEMENTATION_GUIDE.md`**  
+  Complete guide for implementing project reorganization and Notion sync infrastructure.
+
+- **`PROJECT_REORGANIZATION_SUMMARY.md`**  
+  Summary of project reorganization efforts.
+
+- **`TO DO.txt`**  
+  Project task list and action items.
+
+### Wiki Architecture (`notion-wiki/`) - Wiki System Documentation
+
+**Purpose:** Documentation about the Notion wiki architecture, organization guidelines, and sync workflows.
+
+- **`WIKI_ARCHITECTURE_PROPOSAL.md`**  
+  Proposed hierarchical wiki structure and multi-audience organization.
+
+- **`ANALYSIS_REPORT.md`**  
+  Analysis of current Notion wiki structure and recommendations.
+
+- **`ORGANIZATION_GUIDELINES.md`**  
+  Guidelines for wiki organization, documentation standards, and contribution.
+
+- **`SYNC_WORKFLOW.md`**  
+  MCP-enabled sync workflows for bidirectional synchronization.
+
+- **`scripts/`**  
+  Example sync scripts demonstrating MCP integration.
 
 ---
 
@@ -94,6 +192,26 @@ When starting a new conversation or onboarding someone:
 2. **For status logic:** Reference `Wiki/telemetry-status-rules.md`
 3. **For provider fields:** Check `docs/reference/navixy-field-catalog.csv`
 4. **For enum values:** Use `docs/enums/response.json`
-5. **For historical context:** Consult `docs/legacy/` (but verify against current specs)
+5. **For Notion sync:** See `notion/README.md` and `scripts/notion/README.md`
+6. **For historical context:** Consult `docs/legacy/` (but verify against current specs)
+
+### Notion Sync Workflow
+
+For working with Notion-synced documentation:
+
+1. **Local-first workflow:**
+   - Edit markdown files in `notion/` directory
+   - Validate: `python scripts/notion/validate_sync.py --database all`
+   - Check conflicts: `python scripts/notion/detect_conflicts.py --database all`
+   - Sync to Notion: `python scripts/notion/sync_to_notion.py --database all`
+
+2. **Notion-first workflow:**
+   - Edit in Notion workspace
+   - Pull changes: `python scripts/notion/sync_from_notion.py --database all`
+
+3. **YAML generation:**
+   - Generate from Notion: `python scripts/notion/generate_yaml.py --provider navixy`
+
+See `docs/project/REORGANIZATION_IMPLEMENTATION_GUIDE.md` for complete setup instructions.
 
 Keep this file updated whenever a document is added, renamed, or reclassified to ensure future collaborators can immediately navigate the project.
