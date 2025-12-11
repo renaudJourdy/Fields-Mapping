@@ -1,217 +1,227 @@
 # Fleeti Telemetry Mapping Documentation
 
-This repository centralizes the Fleeti telemetry documentation and mapping specifications. Start here to understand where each artifact lives and how to keep it current for future chats or contributors.
+This repository centralizes the Fleeti telemetry documentation and mapping specifications. This README explains the current project structure and how to navigate it.
 
-## 📁 Folder Layout
+## 📁 Current Project Structure
 
 ```
 .
-├── notion/                    # Notion-synced content
-│   ├── fleeti-fields/              # Fleeti Fields database sync
-│   ├── provider-fields/            # Provider Fields database sync
-│   ├── field-mappings/             # Field Mappings database sync
-│   └── fleeti-fields-telemetry-mapping/  # Wiki skeleton structure
-│       ├── overview-vision/        # Project overview and vision
-│       ├── documentation/          # Specifications, requirements, mappings
-│       ├── developer-resources/    # Developer guides and resources
-│       ├── project-management/     # Status, roadmap, decisions
-│       ├── technical-pages/        # Developer-contributed pages
-│       └── guidelines-standards/   # Documentation standards
-├── configs/                 # YAML configuration files
-├── scripts/                # Automation and utility scripts
-│   ├── notion/                  # Notion sync scripts
-│   ├── validation/              # Validation scripts
-│   └── ai-custom/               # AI-generated custom scripts
-├── docs/
-│   ├── enums/              # Fleeti API enumeration definitions
-│   ├── legacy/             # Historical/archived mapping documents
-│   ├── reference/          # Immutable source-of-truth provider catalogs
-│   └── project/            # Project management documents
-├── Wiki/                   # Canonical specifications and rules
-├── working/                # Work-in-progress documents
-└── notion-wiki/           # Wiki architecture documentation
+├── docs/                    # Documentation and reference materials
+│   ├── brainstorming/       # AI-generated analysis and brainstorming documents
+│   ├── legacy/             # Historical documents kept for reference
+│   ├── rag/                # RAG (Retrieval-Augmented Generation) data for AI context
+│   │   ├── enums/          # Fleeti API enumerations (for AI context only)
+│   │   └── reference/      # Immutable provider field catalogs
+│   └── TO DO.txt           # Personal task list
+├── notion/                 # Notion wiki structure (local organization before syncing)
+│   ├── 1-overview-vision/  # Finalized overview and vision (95-100% complete)
+│   ├── 2-documentation/    # Technical documentation (work in progress)
+│   ├── 3-developer-resources/  # Developer guides (work in progress)
+│   ├── 4-project-management/   # Project management (work in progress)
+│   └── 5-technical-pages/      # Technical pages (work in progress)
+└── Scripts/                # Scripts for AI use when needed
 ```
 
 ---
 
-## 📚 Documentation Structure
+## 📚 Folder Descriptions
 
-### Wiki (`Wiki/`) - Canonical Specifications
+### `docs/brainstorming/`
 
-**Purpose:** Final, authoritative specifications that define system behavior and structure.
+**Purpose:** Destination folder for all AI-generated analysis and brainstorming documents.
 
-- **`telemetry-status-rules.md`**  
-  Canonical status family matrix and trigger logic for Connectivity, Transit, Engine, and Immobilization. This document is treated as final—consult it when implementing or validating status behavior.
+**Usage:**
+- When prompting AI to generate analysis, documentation, or brainstorming content, output files should be saved here
+- Subfolders should be organized based on the request/topic
+- Examples: `configuration-file/`, `mapping/`, `storage-strategy/`, `structure-notion/`
 
-- **`telemetry-system-specification.md`**  
-  High-level vision and requirements for building a provider-agnostic telemetry pipeline (ingestion, mapping, storage tiers, configuration strategy). Update this when product scope or architectural decisions change.
-
-### Working Documents (`working/`) - Active Development
-
-**Purpose:** Documents currently being developed or refined. Once finalized, these move to `Wiki/` as reference specifications.
-
-- **`fleeti-telemetry-schema-specification.md`**  
-  Detailed breakdown of the Fleeti telemetry object: sections, nested structures, and provider field mappings. This file evolves alongside the mapping work—edit it as we refine schema coverage. **Status:** Work-in-progress. Will be moved to `Wiki/` once finalized.
-
-### Reference Documents (`docs/reference/`) - Provider Catalogs
-
-**Purpose:** Immutable source-of-truth catalogs from telematics providers. These are used to map provider-specific fields to Fleeti canonical fields.
-
-- **`navixy-field-catalog.csv`**  
-  Complete catalog of all Navixy telemetry fields observed via Data Forwarding POC. Created by running a script to identify every independent Navixy field received from various device configurations. **Use:** Authoritative provider-field inventory before defining new Fleeti mappings.
-
-- **`flespi-teltonika-avl-id-catalog.csv`**  
-  Comprehensive Teltonika AVL ID reference scraped from Flespi platform documentation. Flespi provides updated, comprehensive documentation for Teltonika AVL parameters. **Use:** Reference for mapping Navixy AVL IO IDs to provider field names and understanding field semantics.
-
-- **`teltonika-fmb140-avl-parameters.csv`**  
-  Device-specific AVL parameter reference for Teltonika FMB140 GPS tracker model, scraped directly from Teltonika documentation. **Use:** Device-specific reference that may include AVL IDs not present in the general Flespi catalog. Use alongside Flespi catalog for complete coverage.
-
-### Legacy Documents (`docs/legacy/`) - Historical Reference
-
-**Purpose:** Outdated mapping documents kept for historical reference. Field associations may be outdated, but descriptions and metadata may still be useful.
-
-- **`navixy-to-fleeti-mapping-legacy.csv`**  
-  First attempt at mapping Navixy fields to Fleeti fields. Created manually based on `navixy-field-catalog.csv` to establish initial field associations. **Status:** Outdated. Field associations and mappings should NOT be used as reference—these have been superseded by `fleeti-telemetry-schema-specification.md`. **Use:** Descriptions and other metadata columns may still contain useful information, but field associations are deprecated.
-
-### Enumeration Definitions (`docs/enums/`) - Fleeti API Enums
-
-**Purpose:** Enumeration definitions from the Fleeti backend API, useful for understanding canonical enum structures used throughout the Fleeti system.
-
-- **`response.json`**  
-  Snapshot of 45 enumeration types extracted from the Fleeti backend API. Includes numeric values, names, French/English translations, and image URLs. **Use:** Reference for canonical enum codes, translations, and visual assets when implementing features.
-
-- **`README.md`**  
-  Comprehensive documentation of all enum categories, usage patterns, and integration guidelines.
-
-### Notion Sync (`notion/`) - Notion-Synced Content
-
-**Purpose:** Markdown files that sync bidirectionally with Notion databases and wiki pages.
-
-**Database Sync Folders:**
-- **`notion/README.md`**  
-  Overview of Notion sync system, workflow, and usage guidelines.
-
-- **`notion/fleeti-fields/`**  
-  Fleeti telemetry field definitions synced with Notion "Fleeti Telemetry Fields" database.
-
-- **`notion/provider-fields/`**  
-  Provider-specific field definitions synced with Notion "Provider Telemetry Fields" database.
-
-- **`notion/field-mappings/`**  
-  Field mapping rules synced with Notion "Field Mappings" database.
-
-**Wiki Skeleton Structure:**
-- **`notion/fleeti-fields-telemetry-mapping/`**  
-  Complete wiki skeleton structure mirroring the Notion wiki. Contains empty README.md files in each section for future content sync:
-  - `overview-vision/` - Project overview, objectives, architecture
-  - `documentation/` - Specifications, requirements, field mappings, reference materials
-  - `developer-resources/` - Getting started, implementation guides, API docs, troubleshooting
-  - `project-management/` - Current status, ongoing work, roadmap, decision records
-  - `technical-pages/` - Developer-contributed technical pages
-  - `guidelines-standards/` - Documentation standards, wiki organization, contribution guidelines
-
-### Configuration Files (`configs/`) - YAML Configurations
-
-**Purpose:** YAML configuration files generated from Notion documentation.
-
-- **`configs/README.md`**  
-  Guide to YAML configuration files and generation workflow.
-
-- **`configs/*.yaml`**  
-  Provider-specific mapping configurations (e.g., `navixy-mapping.yaml`).
-
-### Scripts (`scripts/`) - Automation Tools
-
-**Purpose:** Python and PowerShell scripts for validation, Notion sync, automation, and custom utilities.
-
-- **`scripts/notion/`**  
-  Notion sync scripts:
-  - `sync_to_notion.py` - Push local changes to Notion
-  - `sync_from_notion.py` - Pull Notion changes locally
-  - `detect_conflicts.py` - Detect sync conflicts
-  - `validate_sync.py` - Validate markdown files
-  - `generate_yaml.py` - Generate YAML from Notion content
-
-- **`scripts/validation/`**  
-  Validation scripts:
-  - `validate_navixy_completeness.py` - Check mapping completeness
-  - `navixy_fields_completeness_check.md` - Validation results
-
-- **`scripts/ai-custom/`**  
-  AI-generated custom scripts and utilities:
-  - `create-notion-skeleton.ps1` - PowerShell script to create Notion wiki skeleton structure
-  - Other custom automation scripts
-
-### Project Documents (`docs/project/`) - Project Management
-
-**Purpose:** Project management documents, reorganization guides, and project summaries.
-
-- **`REORGANIZATION_IMPLEMENTATION_GUIDE.md`**  
-  Complete guide for implementing project reorganization and Notion sync infrastructure.
-
-- **`PROJECT_REORGANIZATION_SUMMARY.md`**  
-  Summary of project reorganization efforts.
-
-- **`TO DO.txt`**  
-  Project task list and action items.
-
-### Wiki Architecture (`notion-wiki/`) - Wiki System Documentation
-
-**Purpose:** Documentation about the Notion wiki architecture, organization guidelines, and sync workflows.
-
-- **`WIKI_ARCHITECTURE_PROPOSAL.md`**  
-  Proposed hierarchical wiki structure and multi-audience organization.
-
-- **`ANALYSIS_REPORT.md`**  
-  Analysis of current Notion wiki structure and recommendations.
-
-- **`ORGANIZATION_GUIDELINES.md`**  
-  Guidelines for wiki organization, documentation standards, and contribution.
-
-- **`SYNC_WORKFLOW.md`**  
-  MCP-enabled sync workflows for bidirectional synchronization.
-
-- **`scripts/`**  
-  Example sync scripts demonstrating MCP integration.
+**Current subfolders:**
+- `configuration-file/` - Configuration file analysis
+- `mapping/` - Mapping methodology documents
+- `storage-strategy/` - Storage strategy analysis and reviews
+- `structure-notion/` - Notion structure organization guidelines
 
 ---
 
-## 🔄 Document Lifecycle
+### `docs/legacy/`
 
-1. **Working** (`working/`): Active development and refinement
-2. **Wiki** (`Wiki/`): Finalized specifications moved from `working/`
-3. **Legacy** (`docs/legacy/`): Superseded documents kept for historical reference
+**Purpose:** Historical documents from previous work, kept for reference purposes.
+
+**Important:** These documents are **deprecated** and should NOT be used as reference for current field mappings. They are kept for historical context only.
+
+**Contents:**
+- `telemetry-system-specification.md` - Original system specification
+- `telemetry-status-rules.md` - Original status rules document
+- `fleeti-telemetry-schema-specification.md` - Original schema specification
+- `navixy-to-fleeti-mapping-legacy.csv` - Outdated field mapping (field associations deprecated)
 
 ---
 
-## 🎯 How to Use This README
+### `docs/rag/`
 
-When starting a new conversation or onboarding someone:
+**Purpose:** RAG (Retrieval-Augmented Generation) data used to provide AI with context about the Fleeti system. These files help AI understand the project better but are **NOT part of Notion documentation**.
 
-1. **For schema work:** Start with `working/fleeti-telemetry-schema-specification.md`
-2. **For status logic:** Reference `Wiki/telemetry-status-rules.md`
-3. **For provider fields:** Check `docs/reference/navixy-field-catalog.csv`
-4. **For enum values:** Use `docs/enums/response.json`
-5. **For Notion sync:** See `notion/README.md` and `scripts/notion/README.md`
-6. **For historical context:** Consult `docs/legacy/` (but verify against current specs)
+#### `docs/rag/enums/`
 
-### Notion Sync Workflow
+**Purpose:** Fleeti API enumerations for AI context only.
 
-For working with Notion-synced documentation:
+**Contents:**
+- `response.json` - 45 enumeration types from Fleeti backend API (numeric values, names, translations, image URLs)
+- `README.md` - Comprehensive documentation of enum categories and usage patterns
 
-1. **Local-first workflow:**
-   - Edit markdown files in `notion/` directory
-   - Validate: `python scripts/notion/validate_sync.py --database all`
-   - Check conflicts: `python scripts/notion/detect_conflicts.py --database all`
-   - Sync to Notion: `python scripts/notion/sync_to_notion.py --database all`
+**Note:** These enums help AI understand Fleeti's data structures but should **never be included in Notion documentation**.
 
-2. **Notion-first workflow:**
-   - Edit in Notion workspace
-   - Pull changes: `python scripts/notion/sync_from_notion.py --database all`
+#### `docs/rag/reference/`
 
-3. **YAML generation:**
-   - Generate from Notion: `python scripts/notion/generate_yaml.py --provider navixy`
+**Purpose:** Immutable source-of-truth provider field catalogs used for mapping provider-specific fields to Fleeti canonical fields.
 
-See `docs/project/REORGANIZATION_IMPLEMENTATION_GUIDE.md` for complete setup instructions.
+**Contents:**
+- `navixy-field-catalog.csv` - Complete catalog of ~340 Navixy telemetry fields observed via Data Forwarding POC
+- `flespi-teltonika-avl-id-catalog.csv` - Comprehensive Teltonika AVL ID reference from Flespi platform documentation
+- `teltonika-fmb140-avl-parameters.csv` - Device-specific AVL parameter reference for Teltonika FMB140 GPS tracker
 
-Keep this file updated whenever a document is added, renamed, or reclassified to ensure future collaborators can immediately navigate the project.
+**Usage:** Reference these catalogs when mapping provider fields to Fleeti telemetry format.
+
+---
+
+### `docs/TO DO.txt`
+
+**Purpose:** Personal task list to track items that need to be done.
+
+**Current items:**
+- Add `last_updated_at`
+- Add `last_changed_at`
+- Add telemetry field name for debug purposes
+- Calibration table disclaimer
+- Telemetry unmapped?script?
+
+---
+
+### `notion/`
+
+**Purpose:** Local markdown files that reflect the Notion wiki structure. Used to organize content in one place before pasting to Notion.
+
+**Workflow:** Content is organized locally in this folder structure, then manually synced to Notion wiki.
+
+#### `notion/1-overview-vision/`
+
+**Status:** ✅ **Finalized (95-100% complete)**
+
+**Purpose:** Project overview, objectives, architecture, and key concepts.
+
+**Important:** This section should **remain untouched** except for:
+- Fixing mistakes
+- Making huge improvements (if detected)
+
+**Contents:**
+- `1-project-overview.md` - High-level project description
+- `2-objectives-goals.md` - Primary objectives and requirements
+- `3-architecture-overview.md` - System architecture and design
+- `4-key-concepts.md` - Terminology and fundamental concepts
+
+#### `notion/2-documentation/`
+
+**Status:** ⚠️ **Work in Progress**
+
+**Purpose:** Comprehensive technical documentation including specifications, field mappings, reference materials, and requirements.
+
+**Contents:**
+- `specifications/` - Technical specifications (telemetry system, status rules, schema)
+- `field-mappings/` - Field catalogs and mapping rules
+- `reference-materials/` - Provider catalogs, enum definitions, legacy documentation
+- `requirements/` - Functional and product requirements
+
+**Note:** All subfolders and files in this section are **work in progress** and should be treated as **informative** only.
+
+#### `notion/3-developer-resources/`
+
+**Status:** ⚠️ **Work in Progress**
+
+**Purpose:** Practical guides and resources for developers implementing the system.
+
+**Contents:**
+- `getting-started/` - Quick start guides and development setup
+- `implementation-guides/` - Field mapping, status computation, storage strategy implementation
+- `api-documentation/` - Telemetry API, Configuration API, WebSocket API
+- `configuration-guide/` - Configuration hierarchy and YAML examples
+- `developer-guidelines/` - Contribution guidelines, documentation standards
+- `technical-specifications/` - Expert reviews and storage strategy analysis
+- `troubleshooting/` - Common issues, debugging guide, FAQ
+
+**Note:** All subfolders and files in this section are **work in progress** and should be treated as **informative** only.
+
+#### `notion/4-project-management/`
+
+**Status:** ⚠️ **Work in Progress**
+
+**Purpose:** Project status, roadmap, decisions, and ongoing work tracking.
+
+**Contents:**
+- `current-status/` - Current project status
+- `ongoing-work/` - Active work items
+- `roadmap/` - Project roadmap
+- `decision-records/` - Architecture and design decisions
+- `meeting-notes/` - Meeting notes and discussions
+
+**Note:** All subfolders and files in this section are **work in progress** and should be treated as **informative** only.
+
+#### `notion/5-technical-pages/`
+
+**Status:** ⚠️ **Work in Progress**
+
+**Purpose:** Space for developers to contribute their own technical pages, notes, and examples.
+
+**Note:** All subfolders and files in this section are **work in progress** and should be treated as **informative** only.
+
+---
+
+### `Scripts/`
+
+**Purpose:** Scripts folder for AI use when needed.
+
+**Current status:** Empty folder, available for scripts generated by AI when automation or utilities are required.
+
+---
+
+## 🎯 How to Use This Repository
+
+### For AI-Assisted Work
+
+1. **Brainstorming/Analysis:** Save AI-generated documents to `docs/brainstorming/` with appropriate subfolder organization
+2. **Reference Data:** Use `docs/rag/` for context:
+   - `docs/rag/enums/` - Understand Fleeti enum structures
+   - `docs/rag/reference/` - Reference provider field catalogs
+3. **Notion Documentation:** 
+   - Work in `notion/` folder structure
+   - **Respect finalized sections:** `1-overview-vision/` is finalized, avoid changes unless fixing mistakes
+   - **Treat WIP sections as informative:** Other sections are work in progress
+4. **Scripts:** Use `Scripts/` folder when AI needs to create automation scripts
+
+### For Understanding the Project
+
+1. **Start Here:** Read `notion/1-overview-vision/README.md` for project overview
+2. **Technical Specs:** Review `notion/2-documentation/specifications/` for system architecture
+3. **Field Mappings:** Check `notion/2-documentation/field-mappings/` for field catalogs
+4. **Legacy Context:** Consult `docs/legacy/` for historical reference (but verify against current specs)
+5. **Provider Fields:** Reference `docs/rag/reference/` for provider field catalogs
+
+### For Notion Sync Workflow
+
+1. **Local Organization:** Organize content in `notion/` folder structure
+2. **Manual Sync:** Copy/paste content from local files to Notion wiki
+3. **Finalized Content:** `1-overview-vision/` is ready for Notion sync
+4. **WIP Content:** Other sections are still being refined before Notion sync
+
+---
+
+## 📝 Notes
+
+- **README.md is outdated:** The old README described a previous project structure with `configs/`, `scripts/`, `Wiki/`, `working/`, and `notion-wiki/` folders that no longer exist
+- **Current structure is simplified:** Focus is on documentation organization and Notion sync preparation
+- **RAG data is for AI context:** Files in `docs/rag/` help AI understand the project but are not part of Notion documentation
+- **Legacy docs preserved:** Historical documents kept in `docs/legacy/` for reference but are deprecated
+
+---
+
+**Last Updated:** 2025-01-XX  
+**Project Status:** Active development, documentation organization phase
