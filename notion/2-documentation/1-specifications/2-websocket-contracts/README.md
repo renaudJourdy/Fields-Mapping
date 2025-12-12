@@ -1,10 +1,8 @@
-# 📡 WebSocket Contracts
-
 **Status:** 🎯 Structure Created - Content To Be Developed
 
 This section contains detailed WebSocket contract specifications for real-time telemetry streaming to frontend applications.
 
-## Purpose
+# Purpose
 
 WebSocket contracts define:
 - Stream names and versions
@@ -17,9 +15,9 @@ WebSocket contracts define:
 
 ---
 
-## Available Contracts
+# Available Contracts
 
-### [📍 Live Map Markers](./live-map-markers.md)
+## [📍 Live Map Markers](./live-map-markers.md)
 
 WebSocket stream for real-time marker updates on the live map.
 
@@ -32,7 +30,7 @@ WebSocket stream for real-time marker updates on the live map.
 
 ---
 
-### [📋 Asset List](./asset-list.md)
+## [📋 Asset List](./asset-list.md)
 
 WebSocket stream for real-time asset list updates for the asset list panel.
 
@@ -45,7 +43,7 @@ WebSocket stream for real-time asset list updates for the asset list panel.
 
 ---
 
-### [📄 Asset Details](./asset-details.md)
+## [📄 Asset Details](./asset-details.md)
 
 WebSocket stream for real-time asset details updates for the asset details panel.
 
@@ -58,7 +56,7 @@ WebSocket stream for real-time asset details updates for the asset details panel
 
 ---
 
-## Contract Structure
+# Contract Structure
 
 Each contract document includes:
 - Stream name and version
@@ -72,7 +70,7 @@ Each contract document includes:
 
 ---
 
-## Relationship to Fleeti Fields Database
+# Relationship to Fleeti Fields Database
 
 WebSocket contracts reference Fleeti fields from the [🎯 Fleeti Fields Database](./databases/fleeti-fields/README.md):
 - Contracts specify which Fleeti fields are included in each stream
@@ -81,11 +79,10 @@ WebSocket contracts reference Fleeti fields from the [🎯 Fleeti Fields Databas
 
 ---
 
-## Related Documentation
+# Related Documentation
 
 - **[🔗 Epic 6 - API & Consumption](../E6-API-Consumption/README.md)**: Usage and implementation needs
 - **[🎯 Fleeti Fields Database](./databases/fleeti-fields/README.md)**: Field definitions
-- **[Mobile App Specs](../../../docs/rag/SPECIFICATIONS_FAQ.md)**: Frontend requirements reference
 
 ---
 

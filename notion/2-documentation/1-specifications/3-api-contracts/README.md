@@ -2,7 +2,7 @@
 
 This section contains detailed API contract specifications for REST endpoints that expose Fleeti telemetry data.
 
-## Purpose
+# Purpose
 
 API contracts define:
 - Endpoint URLs and HTTP methods
@@ -16,9 +16,9 @@ API contracts define:
 
 ---
 
-## Available Contracts
+# Available Contracts
 
-### Telemetry API Endpoints
+## Telemetry API Endpoints
 
 [To be created as separate contract documents]
 
@@ -27,7 +27,7 @@ API contracts define:
 
 ---
 
-## Contract Structure
+# Contract Structure
 
 Each contract document includes:
 - Endpoint URL and HTTP method
@@ -41,7 +41,7 @@ Each contract document includes:
 
 ---
 
-## Storage Tier Considerations
+# Storage Tier Considerations
 
 API endpoints may query different storage tiers:
 - **Hot Storage**: Fast access to core fields (< 100ms)
@@ -52,7 +52,7 @@ API contracts should specify which storage tier is used and expected latency.
 
 ---
 
-## Related Documentation
+# Related Documentation
 
 - **[🔗 Epic 6 - API & Consumption](../E6-API-Consumption/README.md)**: Usage and implementation needs
 - **[🎯 Fleeti Fields Database](./databases/fleeti-fields/README.md)**: Field definitions

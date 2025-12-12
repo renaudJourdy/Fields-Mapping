@@ -1,18 +1,16 @@
-# Asset List WebSocket Contract
-
 **Status:** 🎯 To Be Created  
 **Priority:** 🔴 HIGH (Blocking Frontend Development)  
 **Stream:** `live.assets.list`
 
 ---
 
-## Overview
+# Overview
 
 This WebSocket stream provides real-time asset list updates for the asset list panel. It delivers asset metadata, status information, and grouping data needed for displaying and filtering assets in the list view.
 
 ---
 
-## Stream Information
+# Stream Information
 
 - **Stream Name:** `live.assets.list`
 - **Version:** `v1`
@@ -21,7 +19,7 @@ This WebSocket stream provides real-time asset list updates for the asset list p
 
 ---
 
-## Authentication
+# Authentication
 
 - **Method:** Bearer token (same as app API authentication)
 - **Channel:** Single WebSocket connection per app session
@@ -29,7 +27,7 @@ This WebSocket stream provides real-time asset list updates for the asset list p
 
 ---
 
-## Subscription
+# Subscription
 
 **Client → Server:**
 ```json
@@ -58,27 +56,27 @@ This WebSocket stream provides real-time asset list updates for the asset list p
 
 ---
 
-## Message Types
+# Message Types
 
-### Snapshot
+## Snapshot
 
 Initial full state sent after subscription.
 
 [Full message format to be defined based on Fleeti Fields Database]
 
-### Delta
+## Delta
 
 Incremental updates after snapshot.
 
 [Full message format to be defined based on Fleeti Fields Database]
 
-### Update
+## Update
 
 Client updates grouping mode, search query, or pagination.
 
 [Full message format to be defined based on Fleeti Fields Database]
 
-### Error & Resync
+## Error & Resync
 
 Error handling and resync requests.
 
@@ -86,7 +84,7 @@ Error handling and resync requests.
 
 ---
 
-## Field References
+# Field References
 
 This stream includes Fleeti fields from the [🎯 Fleeti Fields Database](./databases/fleeti-fields/README.md):
 - `asset.id`, `asset.name`, `asset.type`
@@ -98,7 +96,7 @@ This stream includes Fleeti fields from the [🎯 Fleeti Fields Database](./data
 
 ---
 
-## Related Documentation
+# Related Documentation
 
 - **[🔗 Epic 6 - API & Consumption](../E6-API-Consumption/README.md)**: Usage and implementation needs
 - **[🎯 Fleeti Fields Database](./databases/fleeti-fields/README.md)**: Field definitions

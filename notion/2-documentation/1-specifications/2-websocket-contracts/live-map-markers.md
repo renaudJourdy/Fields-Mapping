@@ -1,27 +1,25 @@
-# Asset Details WebSocket Contract
-
 **Status:** 🎯 To Be Created  
 **Priority:** 🔴 HIGH (Blocking Frontend Development)  
-**Stream:** `live.asset.details`
+**Stream:** `live.map.markers`
 
 ---
 
-## Overview
+# Overview
 
-This WebSocket stream provides real-time asset details updates for the asset details panel. It delivers comprehensive telemetry data, status information, and sensor readings needed for displaying detailed asset information in real-time.
+This WebSocket stream provides real-time marker updates for assets displayed on the live map. It delivers `top_status`, position, heading, and status information needed for marker rendering.
 
 ---
 
-## Stream Information
+# Stream Information
 
-- **Stream Name:** `live.asset.details`
+- **Stream Name:** `live.map.markers`
 - **Version:** `v1`
-- **Purpose:** Real-time asset details updates for asset details panel
-- **Frontend Use:** Asset details panel display with live telemetry, sensors, KPIs, and status information
+- **Purpose:** Real-time marker updates for live map display
+- **Frontend Use:** Marker rendering with status-based iconography
 
 ---
 
-## Authentication
+# Authentication
 
 - **Method:** Bearer token (same as app API authentication)
 - **Channel:** Single WebSocket connection per app session
@@ -29,15 +27,22 @@ This WebSocket stream provides real-time asset details updates for the asset det
 
 ---
 
-## Subscription
+# Subscription
 
 **Client → Server:**
 ```json
 {
   "action": "subscribe",
-  "stream": "live.asset.details",
+  "stream": "live.map.markers",
   "version": "v1",
-  "asset_id": "uuid"
+  "viewport": {
+    "north": 14.68,
+    "south": 14.65,
+    "east": -17.05,
+    "west": -17.09
+  },
+  "zoom": 10,
+  "rate_limit_hz": 5
 }
 ```
 
@@ -45,36 +50,35 @@ This WebSocket stream provides real-time asset details updates for the asset det
 ```json
 {
   "type": "subscribed",
-  "subscription_id": "sub_asset_details",
-  "stream": "live.asset.details.v1",
-  "asset_id": "uuid",
+  "subscription_id": "sub_markers",
+  "stream": "live.map.markers.v1",
   "at": "2025-01-21T12:00:00Z"
 }
 ```
 
 ---
 
-## Message Types
+# Message Types
 
-### Snapshot
+## Snapshot
 
 Initial full state sent after subscription.
 
 [Full message format to be defined based on Fleeti Fields Database]
 
-### Delta
+## Delta
 
 Incremental updates after snapshot.
 
 [Full message format to be defined based on Fleeti Fields Database]
 
-### Update
+## Update
 
-Client changes asset selection.
+Client updates viewport/zoom.
 
 [Full message format to be defined based on Fleeti Fields Database]
 
-### Error & Resync
+## Error & Resync
 
 Error handling and resync requests.
 
@@ -82,25 +86,21 @@ Error handling and resync requests.
 
 ---
 
-## Field References
+# Field References
 
 This stream includes Fleeti fields from the [🎯 Fleeti Fields Database](./databases/fleeti-fields/README.md):
-- `asset.id`, `asset.name`, `asset.type`, `asset.make`, `asset.model`
 - `status.top_status` (computed)
 - `status.statuses[]` (computed)
-- `location.latitude`, `location.longitude`, `location.heading`, `location.address`
-- `motion.speed`, `motion.is_moving`
-- `power.ignition`, `power.battery_voltage`
-- `fuel.level`, `fuel.consumption`
-- `sensors.*` (temperature, door status, etc.)
-- `counters.*` (odometer, engine hours, etc.)
+- `location.latitude`, `location.longitude`
+- `location.heading`
+- `asset.id`, `asset.type`
 - [Additional fields to be defined based on frontend needs]
 
 ---
 
-## Related Documentation
+# Related Documentation
 
-- **[🔗 Epic 6 - API & Consumption](../E6-API-Consumption/README.md)**: Usage and implementation needs
+- **[✅ Epic 3 - Status Computation](../E3-Status-Computation/README.md)**: Top status computation logic
 - **[🎯 Fleeti Fields Database](./databases/fleeti-fields/README.md)**: Field definitions
 - **[Mobile App Specs](../../../docs/rag/SPECIFICATIONS_FAQ.md)**: Frontend requirements
 

@@ -1,0 +1,339 @@
+Field Name,Provider,Field Path,Data Type,Unit,Example Value,Description,Availability,Status,Version Added,Notes
+avl_io_127,navixy,params.avl_io_127,number,m2/h,0,Mowing efficiency. ,rare,pending,1.0.0,How does it work? What is the difference in comparison to read the output status?
+avl_io_238,navixy,params.avl_io_238,number,,0,MAC address of NMEA receiver device connected via Bluetooth. ,rare,pending,1.0.0,does it help for drivier identification?
+avl_io_243,navixy,params.avl_io_243,number,ms,1855,Duration of event that did generate Green driving. ,rare,pending,1.0.0,what is the difference with movement telemetry fields?
+avl_io_207,navixy,params.avl_io_207,number,,0,RFID ID. ,rare,pending,1.0.0,to confirm if this is used by customer
+avl_io_303,navixy,params.avl_io_303,boolean,,1,Logic: 0/1 returns movement value. ,rare,pending,1.0.0,What this stands for?
+can_axle_load_1,navixy,params.can_axle_load_1,number,,0,,rare,pending,1.0.0,What this stands for?
+can_axle_load_2,navixy,params.can_axle_load_2,number,,0,,rare,pending,1.0.0,What this stands for?
+can_axle_load_3,navixy,params.can_axle_load_3,number,,0,,rare,pending,1.0.0,What this stands for?
+can_axle_load_4,navixy,params.can_axle_load_4,number,,0,,rare,pending,1.0.0,What this stands for?
+can_axle_load_5,navixy,params.can_axle_load_5,number,,0,,rare,pending,1.0.0,What this stands for?
+avl_io_935,navixy,params.avl_io_935,boolean,,0,0 - Off 1 - On. ,rare,pending,1.0.0,what kind of sensor this is?
+avl_io_936,navixy,params.avl_io_936,boolean,,0,0 - Off 1 - On.,rare,pending,1.0.0,what kind of sensor this is?
+avl_io_941,navixy,params.avl_io_941,boolean,,0,0 - Not fastened 1 - Fastened.,rare,pending,1.0.0,-
+avl_io_942,navixy,params.avl_io_942,boolean,,0,1 - Not fastened 1 - Fastened.,rare,pending,1.0.0,-
+avl_io_943,navixy,params.avl_io_943,boolean,,0,2 - Not fastened 1 - Fastened.,rare,pending,1.0.0,-
+avl_io_944,navixy,params.avl_io_944,boolean,,0,3 - Not fastened 1 - Fastened.,rare,pending,1.0.0,-
+EVENT,navixy,params.EVENT,number,-,2,"Platform event ID (2=track, 41=power lost, 83=SOS, etc)",always,pending,1.0.0,-
+avl_io_940,navixy,params.avl_io_940,boolean,,1,0 - Not fastened 1 - Fastened,rare,pending,1.0.0,-
+avl_io_945,navixy,params.avl_io_945,boolean,,0,0 - Not present 1 - Present,rare,pending,1.0.0,-
+avl_io_1,navixy,params.avl_io_1,boolean,,1,Logic: 0/1,always,pending,1.0.0,-
+avl_io_21,navixy,params.avl_io_21,number,,5,Value in range 1-5 Explanation,always,pending,1.0.0,-
+avl_io_232,navixy,params.avl_io_232,boolean,,0,CNG Status,conditional,pending,1.0.0,-
+avl_io_239,navixy,params.avl_io_239,boolean,,1,0 - Ignition Off 1 - Ignition On,always,pending,1.0.0,-
+avl_io_240,navixy,params.avl_io_240,boolean,,1,0 - Movement Off 1 - Movement On,always,pending,1.0.0,-
+avl_io_960,navixy,params.avl_io_960,boolean,,0,0 - Off 1 - On,rare,pending,1.0.0,-
+ble_beacon_id,navixy,params.ble_beacon_id,string,-,0D54C06CA38255AAB8FE6A174E2D0055,BLE beacon identifier (hex),rare,pending,1.0.0,-
+can_ignition_state,navixy,params.can_ignition_state,boolean,-,1,"Ignition state (0=off, 1=on)",conditional,pending,1.0.0,-
+gsm.signal.csq,navixy,params.gsm.signal.csq,number,-,31,"Mobile network signal strength (0-31, 99=unknown)",always,pending,1.0.0,-
+ibutton,navixy,ibutton,string,-,BA0000002B4D4E01,iButton/Dallas key identifier (hex),conditional,pending,1.0.0,-
+moving,navixy,params.moving,boolean,-,1,"Device movement status (0=stationary, 1=moving)",always,pending,1.0.0,-
+obd_dtc_number,navixy,params.obd_dtc_number,number,-,0,Number of diagnostic trouble codes,rare,pending,1.0.0,-
+raw_mileage,navixy,params.raw_mileage,number,-,85234424,Raw odometer value from device,always,pending,1.0.0,-
+avl_io_101,navixy,params.avl_io_101,number,,0,Module ID 8 Bytes,conditional,pending,1.0.0,-
+avl_io_306,navixy,params.avl_io_306,number,,0,Frequency value of BLE fuel sensor #1,rare,pending,1.0.0,-
+avl_io_86,navixy,params.avl_io_86,number,%RH,78,Humidity From firmware version 03.28.00 and up: 65535 - sensor not found 65534 - failed sensor data parsing 65533 - abnormal sensor state,rare,pending,1.0.0,-
+obd_throttle,navixy,params.obd_throttle,number,%,31,Throttle position,rare,pending,1.0.0,-
+msg_time,navixy,msg_time,string,,2025-10-17T00:50:45.000Z,,always,pending,1.0.0,-
+server_time,navixy,server_time,string,,2025-10-17T00:50:50.832Z,,always,pending,1.0.0,-
+can_engine_hours_relative,navixy,params.can_engine_hours_relative,number,,2697.1,,conditional,pending,1.0.0,-
+can_fuel_1,navixy,params.can_fuel_1,number,,86,unit to validate,conditional,pending,1.0.0,-
+can_fuel_litres,navixy,params.can_fuel_litres,number,,228,,conditional,pending,1.0.0,-
+can_mileage_relative,navixy,params.can_mileage_relative,number,,50569.2,,conditional,pending,1.0.0,-
+obd_custom_fuel_litres,navixy,params.obd_custom_fuel_litres,number,,17,,rare,pending,1.0.0,-
+obd_custom_odometer,navixy,params.obd_custom_odometer,number,,9.044,,rare,pending,1.0.0,relative odometer or from installation?
+heading,navixy,heading,number,°C,347,Object heading in degrees (0=North),always,pending,1.0.0,-
+lat,navixy,lat,number,°C,14.7407,Location latitude coordinate,always,pending,1.0.0,-
+lng,navixy,lng,number,°C,-17.5091,Location longitude coordinate,always,pending,1.0.0,-
+avl_io_331,navixy,params.avl_io_331,number,,183,Custom IO element for BLE sensor,rare,pending,1.0.0,-
+avl_io_332,navixy,params.avl_io_332,number,,247,Custom IO element for BLE sensor,rare,pending,1.0.0,-
+avl_io_333,navixy,params.avl_io_333,number,,183,Custom IO element for BLE sensor,rare,pending,1.0.0,-
+avl_io_520,navixy,params.avl_io_520,number,,0,"Agricultural state flags protocol 4, more information click here Flags",rare,pending,1.0.0,-
+avl_io_521,navixy,params.avl_io_521,number,,0,"Utility state flags protocol 4, more information click here Flags",rare,pending,1.0.0,-
+avl_io_522,navixy,params.avl_io_522,number,,0,"Cistern state flags protocol 4, more information click here Flags",rare,pending,1.0.0,-
+avl_io_657,navixy,params.avl_io_657,boolean,,1,0 - Closed 1 - Open,rare,pending,1.0.0,-
+avl_io_658,navixy,params.avl_io_658,boolean,,0,0 - Closed 1 - Open,rare,pending,1.0.0,-
+avl_io_72,navixy,params.avl_io_72,number,°C,185,"Degrees ( deg C ), -55 - +115, if 850 - Sensor not ready if 2000 - Value read error if 3000 - Not connected if 4000 - ID failed if 5000 - same as 850",rare,pending,1.0.0,-
+avl_io_73,navixy,params.avl_io_73,number,°C,172,"Degrees ( deg C ), -55 - +115, if 850 - Sensor not ready if 2000 - Value read error if 3000 - Not connected if 4000 - ID failed if 5000 - same as 850",rare,pending,1.0.0,-
+ble_temp_sensor_1,navixy,params.ble_temp_sensor_1,number,°C,-217.5,BLE temperature sensor 1,rare,pending,1.0.0,-
+ble_temp_sensor_2,navixy,params.ble_temp_sensor_2,number,°C,-181.9,BLE temperature sensor 2,rare,pending,1.0.0,-
+ble_temp_sensor_3,navixy,params.ble_temp_sensor_3,number,°C,58.4,BLE temperature sensor 3,rare,pending,1.0.0,-
+ble_temp_sensor_4,navixy,params.ble_temp_sensor_4,number,°C,74.1,BLE temperature sensor 4,rare,pending,1.0.0,-
+ext_temp_sensor_1,navixy,params.ext_temp_sensor_1,number,°C,18.5,External temperature sensor 1,conditional,pending,1.0.0,-
+ext_temp_sensor_2,navixy,params.ext_temp_sensor_2,number,°C,17.2,External temperature sensor 2,rare,pending,1.0.0,-
+ext_temp_sensor_3,navixy,params.ext_temp_sensor_3,number,°C,0,External temperature sensor 3,rare,pending,1.0.0,-
+lls_temperature_1,navixy,params.lls_temperature_1,number,°C,32,LLS 1 temperature,rare,pending,1.0.0,-
+lls_temperature_2,navixy,params.lls_temperature_2,number,°C,0,LLS 2 temperature,rare,pending,1.0.0,-
+temp_sensor,navixy,params.temp_sensor,number,°C,51,General temperature sensor,rare,pending,1.0.0,-
+avl_io_449,navixy,params.avl_io_449,number,s,66885400,Duration in seconds which is counted while Ignition state is On,conditional,pending,1.0.0,-
+can_engine_hours,navixy,params.can_engine_hours,number,h,0,Total engine operating hours,conditional,pending,1.0.0,-
+avl_io_468,navixy,params.avl_io_468,number,,4652896,Custom IO element for BLE sensor,rare,pending,1.0.0,-
+avl_io_87,navixy,params.avl_io_87,number,m,82624000,Value in meters,conditional,pending,1.0.0,-
+can_mileage,navixy,params.can_mileage,number,km,82624,Total distance traveled,conditional,pending,1.0.0,-
+hw_mileage,navixy,params.hw_mileage,number,km,52963.6,Odometer from device hardware,always,pending,1.0.0,-
+avl_io_180,navixy,params.avl_io_180,boolean,,1,Logic 0/1,conditional,pending,1.0.0,-
+avl_io_24,navixy,params.avl_io_24,number,km/h,8,GNSS Speed,always,pending,1.0.0,-
+avl_io_37,navixy,params.avl_io_37,number,km/h,25,Vehicle speed,rare,pending,1.0.0,-
+avl_io_389,navixy,params.avl_io_389,number,km,9044,Total mileage received by requesting vehicle specific PID,rare,pending,1.0.0,-
+can_speed,navixy,params.can_speed,number,km/h,26,Vehicle speed from CAN,conditional,pending,1.0.0,-
+obd_speed,navixy,params.obd_speed,number,km/h,25,Vehicle speed from OBD,rare,pending,1.0.0,-
+speed,navixy,speed,number,km/h,8,Speed determined by tracker GPS,always,pending,1.0.0,-
+avl_io_210,navixy,params.avl_io_210,number,kvants or ltr,0,Fuel level measured by LLS sensor via RS485,rare,pending,1.0.0,-
+avl_io_212,navixy,params.avl_io_212,number,kvants or ltr,0,Fuel level measured by LLS sensor via RS485,rare,pending,1.0.0,-
+avl_io_270,navixy,params.avl_io_270,number,,4037,Fuel Level,conditional,pending,1.0.0,-
+avl_io_273,navixy,params.avl_io_273,number,,417,Fuel Level,rare,pending,1.0.0,-
+avl_io_463,navixy,params.avl_io_463,number,,5061,Custom IO element for BLE sensor,rare,pending,1.0.0,-
+fuel_level,navixy,params.fuel_level,number,L,0.0271,Fuel level in liters,rare,pending,1.0.0,-
+lls_level_1,navixy,params.lls_level_1,number,L,111,Liquid level sensor 1 fuel level,rare,pending,1.0.0,-
+lls_level_2,navixy,params.lls_level_2,number,L,0,Liquid level sensor 2 fuel level,rare,pending,1.0.0,-
+lls_level_3,navixy,params.lls_level_3,number,L,0,Liquid level sensor 3 fuel level,rare,pending,1.0.0,-
+lls_level_4,navixy,params.lls_level_4,number,L,0,Liquid level sensor 4 fuel level,rare,pending,1.0.0,-
+avl_io_105,navixy,params.avl_io_105,number,m,50569210,Total Vehicle Mileage,conditional,pending,1.0.0,-
+avl_io_16,navixy,params.avl_io_16,number,,52963570,Total Odometer value in meters,always,pending,1.0.0,-
+avl_io_199,navixy,params.avl_io_199,number,m,36,Trip Odometer value,always,pending,1.0.0,-
+avl_io_304,navixy,params.avl_io_304,number,m,415000,Vehicle Range on Battery,rare,pending,1.0.0,-
+avl_io_42,navixy,params.avl_io_42,number,s,5793,Runtime since engine start,rare,pending,1.0.0,-
+ble_lls_level_1,navixy,params.ble_lls_level_1,number,,4037,,conditional,pending,1.0.0,-
+ble_lls_level_2,navixy,params.ble_lls_level_2,number,,417,,rare,pending,1.0.0,-
+ble_magnet_sensor_1,navixy,params.ble_magnet_sensor_1,number,,0,,rare,pending,1.0.0,-
+ble_magnet_sensor_2,navixy,params.ble_magnet_sensor_2,number,,0,,rare,pending,1.0.0,-
+ble_magnet_sensor_3,navixy,params.ble_magnet_sensor_3,number,,0,,rare,pending,1.0.0,-
+can_consumption_relative,navixy,params.can_consumption_relative,number,,50332,,conditional,pending,1.0.0,-
+avl_io_123,navixy,params.avl_io_123,number,,2164334600,Control state flags,conditional,pending,1.0.0,-
+avl_io_653,navixy,params.avl_io_653,boolean,,1,0 - Handbrake inactive 1 - Handbrake active,rare,pending,1.0.0,-
+avl_io_654,navixy,params.avl_io_654,boolean,,1,0 - Closed 1 - Open,rare,pending,1.0.0,-
+avl_io_655,navixy,params.avl_io_655,boolean,,1,0 - Closed 1 - Open,rare,pending,1.0.0,-
+avl_io_112,navixy,params.avl_io_112,number,l,0,AdBlue level,rare,pending,1.0.0,-
+avl_io_114,navixy,params.avl_io_114,number,%,0,Engine Load,rare,pending,1.0.0,-
+avl_io_119,navixy,params.avl_io_119,number,kg,0,Axle 2 load,rare,pending,1.0.0,-
+acceleration,navixy,params.acceleration,number,g,4.116,Acceleration force magnitude,conditional,pending,1.0.0,-
+braking,navixy,params.braking,number,g,3.626,Braking force magnitude,conditional,pending,1.0.0,-
+cornering,navixy,params.cornering,number,g,4.018,Cornering force magnitude,conditional,pending,1.0.0,-
+cornering_rad,navixy,params.cornering_rad,number,rad,0.58,Cornering radius in radians,rare,pending,1.0.0,-
+towing,navixy,params.towing,boolean,-,1,"Towing detection status (0=no, 1=yes)",rare,pending,1.0.0,-
+avl_io_111,navixy,params.avl_io_111,number,%,0,AdBlue,rare,pending,1.0.0,-
+event_code,navixy,params.event_code,number,-,78,"Event type identifier (2=track, 11-18=input, 111-118=output, etc)",always,pending,1.0.0,-
+sub_event_code,navixy,params.sub_event_code,string,-,30_68,Sub-event type identifier,rare,pending,1.0.0,-
+avl_io_108,navixy,params.avl_io_108,number,%RH,93,Humidity From firmware version 03.28.00 and up: 65535 - sensor not found 65534 - failed sensor data parsing 65533 - abnormal sensor state,rare,pending,1.0.0,-
+avl_io_110,navixy,params.avl_io_110,number,l/h,0,Fuel rate,rare,pending,1.0.0,-
+avl_io_118,navixy,params.avl_io_118,number,kg,0,Axle 1 load,rare,pending,1.0.0,-
+avl_io_152,navixy,params.avl_io_152,number,%,73,Battery level in percent,rare,pending,1.0.0,-
+avl_io_43,navixy,params.avl_io_43,number,km,0,Distance ormattin MIL on,rare,pending,1.0.0,-
+outputs,navixy,outputs,number,-,2,Output status bitmask,always,pending,1.0.0,-
+avl_io_385,navixy,params.avl_io_385,number,,-1,List of Beacon IDs,rare,pending,1.0.0,-
+avl_io_388,navixy,params.avl_io_388,number,,-1,Module ID 17 Bytes,conditional,pending,1.0.0,-
+can_throttle,navixy,params.can_throttle,number,%,87,Accelerator pedal position,conditional,pending,1.0.0,-
+humidity_1,navixy,params.humidity_1,number,%,0,Humidity sensor 1,rare,pending,1.0.0,-
+humidity_2,navixy,params.humidity_2,number,%,0,Humidity sensor 2,rare,pending,1.0.0,-
+adc,navixy,adc,array,,"[0.087, 0.087]",,always,pending,1.0.0,-
+can_engine_state,navixy,params.can_engine_state,number,,1,,conditional,pending,1.0.0,is it like ignition?
+can_low_tire_pressure,navixy,params.can_low_tire_pressure,number,,0,,conditional,pending,1.0.0,-
+can_seat_belt_driver_state,navixy,params.can_seat_belt_driver_state,number,,1,,conditional,pending,1.0.0,-
+avl_io_390,navixy,params.avl_io_390,number,l,170,Fuel level in litres received by requesting vehicle specific PID,rare,pending,1.0.0,-
+can_engine_temp,navixy,params.can_engine_temp,number,°C,86,Engine coolant temperature,conditional,pending,1.0.0,-
+avl_io_471,navixy,params.avl_io_471,number,,2084,Custom IO element for BLE sensor,rare,pending,1.0.0,-
+can_fuel_rate,navixy,params.can_fuel_rate,number,L/h,0,Instantaneous fuel consumption rate,rare,pending,1.0.0,-
+avl_io_6,navixy,params.avl_io_6,number,V,86,Voltage,conditional,pending,1.0.0,-
+avl_io_66,navixy,params.avl_io_66,number,V,12888,Voltage,always,pending,1.0.0,-
+avl_io_9,navixy,params.avl_io_9,number,V,86,Voltage,conditional,pending,1.0.0,-
+obd_time_since_engine_start,navixy,params.obd_time_since_engine_start,number,s,5793,Time since engine start. to confirm if it reset every trip,rare,pending,1.0.0,-
+board_voltage,navixy,params.board_voltage,number,V,12.888,External power supply voltage,always,pending,1.0.0,-
+ble_pitch_1,navixy,params.ble_pitch_1,number,,216,,rare,pending,1.0.0,-
+ble_pitch_2,navixy,params.ble_pitch_2,number,,70,,rare,pending,1.0.0,-
+ble_roll_1,navixy,params.ble_roll_1,number,,-130,,rare,pending,1.0.0,-
+ble_roll_2,navixy,params.ble_roll_2,number,,-160,,rare,pending,1.0.0,-
+can_consumption,navixy,params.can_consumption,number,,211000,,rare,pending,1.0.0,-
+avl_io_2,navixy,params.avl_io_2,boolean,,1,Logic: 0/1,conditional,pending,1.0.0,-
+can_battery_level,navixy,params.can_battery_level,number,,73,,rare,pending,1.0.0,-
+can_brake_pad_wear,navixy,params.can_brake_pad_wear,number,,0,,conditional,pending,1.0.0,-
+can_electronics_power_control,navixy,params.can_electronics_power_control,number,,0,,conditional,pending,1.0.0,-
+avl_io_126,navixy,params.avl_io_126,number,m2,0,Area of harvest in square meters,rare,pending,1.0.0,-
+avl_io_759,navixy,params.avl_io_759,number,,1,0 Not available 1 Gasoline 2 Methanol 3 Ethanol 4 Diesel 5 LPG 6 CNG 7 Propane 8 Electric 9 Bifuel running Gasoline 10 Bifuel running Methanol 11 Bifuel running Ethanol 12 Bifuel running LPG 13 Bifuel running CNG 14 Bifuel running Propane 15 Bifuel running Electricity 16 Bifuel running electric and combustion engine 17 Hybrid gasoline 18 Hybrid Ethanol 19 Hybrid Diesel 20 Hybrid Electric 21 Hybrid running electric and combustion engine 22 Hybrid Regenerative 23 Bifuel running diesel,rare,pending,1.0.0,-
+avl_io_125,navixy,params.avl_io_125,boolean,-,0,Towing event detection,rare,pending,1.0.0,Not in FMB140 spec
+avl_io_252,navixy,params.avl_io_252,boolean,,1,0 - battery present 1 - battery unplugged,conditional,pending,1.0.0,-
+avl_io_30,navixy,params.avl_io_30,number,,0,Number of DTC,rare,pending,1.0.0,-
+avl_io_208,navixy,params.avl_io_208,number,,1,0 - target left zone 1 - target entered zone 2 - over speeding end 3 - over speeding start,rare,pending,1.0.0,-
+can_warning,navixy,params.can_warning,boolean,-,0,"General CAN warning indicator (0=no warning, 1=warning)",conditional,pending,1.0.0,-
+obd_mil_status,navixy,params.obd_mil_status,boolean,-,1,"Malfunction Indicator Lamp status (0=off, 1=on)",conditional,pending,1.0.0,-
+avl_io_131,navixy,params.avl_io_131,number,mm,0,Gap under harvesting drum,rare,pending,1.0.0,-
+avl_io_132,navixy,params.avl_io_132,number,,3.60E+16,Security state flags,conditional,pending,1.0.0,-
+avl_io_14,navixy,params.avl_io_14,number,,8247569,"Value of SIM ICCID, LSB",rare,pending,1.0.0,-
+avl_io_179,navixy,params.avl_io_179,boolean,,1,Logic: 0/1,conditional,pending,1.0.0,-
+avl_io_241,navixy,params.avl_io_241,number,,60801,Currently used GSM Operator code,always,pending,1.0.0,-
+avl_io_25,navixy,params.avl_io_25,number,°C,3000,"Degrees ( deg C ), -40 - +125; Error codes: 4000 - abnormal sensor state 3000 - sensor not found 2000 - failed sensor data parsing From firmware version 03.28.00 and up: 32767 - sensor not found 32766 - failed sensor data parsing 32765 - abnormal sensor state",rare,pending,1.0.0,-
+avl_io_253,navixy,params.avl_io_253,number,,2,1 - harsh acceleration 2 - harsh braking 3 - harsh cornering,conditional,pending,1.0.0,-
+avl_io_26,navixy,params.avl_io_26,number,°C,3000,"Degrees ( deg C ), -40 - +125; Error codes: 4000 - abnormal sensor state 3000 - sensor not found 2000 - failed sensor data parsing From firmware version 03.28.00 and up: 32767 - sensor not found 32766 - failed sensor data parsing 32765 - abnormal sensor state",rare,pending,1.0.0,-
+avl_io_27,navixy,params.avl_io_27,number,°C,3000,"Degrees ( deg C ), -40 - +125; Error codes: 4000 - abnormal sensor state 3000 - sensor not found 2000 - failed sensor data parsing From firmware version 03.28.00 and up: 32767 - sensor not found 32766 - failed sensor data parsing 32765 - abnormal sensor state",rare,pending,1.0.0,-
+avl_io_28,navixy,params.avl_io_28,number,°C,3000,"Degrees ( deg C ), -40 - +125; Error codes: 4000 - abnormal sensor state 3000 - sensor not found 2000 - failed sensor data parsing From firmware version 03.28.00 and up: 32767 - sensor not found 32766 - failed sensor data parsing 32765 - abnormal sensor state",rare,pending,1.0.0,-
+avl_io_3,navixy,params.avl_io_3,boolean,,1,Logic: 0/1,conditional,pending,1.0.0,-
+avl_io_4,navixy,params.avl_io_4,number,,1,"Counts pulses, count is reset when records are saved",rare,pending,1.0.0,-
+avl_io_90,navixy,params.avl_io_90,number,-,512,"0: Closed, 1: Open",conditional,pending,1.0.0,Not in FMB140 spec
+external_power_state,navixy,params.external_power_state,boolean,-,1,"External power state (0=disconnected, 1=connected)",rare,pending,1.0.0,-
+hdop,navixy,hdop,number,-,1,"Horizontal Dilution of Precision (1=excellent, 20=poor, -1=unknown)",rare,pending,1.0.0,-
+satellites,navixy,satellites,number,-,15,Number of connected satellites (-1=unknown/LBS),always,pending,1.0.0,-
+avl_io_104,navixy,params.avl_io_104,number,%RH,75,Humidity From firmware version 03.28.00 and up: 65535 - sensor not found 65534 - failed sensor data parsing 65533 - abnormal sensor state,rare,pending,1.0.0,-
+avl_io_20,navixy,params.avl_io_20,number,%,69,Battery level of sensor #2,rare,pending,1.0.0,-
+avl_io_22,navixy,params.avl_io_22,number,%,72,Battery level of sensor #3,rare,pending,1.0.0,-
+avl_io_23,navixy,params.avl_io_23,number,%,61,Battery level of sensor #4,rare,pending,1.0.0,-
+avl_io_391,navixy,params.avl_io_391,number,,1,Private mode state: 0 - Private mode off 1 - Private mode on,rare,pending,1.0.0,-
+avl_io_465,navixy,params.avl_io_465,number,,0,Custom IO element for BLE sensor,rare,pending,1.0.0,-
+avl_io_517,navixy,params.avl_io_517,number,,61,"Security state flags protocol 4, more information click here Flags",conditional,pending,1.0.0,-
+avl_io_947,navixy,params.avl_io_947,boolean,,0,0 - Unlocked 1 - Locked,rare,pending,1.0.0,-
+battery_level,navixy,params.battery_level,number,%,81,Internal battery level percentage,always,pending,1.0.0,-
+ble_battery_level_2,navixy,params.ble_battery_level_2,number,%,69,BLE sensor 2 battery level,rare,pending,1.0.0,-
+ble_battery_level_3,navixy,params.ble_battery_level_3,number,%,72,BLE sensor 3 battery level,rare,pending,1.0.0,-
+ble_battery_level_4,navixy,params.ble_battery_level_4,number,%,61,BLE sensor 4 battery level,rare,pending,1.0.0,-
+ble_humidity_1,navixy,params.ble_humidity_1,number,%,7.8,BLE humidity sensor 1,rare,pending,1.0.0,-
+ble_humidity_2,navixy,params.ble_humidity_2,number,%,7.5,BLE humidity sensor 2,rare,pending,1.0.0,-
+can_adblue_level,navixy,params.can_adblue_level,number,%,0,DEF/AdBlue tank level,rare,pending,1.0.0,-
+pdop,navixy,pdop,number,,0.9,Indicates the current state of the electric power steering (EPS) system.,rare,pending,1.0.0,-
+can_front_right_door,navixy,params.can_front_right_door,number,,1,,conditional,pending,1.0.0,-
+can_low_fuel,navixy,params.can_low_fuel,number,,0,,conditional,pending,1.0.0,-
+can_oil_pressure_or_level,navixy,params.can_oil_pressure_or_level,number,,0,,conditional,pending,1.0.0,-
+can_rear_left_door,navixy,params.can_rear_left_door,number,,1,,conditional,pending,1.0.0,-
+can_rear_right_door,navixy,params.can_rear_right_door,number,,1,,conditional,pending,1.0.0,-
+can_trunk_state,navixy,params.can_trunk_state,number,,1,,conditional,pending,1.0.0,-
+avl_io_124,navixy,params.avl_io_124,number,,0,Agricultural machinery flags,conditional,pending,1.0.0,-
+avl_io_464,navixy,params.avl_io_464,number,,14221182,Custom IO element for BLE sensor,rare,pending,1.0.0,-
+avl_io_472,navixy,params.avl_io_472,number,,16121856,Custom IO element for BLE sensor.,rare,pending,1.0.0, to clarify if it is from last ignition?
+avl_io_107,navixy,params.avl_io_107,number,l,50332,Total Fuel Consumed,conditional,pending,1.0.0,-
+alt,navixy,alt,number,m,17,Location altitude in meters,always,pending,1.0.0,-
+avl_io_68,navixy,params.avl_io_68,number,A,40,Current,rare,pending,1.0.0,-
+battery_current,navixy,params.battery_current,number,mA,0.04,Internal battery charge/discharge current,rare,pending,1.0.0,-
+avl_io_67,navixy,params.avl_io_67,number,V,3930,Voltage,conditional,pending,1.0.0,-
+avl_io_36,navixy,params.avl_io_36,number,rpm,793,Engine RPM,rare,pending,1.0.0,-
+avl_io_85,navixy,params.avl_io_85,number,rpm,1252,Engine revolutions per minute,conditional,pending,1.0.0,Not in FMB140 spec
+can_rpm,navixy,params.can_rpm,number,rpm,1252,Engine speed in RPM,conditional,pending,1.0.0,-
+obd_rpm,navixy,params.obd_rpm,number,rpm,793,Engine revolutions per minute,rare,pending,1.0.0,-
+avl_io_916,navixy,params.avl_io_916,boolean,,1,0 - Off 1 - On,rare,pending,1.0.0,-
+battery_voltage,navixy,params.battery_voltage,number,V,4.05,Internal battery voltage,conditional,pending,1.0.0,-
+ble_humidity_3,navixy,params.ble_humidity_3,number,,9.7,,rare,pending,1.0.0,-
+ble_humidity_4,navixy,params.ble_humidity_4,number,,9.3,,rare,pending,1.0.0,-
+can_coolant_temp_or_level,navixy,params.can_coolant_temp_or_level,number,,1,,conditional,pending,1.0.0,-
+can_door_state,navixy,params.can_door_state,number,,1,,conditional,pending,1.0.0,-
+avl_io_120,navixy,params.avl_io_120,number,kg,0,Axle 3 load,rare,pending,1.0.0,-
+avl_io_467,navixy,params.avl_io_467,number,,16102,Custom IO element for BLE sensor,rare,pending,1.0.0,-
+avl_io_83,navixy,params.avl_io_83,number,l,2110005,Value in liters,conditional,pending,1.0.0,-
+avl_io_84,navixy,params.avl_io_84,number,l,228,Value in liters,conditional,pending,1.0.0,-
+can_automatic_retarder,navixy,params.can_automatic_retarder,number,,0,,conditional,pending,1.0.0,-
+can_central_diff_4hi_locked,navixy,params.can_central_diff_4hi_locked,number,,0,,conditional,pending,1.0.0,-
+can_central_diff_4lo_locked,navixy,params.can_central_diff_4lo_locked,number,,0,,conditional,pending,1.0.0,-
+can_clutch_state,navixy,params.can_clutch_state,number,,1,,conditional,pending,1.0.0,-
+avl_io_250,navixy,params.avl_io_250,boolean,,1,0 - trip stop 1 - trip start From 01.00.24 fw version available with BT app new values: 2 - Business Status 3 - Private Status 4-9 - Custom Statuses,conditional,pending,1.0.0,-
+avl_io_251,navixy,params.avl_io_251,boolean,,1,0 - moving 1 - idling,rare,pending,1.0.0,-
+avl_io_656,navixy,params.avl_io_656,boolean,,1,0 - Closed 1 - Open,rare,pending,1.0.0,-
+avl_io_234,navixy,params.avl_io_234,number,%,0,CNG Level,rare,pending,1.0.0,-
+avl_io_966,navixy,params.avl_io_966,boolean,,0,0 - Off 1 - On,rare,pending,1.0.0,-
+avl_io_128,navixy,params.avl_io_128,number,kg,0,Mown volume,rare,pending,1.0.0,-
+avl_io_907,navixy,params.avl_io_907,boolean,,0,0 - Inactive 1 - Active,rare,pending,1.0.0,-
+avl_io_908,navixy,params.avl_io_908,boolean,,0,0 - Off 1 - On,rare,pending,1.0.0,-
+avl_io_910,navixy,params.avl_io_910,boolean,,1,0 - Footbrake inactive 1 - Footbrake active,rare,pending,1.0.0,-
+avl_io_913,navixy,params.avl_io_913,boolean,,0,0 - Closed 1 - Open,rare,pending,1.0.0,-
+avl_io_914,navixy,params.avl_io_914,boolean,,0,0 - Unplugged 1 - Plugged,rare,pending,1.0.0,-
+avl_io_915,navixy,params.avl_io_915,boolean,,0,0 - Not charging 1 - Charging,rare,pending,1.0.0,-
+avl_io_130,navixy,params.avl_io_130,number,rpm,0,Harvesting drum rpm,rare,pending,1.0.0,-
+avl_io_248,navixy,params.avl_io_248,number,,1,0 - iButton not connected 1 - iButton connected (Immobilizer) 2 - iButton connected (Authorized Driving),conditional,pending,1.0.0,-
+avl_io_263,navixy,params.avl_io_263,number,,1,"0 - BT is disabled 1 - BT Enabled, not device connected 2 - Device connected, BTv3 Only 3 - Device connected, BLE only 4 - Device connected, BLE + BT",rare,pending,1.0.0,-
+avl_io_380,navixy,params.avl_io_380,boolean,,0,Logic: 0/1. from where does it come from?,rare,pending,1.0.0,-
+can_front_diff_locked,navixy,params.can_front_diff_locked,number,,0,,conditional,pending,1.0.0,-
+can_front_fog_lights,navixy,params.can_front_fog_lights,number,,0,,conditional,pending,1.0.0,-
+can_front_left_door,navixy,params.can_front_left_door,number,,1,,conditional,pending,1.0.0,-
+can_hood_state,navixy,params.can_hood_state,number,,1,,conditional,pending,1.0.0,-
+can_manual_retarder,navixy,params.can_manual_retarder,number,,0,,conditional,pending,1.0.0,-
+can_rear_diff_locked,navixy,params.can_rear_diff_locked,number,,0,,conditional,pending,1.0.0,-
+can_trailer_axle_lift_active_2,navixy,params.can_trailer_axle_lift_active_2,number,,0,,conditional,pending,1.0.0,-
+can_webasto_state,navixy,params.can_webasto_state,number,,0,,conditional,pending,1.0.0,-
+obd_mil_activated_distance,navixy,params.obd_mil_activated_distance,number,,0,,rare,pending,1.0.0,-
+can_pto_state,navixy,params.can_pto_state,number,,0,,conditional,pending,1.0.0,-
+can_trailer_axle_lift_active_1,navixy,params.can_trailer_axle_lift_active_1,number,,0,,conditional,pending,1.0.0,-
+raw_can_15,navixy,params.raw_can_15,number,,0,,rare,pending,1.0.0,-
+raw_can_16,navixy,params.raw_can_16,number,,0,,rare,pending,1.0.0,-
+raw_can_1,navixy,params.raw_can_1,number,,0,,rare,pending,1.0.0,-
+raw_can_11,navixy,params.raw_can_11,number,,1,,rare,pending,1.0.0,-
+raw_can_14,navixy,params.raw_can_14,number,,0,,rare,pending,1.0.0,-
+raw_can_17,navixy,params.raw_can_17,number,,1,,rare,pending,1.0.0,-
+raw_can_3,navixy,params.raw_can_3,number,,1,,rare,pending,1.0.0,-
+raw_can_8,navixy,params.raw_can_8,number,,0,,rare,pending,1.0.0,-
+raw_can_9,navixy,params.raw_can_9,number,,0,,rare,pending,1.0.0,-
+avl_io_205,navixy,params.avl_io_205,number,,24393,GSM base station ID,rare,pending,1.0.0,-
+avl_io_206,navixy,params.avl_io_206,number,,6,"Location Area code (LAC), it depends on GSM operator. It provides unique number which assigned to a set of base GSM stations.",rare,pending,1.0.0,-
+can_engine_load,navixy,params.can_engine_load,number,%,0,Engine load percentage,rare,pending,1.0.0,-
+can_abs_state,navixy,params.can_abs_state,boolean,-,1,"Anti-lock braking system status (0=inactive, 1=active)",conditional,pending,1.0.0,-
+can_eps_state,navixy,params.can_eps_state,number,,0,,conditional,pending,1.0.0,-
+avl_io_102,navixy,params.avl_io_102,number,°C,0,Fuel temperature,conditional,pending,1.0.0,Not in FMB140 spec
+avl_io_201,navixy,params.avl_io_201,number,kvants or ltr,65532,Fuel level measured by LLS sensor via RS232/RS485,rare,pending,1.0.0,-
+avl_io_202,navixy,params.avl_io_202,number,°C,32,Fuel temperature measured by LLS via RS232/RS485,rare,pending,1.0.0,-
+avl_io_203,navixy,params.avl_io_203,number,kvants or ltr,65532,Fuel level measured by LLS sensor via RS485,rare,pending,1.0.0,-
+avl_io_204,navixy,params.avl_io_204,number,°C,-128,Fuel temperature measured by LLS via RS485,rare,pending,1.0.0,-
+can_additional_front_fog_lights,navixy,params.can_additional_front_fog_lights,number,,0,,conditional,pending,1.0.0,-
+can_additional_rear_lights,navixy,params.can_additional_rear_lights,number,,0,,conditional,pending,1.0.0,-
+can_air_conditioning,navixy,params.can_air_conditioning,number,,0,,conditional,pending,1.0.0,-
+can_airbag_state,navixy,params.can_airbag_state,number,,1,,conditional,pending,1.0.0,-
+avl_io_100,navixy,params.avl_io_100,number,-,12181,Device firmware version identifier,conditional,pending,1.0.0,Not in FMB140 spec
+avl_io_106,navixy,params.avl_io_106,number,%RH,97,Humidity From firmware version 03.28.00 and up: 65535 - sensor not found 65534 - failed sensor data parsing 65533 - abnormal sensor state,rare,pending,1.0.0,-
+avl_io_11,navixy,params.avl_io_11,number,,8.93E+12,"Value of SIM ICCID, MSB",rare,pending,1.0.0,-
+avl_io_115,navixy,params.avl_io_115,number,°C,860,Engine Temperature,conditional,pending,1.0.0,-
+avl_io_121,navixy,params.avl_io_121,number,kg,0,Axle 4 load,rare,pending,1.0.0,-
+avl_io_122,navixy,params.avl_io_122,number,kg,0,Axle 5 load,rare,pending,1.0.0,-
+avl_io_129,navixy,params.avl_io_129,number,%,0,Grain moisture,rare,pending,1.0.0,-
+avl_io_15,navixy,params.avl_io_15,number,,1000,Average amount of events on some distance,rare,pending,1.0.0,-
+avl_io_155,navixy,params.avl_io_155,number,,3,0 - target left zone 1 - target entered zone 2 - over speeding end 3 - over speeding start,rare,pending,1.0.0,-
+avl_io_175,navixy,params.avl_io_175,boolean,,0,0 - target left zone 1 - target entered zone,rare,pending,1.0.0,-
+avl_io_181,navixy,params.avl_io_181,number,,10,"Coefficient, calculation formula",rare,pending,1.0.0,-
+avl_io_182,navixy,params.avl_io_182,number,,6,"Coefficient, calculation formula",rare,pending,1.0.0,-
+avl_io_200,navixy,params.avl_io_200,number,,3,0 - No Sleep 1 - GPS Sleep 2 - Deep Sleep 3 - Online Sleep 4 - Ultra Sleep,conditional,pending,1.0.0,-
+avl_io_254,navixy,params.avl_io_254,number,G or rad,37,"Depending on green driving type: if harsh acceleration or braking - g*100 (value 123 -> 1.23g). If Green driving source is â€žGPS"" - harsh cornering value is rad/s*100. If source is â€žAccelerometer"" - g*100.",conditional,pending,1.0.0,-
+avl_io_466,navixy,params.avl_io_466,number,,0,Custom IO element for BLE sensor,rare,pending,1.0.0,-
+avl_io_652,navixy,params.avl_io_652,boolean,,0,0 - No key in lock 1 - Key in lock,rare,pending,1.0.0,-
+avl_io_69,navixy,params.avl_io_69,number,,1,"0 - GNSS OFF 1 - GNSS ON with fix 2 - GNSS ON without fix 3 - GNSS sleep 4 - GNSS ON with fix, invalid data",always,pending,1.0.0,-
+avl_io_76,navixy,params.avl_io_76,number,,8.86E+18,Dallas sensor ID,rare,pending,1.0.0,-
+avl_io_77,navixy,params.avl_io_77,number,,2.74E+18,Dallas sensor ID,rare,pending,1.0.0,-
+avl_io_78,navixy,params.avl_io_78,number,,9.41E+16,iButton ID,conditional,pending,1.0.0,-
+avl_io_80,navixy,params.avl_io_80,number,-,5,Device data mode (Home On Stop/Roaming/Unknown),rare,pending,1.0.0,Not in FMB140 spec
+avl_io_81,navixy,params.avl_io_81,number,km/h,26,Vehicle Speed,conditional,pending,1.0.0,-
+avl_io_82,navixy,params.avl_io_82,number,%,87,Value in percentages,conditional,pending,1.0.0,-
+avl_io_898,navixy,params.avl_io_898,boolean,,1,0 - No 1 - Yes,rare,pending,1.0.0,-
+avl_io_900,navixy,params.avl_io_900,boolean,,0,0 - No 1 - Yes,rare,pending,1.0.0,-
+avl_io_902,navixy,params.avl_io_902,boolean,,1,0 - No 1 - Yes,rare,pending,1.0.0,-
+can_hand_brake_state,navixy,params.can_hand_brake_state,boolean,-,1,"Hand/parking brake state (0=released, 1=engaged)",conditional,pending,1.0.0,-
+impulse_counter_1,navixy,params.impulse_counter_1,number,-,7,Impulse/frequency counter 1. ,rare,pending,1.0.0,What this stands for?
+impulse_counter_2,navixy,params.impulse_counter_2,number,-,1,Impulse/frequency counter 2.,rare,pending,1.0.0,What this stands for?
+status,navixy,params.status,number,-,10240,Device status bitmap.,rare,pending,1.0.0,Useful?
+avl_io_1086,navixy,params.avl_io_1086,boolean,,0,0 - No 1 - Yes,rare,pending,1.0.0,-
+avl_io_113,navixy,params.avl_io_113,number,%,81,Battery capacity level,conditional,pending,1.0.0,-
+avl_io_41,navixy,params.avl_io_41,number,%,31,Throttle position,rare,pending,1.0.0,-
+avl_io_473,navixy,params.avl_io_473,number,,0,Custom IO element for BLE sensor,rare,pending,1.0.0,-
+can_footbrake_state,navixy,params.can_footbrake_state,number,,1,,conditional,pending,1.0.0,-
+can_front_passenger_presence,navixy,params.can_front_passenger_presence,number,,0,,conditional,pending,1.0.0,-
+can_full_beam_headlights,navixy,params.can_full_beam_headlights,number,,1,,conditional,pending,1.0.0,-
+can_glow_plug_indicator,navixy,params.can_glow_plug_indicator,number,,0,,conditional,pending,1.0.0,-
+can_light_signal,navixy,params.can_light_signal,number,,0,,conditional,pending,1.0.0,-
+can_lights_failure,navixy,params.can_lights_failure,number,,0,,conditional,pending,1.0.0,-
+can_parking_lights,navixy,params.can_parking_lights,number,,1,,conditional,pending,1.0.0,-
+can_ready_to_drive,navixy,params.can_ready_to_drive,number,,1,,conditional,pending,1.0.0,-
+can_rear_centre_seat_belt_state,navixy,params.can_rear_centre_seat_belt_state,number,,1,,conditional,pending,1.0.0,-
+can_rear_fog_lights,navixy,params.can_rear_fog_lights,number,,0,,conditional,pending,1.0.0,-
+can_rear_left_seat_belt_state,navixy,params.can_rear_left_seat_belt_state,number,,1,,conditional,pending,1.0.0,-
+can_rear_right_seat_belt_state,navixy,params.can_rear_right_seat_belt_state,number,,1,,conditional,pending,1.0.0,-
+can_roof_state,navixy,params.can_roof_state,number,,0,,conditional,pending,1.0.0,-
+can_seat_belt_passenger_state,navixy,params.can_seat_belt_passenger_state,number,,1,,conditional,pending,1.0.0,-
+avl_io_89,navixy,params.avl_io_89,number,%,86,Value in percentages,conditional,pending,1.0.0,-
+avl_io_518,navixy,params.avl_io_518,number,,4096,"Control state flags protocol 4, more information click here Flags",conditional,pending,1.0.0,-
+avl_io_519,navixy,params.avl_io_519,number,,262,"Indicator state flags protocol 4, more information click here Flags",conditional,pending,1.0.0,-
+freq_1,navixy,params.freq_1,number,Hz,7,Frequency input 1,rare,pending,1.0.0,-
+freq_2,navixy,params.freq_2,number,Hz,1,Frequency input 2,rare,pending,1.0.0,-
+avl_io_469,navixy,params.avl_io_469,number,,0,Custom IO element for BLE sensor,rare,pending,1.0.0,-
+avl_io_470,navixy,params.avl_io_470,number,,0,Custom IO element for BLE sensor,rare,pending,1.0.0,-
+avl_io_103,navixy,params.avl_io_103,number,L,161826,Fuel consumed calculated by GPS,conditional,pending,1.0.0,Not in FMB140 spec
+avl_io_948,navixy,params.avl_io_948,boolean,,0,0 - Unlocked 1 - Locked,rare,pending,1.0.0,-
+avl_io_17,navixy,params.avl_io_17,number,mg,-34,X axis value,rare,pending,1.0.0,-
+avl_io_18,navixy,params.avl_io_18,number,mg,55,Y axis value,rare,pending,1.0.0,-
+avl_io_19,navixy,params.avl_io_19,number,mg,-71,Z axis value,rare,pending,1.0.0,-
+axis_x,navixy,params.axis_x,number,mg,-34,X-axis acceleration (milligravity),rare,pending,1.0.0,-
+axis_y,navixy,params.axis_y,number,mg,55,Y-axis acceleration (milligravity),rare,pending,1.0.0,-
+axis_z,navixy,params.axis_z,number,mg,-71,Z-axis acceleration (milligravity),rare,pending,1.0.0,-
+avl_io_235,navixy,params.avl_io_235,boolean,,1,Engine Oil Level Indicator Status,conditional,pending,1.0.0,-
+ble_frequency_1,navixy,params.ble_frequency_1,number,,0,,rare,pending,1.0.0,-
+can_cruise_control,navixy,params.can_cruise_control,number,,1,,conditional,pending,1.0.0,-
+can_dipped_headlights,navixy,params.can_dipped_headlights,number,,1,,conditional,pending,1.0.0,-
