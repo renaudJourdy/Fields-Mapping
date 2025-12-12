@@ -1,10 +1,8 @@
-# Databases
-
 **Status:** 🎯 Structure Created - Content To Be Developed
 
 This section defines the three critical databases that serve as the single source of truth for field definitions and mappings in the Fleeti Telemetry Mapping system.
 
-## Purpose
+# Purpose
 
 The databases section provides:
 

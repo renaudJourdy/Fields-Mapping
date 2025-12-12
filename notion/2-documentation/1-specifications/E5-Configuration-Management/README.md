@@ -1,5 +1,3 @@
-# E5 – Configuration & Management
-
 **Status:** 🎯 Draft  
 **Epic Number:** E5  
 **Related Epics:** E2 (configuration used for field mapping), E4 (configuration storage)

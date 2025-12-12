@@ -1,5 +1,3 @@
-# E6 – API & Consumption
-
 **Status:** 🎯 Draft  
 **Epic Number:** E6  
 **Related Epics:** E3 (status computation), E4 (storage), E5 (configuration)

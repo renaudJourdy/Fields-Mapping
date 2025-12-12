@@ -1,12 +1,10 @@
-# E1 – Ingestion & Provider Integration
-
 **Status:** 🎯 Draft  
 **Epic Number:** E1  
 **Related Epics:** E2 (Field Mapping depends on ingestion), E4 (Storage depends on ingestion)
 
 ---
 
-## 1. Overview
+# 1. Overview
 
 The Ingestion & Provider Integration epic handles receiving raw telemetry packets from multiple providers (Navixy, Teltonika, future OEMs), parsing provider-specific formats, validating data integrity, and preparing packets for transformation.
 

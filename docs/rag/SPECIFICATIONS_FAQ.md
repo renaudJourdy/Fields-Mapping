@@ -427,6 +427,8 @@ Transient errors must be retried using exponential backoff as specified in the e
 
 ## 10. Status Computation & Top Status
 
+## 11. Markdown Heading Levels for Notion
+
 ### Q: Should top status computation be a separate feature?
 
 **A:** Yes, top status computation should be a **separate feature** in Epic 3 (Status Computation):
@@ -518,6 +520,41 @@ Data Forwarding from Navixy:
 6. **Notion-Compatible**: Structure must work for Notion wiki pages
 7. **Standalone Features**: Each feature delivers value independently
 8. **Clear Contracts**: WebSocket/API contracts easily accessible, not buried in features
+
+---
+
+---
+
+## 11. Markdown Heading Levels for Notion
+
+### Q: What heading levels should be used in markdown files for Notion?
+
+**A:** When creating markdown pages for Notion, **remove the H1 (#) page title** and shift all headings down by one level. The page title in Notion is separate from the markdown content.
+
+**Heading Level Rules:**
+- **Page Title**: The page name (e.g., "Specifications", "E1 – Ingestion & Provider Integration") is the **Notion page title**, not a markdown heading - **remove it from markdown**
+- **H1 (#)**: Use for main sections (what was originally H2)
+- **H2 (##)**: Use for subsections (what was originally H3)
+- **H3 (###)**: Use for sub-subsections (what was originally H4)
+- **H4 (####)**: Use for deeper nesting (what was originally H5)
+
+**Example:**
+```markdown
+# ❌ WRONG - H1 is the page title, should be removed
+# Specifications
+
+## Overview
+### Epic Structure
+
+# ✅ CORRECT - Remove H1, shift everything down
+# Overview
+## Epic Structure
+### E1 – Ingestion
+```
+
+**Rationale:** Notion automatically uses the page/file name as the page title. The H1 in markdown creates a duplicate title. Remove the H1 and shift all headings down: H2 → H1, H3 → H2, H4 → H3, etc.
+
+**Rule:** Always remove the H1 page title and shift all headings down by one level: H2 → H1, H3 → H2, H4 → H3, etc.
 
 ---
 

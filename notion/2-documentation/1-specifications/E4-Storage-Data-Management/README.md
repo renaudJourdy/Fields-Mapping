@@ -1,5 +1,3 @@
-# E4 – Storage & Data Management
-
 **Status:** 🎯 Draft  
 **Epic Number:** E4  
 **Related Epics:** E1 (cold storage), E2 (warm storage), E3 (hot storage), E5 (configuration storage)

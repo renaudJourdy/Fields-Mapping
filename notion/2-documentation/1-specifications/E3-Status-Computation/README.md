@@ -1,5 +1,3 @@
-# E3 – Status Computation
-
 **Status:** 🎯 Draft  
 **Epic Number:** E3  
 **Related Epics:** E2 (depends on transformed Fleeti fields), E6 (top status used for marker display)

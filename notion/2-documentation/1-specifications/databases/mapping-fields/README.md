@@ -1,5 +1,3 @@
-# Mapping Fields Database
-
 **Status:** 🎯 Structure Created - Content To Be Developed
 
 ## Purpose

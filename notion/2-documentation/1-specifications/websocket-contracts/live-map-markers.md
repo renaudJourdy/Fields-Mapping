@@ -1,5 +1,3 @@
-# Live Map Markers WebSocket Contract
-
 **Status:** 🎯 To Be Created  
 **Priority:** 🔴 HIGH (Blocking Frontend Development)  
 **Stream:** `live.map.markers`

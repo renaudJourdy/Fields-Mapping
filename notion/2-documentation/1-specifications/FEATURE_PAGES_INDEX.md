@@ -1,12 +1,10 @@
-# Feature Pages Index
-
 **Status:** 🎯 Structure Created
 
 Complete index of all features across all epics in the Fleeti Telemetry Mapping specifications.
 
 ---
 
-## Epic 1 – Ingestion & Provider Integration
+# Epic 1 – Ingestion & Provider Integration
 
 | Feature ID | Feature Name | File Path | Status |
 |------------|--------------|-----------|--------|
@@ -17,7 +15,7 @@ Complete index of all features across all epics in the Fleeti Telemetry Mapping 
 
 ---
 
-## Epic 2 – Field Mapping & Transformation
+# Epic 2 – Field Mapping & Transformation
 
 | Feature ID | Feature Name | File Path | Status |
 |------------|--------------|-----------|--------|
@@ -30,7 +28,7 @@ Complete index of all features across all epics in the Fleeti Telemetry Mapping 
 
 ---
 
-## Epic 3 – Status Computation
+# Epic 3 – Status Computation
 
 | Feature ID | Feature Name | File Path | Status |
 |------------|--------------|-----------|--------|
@@ -42,7 +40,7 @@ Complete index of all features across all epics in the Fleeti Telemetry Mapping 
 
 ---
 
-## Epic 4 – Storage & Data Management
+# Epic 4 – Storage & Data Management
 
 | Feature ID | Feature Name | File Path | Status |
 |------------|--------------|-----------|--------|
@@ -54,7 +52,7 @@ Complete index of all features across all epics in the Fleeti Telemetry Mapping 
 
 ---
 
-## Epic 5 – Configuration & Management
+# Epic 5 – Configuration & Management
 
 | Feature ID | Feature Name | File Path | Status |
 |------------|--------------|-----------|--------|
@@ -66,7 +64,7 @@ Complete index of all features across all epics in the Fleeti Telemetry Mapping 
 
 ---
 
-## Epic 6 – API & Consumption
+# Epic 6 – API & Consumption
 
 | Feature ID | Feature Name | File Path | Status |
 |------------|--------------|-----------|--------|
@@ -78,7 +76,7 @@ Complete index of all features across all epics in the Fleeti Telemetry Mapping 
 
 ---
 
-## Summary
+# Summary
 
 **Total Epics:** 6  
 **Total Features:** 30

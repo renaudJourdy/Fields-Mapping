@@ -1,5 +1,3 @@
-# WebSocket Contracts
-
 **Status:** 🎯 Structure Created - Content To Be Developed
 
 This section contains detailed WebSocket contract specifications for real-time telemetry streaming to frontend applications.

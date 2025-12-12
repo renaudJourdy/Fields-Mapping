@@ -1,5 +1,3 @@
-# E2 – Field Mapping & Transformation
-
 **Status:** 🎯 Draft  
 **Epic Number:** E2  
 **Related Epics:** E1 (depends on provider-agnostic telemetry), E3 (Status Computation depends on transformed fields), E5 (Configuration provides mapping rules)

@@ -1,5 +1,3 @@
-# API Contracts
-
 **Status:** 🎯 Structure Created - Content To Be Developed
 
 This section contains detailed API contract specifications for REST endpoints that expose Fleeti telemetry data.
