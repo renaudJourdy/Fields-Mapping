@@ -16,7 +16,7 @@ The databases section provides:
 
 ## Database Structure
 
-### [Provider Fields Database](./provider-fields/README.md)
+### [📥 Provider Fields Database](./provider-fields/README.md)
 
 Catalog of all provider-specific telemetry fields organized by provider (Navixy, Teltonika, OEM, etc.).
 
@@ -30,7 +30,7 @@ Catalog of all provider-specific telemetry fields organized by provider (Navixy,
 
 ---
 
-### [Fleeti Fields Database](./fleeti-fields/README.md)
+### [🎯 Fleeti Fields Database](./fleeti-fields/README.md)
 
 Complete catalog of all Fleeti telemetry fields organized by section (Asset Metadata, Location, Motion, Power, Fuel, etc.).
 
@@ -44,7 +44,7 @@ Complete catalog of all Fleeti telemetry fields organized by section (Asset Meta
 
 ---
 
-### [Mapping Fields Database](./mapping-fields/README.md)
+### [🔀 Mapping Fields Database](./mapping-fields/README.md)
 
 Field transformation rules and priority chains linking provider fields to Fleeti fields.
 

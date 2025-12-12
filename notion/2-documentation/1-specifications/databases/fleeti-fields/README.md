@@ -28,7 +28,7 @@ This database is used to:
 ## Related Documentation
 
 - **[Schema Specification](../../../docs/legacy/fleeti-telemetry-schema-specification.md)**: Big picture reference (not definitive)
-- **[Mapping Fields Database](../mapping-fields/README.md)**: How provider fields map to Fleeti fields
+- **[🔀 Mapping Fields Database](../mapping-fields/README.md)**: How provider fields map to Fleeti fields
 - **[Field Mappings](../../2-field-mappings/fleeti-fields-catalog.md)**: Field catalog documentation
 
 ---

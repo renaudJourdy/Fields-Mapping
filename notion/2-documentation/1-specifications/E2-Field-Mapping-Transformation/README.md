@@ -226,9 +226,9 @@ Transformation failures must be handled gracefully. Missing fields should use de
 
 ### 9.1 Related Documentation
 
-- **[Mapping Fields Database](../databases/mapping-fields/README.md)**: Mapping rules
-- **[Fleeti Fields Database](../databases/fleeti-fields/README.md)**: Target field definitions
-- **[Provider Fields Database](../databases/provider-fields/README.md)**: Source field definitions
+- **[🔀 Mapping Fields Database](../databases/mapping-fields/README.md)**: Mapping rules
+- **[🎯 Fleeti Fields Database](../databases/fleeti-fields/README.md)**: Target field definitions
+- **[📥 Provider Fields Database](../databases/provider-fields/README.md)**: Source field definitions
 - **[Field Mappings](../../2-field-mappings/mapping-rules.md)**: Mapping rules documentation
 
 ### 9.2 External References

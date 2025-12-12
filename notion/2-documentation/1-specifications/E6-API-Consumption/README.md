@@ -207,10 +207,10 @@ API errors must be handled gracefully. See error handling documentation.
 
 ### 9.1 Related Documentation
 
-- **[WebSocket Contracts](../websocket-contracts/README.md)**: WebSocket contract specifications
-- **[API Contracts](../api-contracts/README.md)**: REST API contract specifications
-- **[Epic 3 - Status Computation](../E3-Status-Computation/README.md)**: Top status computation
-- **[Epic 4 - Storage](../E4-Storage-Data-Management/README.md)**: Storage architecture
+- **[📡 WebSocket Contracts](../websocket-contracts/README.md)**: WebSocket contract specifications
+- **[🌐 API Contracts](../api-contracts/README.md)**: REST API contract specifications
+- **[✅ Epic 3 - Status Computation](../E3-Status-Computation/README.md)**: Top status computation
+- **[💾 Epic 4 - Storage](../E4-Storage-Data-Management/README.md)**: Storage architecture
 
 ---
 

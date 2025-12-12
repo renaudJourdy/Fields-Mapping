@@ -214,8 +214,8 @@ Status computation failures should use safe defaults (e.g., assume online if con
 ### 9.1 Related Documentation
 
 - **[Status Rules](./status-rules.md)**: Status computation rules (legacy reference)
-- **[Fleeti Fields Database](../databases/fleeti-fields/README.md)**: Required telemetry fields
-- **[WebSocket Contracts](../websocket-contracts/live-map-markers.md)**: Top status usage
+- **[🎯 Fleeti Fields Database](../databases/fleeti-fields/README.md)**: Required telemetry fields
+- **[📍 WebSocket Contracts](../websocket-contracts/live-map-markers.md)**: Top status usage
 
 ### 9.2 External References
 

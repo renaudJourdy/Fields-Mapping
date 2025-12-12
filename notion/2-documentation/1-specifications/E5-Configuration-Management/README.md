@@ -201,8 +201,8 @@ Configuration errors must be caught before deployment. See error handling docume
 
 ### 9.1 Related Documentation
 
-- **[Databases](../databases/README.md)**: Database definitions
-- **[Epic 2 - Field Mapping](../E2-Field-Mapping-Transformation/README.md)**: Configuration usage
+- **[🗄️ Databases](../databases/README.md)**: Database definitions
+- **[🔄 Epic 2 - Field Mapping](../E2-Field-Mapping-Transformation/README.md)**: Configuration usage
 - **[Configuration Guide](../../../3-developer-resources/configuration-guide/README.md)**: Configuration documentation
 
 ---

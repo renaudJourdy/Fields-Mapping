@@ -26,8 +26,8 @@ This database is used to:
 
 ## Related Documentation
 
-- **[Provider Fields Database](../provider-fields/README.md)**: Source provider fields
-- **[Fleeti Fields Database](../fleeti-fields/README.md)**: Target Fleeti fields
+- **[📥 Provider Fields Database](../provider-fields/README.md)**: Source provider fields
+- **[🎯 Fleeti Fields Database](../fleeti-fields/README.md)**: Target Fleeti fields
 - **[Mapping Rules](../../2-field-mappings/mapping-rules.md)**: Mapping rules documentation
 
 ---

@@ -1,3 +1,5 @@
+# 📡 WebSocket Contracts
+
 **Status:** 🎯 Structure Created - Content To Be Developed
 
 This section contains detailed WebSocket contract specifications for real-time telemetry streaming to frontend applications.
@@ -17,13 +19,39 @@ WebSocket contracts define:
 
 ## Available Contracts
 
-### [Live Map Markers](./live-map-markers.md)
+### [📍 Live Map Markers](./live-map-markers.md)
 
 WebSocket stream for real-time marker updates on the live map.
 
 **Stream:** `live.map.markers`  
 **Purpose:** Display asset markers on map with status-based iconography  
 **Key Fields:** `top_status`, `statuses[]`, `position`, `heading`, `assetId`, `assetType`
+
+**Status:** 🎯 To Be Created  
+**Priority:** 🔴 HIGH (Blocking Frontend Development)
+
+---
+
+### [📋 Asset List](./asset-list.md)
+
+WebSocket stream for real-time asset list updates for the asset list panel.
+
+**Stream:** `live.assets.list`  
+**Purpose:** Display and update asset list with grouping, search, and selection synchronization  
+**Key Fields:** `asset.id`, `asset.name`, `asset.type`, `status.top_status`, `location`, `motion.speed`
+
+**Status:** 🎯 To Be Created  
+**Priority:** 🔴 HIGH (Blocking Frontend Development)
+
+---
+
+### [📄 Asset Details](./asset-details.md)
+
+WebSocket stream for real-time asset details updates for the asset details panel.
+
+**Stream:** `live.asset.details`  
+**Purpose:** Display comprehensive asset details with live telemetry, sensors, KPIs, and status  
+**Key Fields:** Complete Fleeti telemetry fields including `status`, `location`, `motion`, `power`, `fuel`, `sensors`, `counters`
 
 **Status:** 🎯 To Be Created  
 **Priority:** 🔴 HIGH (Blocking Frontend Development)
@@ -46,7 +74,7 @@ Each contract document includes:
 
 ## Relationship to Fleeti Fields Database
 
-WebSocket contracts reference Fleeti fields from the [Fleeti Fields Database](./databases/fleeti-fields/README.md):
+WebSocket contracts reference Fleeti fields from the [🎯 Fleeti Fields Database](./databases/fleeti-fields/README.md):
 - Contracts specify which Fleeti fields are included in each stream
 - Field definitions come from the database
 - As new Fleeti fields are added, contracts may be updated
@@ -55,8 +83,8 @@ WebSocket contracts reference Fleeti fields from the [Fleeti Fields Database](./
 
 ## Related Documentation
 
-- **[Epic 6 - API & Consumption](../E6-API-Consumption/README.md)**: Usage and implementation needs
-- **[Fleeti Fields Database](./databases/fleeti-fields/README.md)**: Field definitions
+- **[🔗 Epic 6 - API & Consumption](../E6-API-Consumption/README.md)**: Usage and implementation needs
+- **[🎯 Fleeti Fields Database](./databases/fleeti-fields/README.md)**: Field definitions
 - **[Mobile App Specs](../../../docs/rag/SPECIFICATIONS_FAQ.md)**: Frontend requirements reference
 
 ---

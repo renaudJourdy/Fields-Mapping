@@ -216,7 +216,7 @@ Transient errors (network timeouts, temporary unavailability) must be retried us
 
 ### 9.1 Related Documentation
 
-- **[Provider Fields Database](../databases/provider-fields/README.md)**: Provider field definitions
+- **[📥 Provider Fields Database](../databases/provider-fields/README.md)**: Provider field definitions
 - **[Field Mappings](../../2-field-mappings/provider-fields-catalog.md)**: Provider field catalogs
 - **[Architecture Overview](../../../1-overview-vision/3-architecture-overview.md)**: System architecture
 

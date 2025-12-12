@@ -27,7 +27,7 @@ This database is used to:
 
 ## Related Documentation
 
-- **[Mapping Fields Database](../mapping-fields/README.md)**: How provider fields map to Fleeti fields
+- **[🔀 Mapping Fields Database](../mapping-fields/README.md)**: How provider fields map to Fleeti fields
 - **[Provider Catalogs](../../3-reference-materials/provider-catalogs.md)**: Detailed provider field catalogs
 
 ---

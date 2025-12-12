@@ -1,5 +1,3 @@
-**Status:** 🎯 Structure Created - Content To Be Developed
-
 This section contains comprehensive technical specifications for the Fleeti Telemetry Mapping system, organized by epics and features.
 
 ---
@@ -19,7 +17,7 @@ The specifications section provides structured technical documentation covering:
 
 The specifications are organized into 6 epics, each delivering major functional capabilities:
 
-## [E1 – Ingestion & Provider Integration](./E1-Ingestion-Provider-Integration/README.md)
+## [📥 E1 – Ingestion & Provider Integration](./E1-Ingestion-Provider-Integration/README.md)
 
 Receive and parse telemetry packets from multiple providers (Navixy, Teltonika, OEM).
 
@@ -33,7 +31,7 @@ Receive and parse telemetry packets from multiple providers (Navixy, Teltonika, 
 
 ---
 
-## [E2 – Field Mapping & Transformation](./E2-Field-Mapping-Transformation/README.md)
+## [🔄 E2 – Field Mapping & Transformation](./E2-Field-Mapping-Transformation/README.md)
 
 Transform provider telemetry into Fleeti format using configuration-driven mappings.
 
@@ -49,7 +47,7 @@ Transform provider telemetry into Fleeti format using configuration-driven mappi
 
 ---
 
-## [E3 – Status Computation](./E3-Status-Computation/README.md)
+## [✅ E3 – Status Computation](./E3-Status-Computation/README.md)
 
 Compute status families (Connectivity, Transit, Engine, Immobilization) and top status.
 
@@ -64,7 +62,7 @@ Compute status families (Connectivity, Transit, Engine, Immobilization) and top 
 
 ---
 
-## [E4 – Storage & Data Management](./E4-Storage-Data-Management/README.md)
+## [💾 E4 – Storage & Data Management](./E4-Storage-Data-Management/README.md)
 
 Multi-tier storage (hot, warm, cold) and data management capabilities.
 
@@ -79,7 +77,7 @@ Multi-tier storage (hot, warm, cold) and data management capabilities.
 
 ---
 
-## [E5 – Configuration & Management](./E5-Configuration-Management/README.md)
+## [⚙️ E5 – Configuration & Management](./E5-Configuration-Management/README.md)
 
 Generate, store, deploy, and manage configuration files for field mapping.
 
@@ -94,7 +92,7 @@ Generate, store, deploy, and manage configuration files for field mapping.
 
 ---
 
-## [E6 – API & Consumption](./E6-API-Consumption/README.md)
+## [🔗 E6 – API & Consumption](./E6-API-Consumption/README.md)
 
 Expose telemetry data via WebSocket streams and REST APIs.
 
@@ -113,11 +111,11 @@ Expose telemetry data via WebSocket streams and REST APIs.
 
 Three critical databases serve as the single source of truth for field definitions and mappings:
 
-## [Databases](./databases/README.md)
+## [🗄️ Databases](./databases/README.md)
 
-- **[Provider Fields Database](./databases/provider-fields/README.md)**: Catalog of all provider-specific telemetry fields
-- **[Fleeti Fields Database](./databases/fleeti-fields/README.md)**: Catalog of all Fleeti telemetry fields (~343+ fields)
-- **[Mapping Fields Database](./databases/mapping-fields/README.md)**: Field transformation rules linking provider to Fleeti fields
+- **[📥 Provider Fields Database](./databases/provider-fields/README.md)**: Catalog of all provider-specific telemetry fields
+- **[🎯 Fleeti Fields Database](./databases/fleeti-fields/README.md)**: Catalog of all Fleeti telemetry fields (~343+ fields)
+- **[🔀 Mapping Fields Database](./databases/mapping-fields/README.md)**: Field transformation rules linking provider to Fleeti fields
 
 **Status:** 🎯 Structure Created - Content To Be Developed
 
@@ -127,46 +125,18 @@ Three critical databases serve as the single source of truth for field definitio
 
 Detailed contract specifications for WebSocket streams and REST APIs:
 
-## [WebSocket Contracts](./websocket-contracts/README.md)
+## [📡 WebSocket Contracts](./websocket-contracts/README.md)
 
-- **[Live Map Markers](./websocket-contracts/live-map-markers.md)**: Real-time marker updates for live map
+WebSocket streams for real-time telemetry updates:
+
+- **[📍 Live Map Markers](./websocket-contracts/live-map-markers.md)**: Real-time marker updates for live map display
+- **[📋 Asset List](./websocket-contracts/asset-list.md)**: Real-time asset list updates for asset list panel
+- **[📄 Asset Details](./websocket-contracts/asset-details.md)**: Real-time asset details updates for asset details panel
 
 **Status:** 🎯 Structure Created - Content To Be Developed
 
-## [API Contracts](./api-contracts/README.md)
+## [🌐 API Contracts](./api-contracts/README.md)
 
 REST API contract specifications for hot and warm storage access.
 
 **Status:** 🎯 Structure Created - Content To Be Developed
-
----
-
-# Feature Index
-
-See [FEATURE_PAGES_INDEX.md](./FEATURE_PAGES_INDEX.md) for a complete list of all features across all epics.
-
----
-
-# Legacy Specifications
-
-Legacy specification documents have been moved to `docs/legacy/` for reference:
-
-- `telemetry-system-specification.md` - Complete system specification (validated)
-- `status-rules.md` - Status computation rules (validated)
-- `schema-specification.md` - Schema specification (validated)
-
-**Note:** These legacy documents are for reference only. The new epic-based structure is the primary specification system.
-
----
-
-# Related Documentation
-
-- **[Field Mappings](../2-field-mappings/README.md)**: Field catalogs and mapping rules
-- **[Requirements](../4-requirements/README.md)**: Functional and product requirements
-- **[Overview & Vision](../../1-overview-vision/README.md)**: Project overview and architecture
-- **[Developer Resources](../../3-developer-resources/README.md)**: Implementation guides and developer documentation
-
----
-
-**Last Updated:** 2025-01-XX  
-**Section Status:** 🎯 Structure Created - Content To Be Developed

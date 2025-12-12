@@ -54,9 +54,9 @@ API contracts should specify which storage tier is used and expected latency.
 
 ## Related Documentation
 
-- **[Epic 6 - API & Consumption](../E6-API-Consumption/README.md)**: Usage and implementation needs
-- **[Fleeti Fields Database](./databases/fleeti-fields/README.md)**: Field definitions
-- **[Storage Strategy](../E4-Storage-Data-Management/README.md)**: Storage tier details
+- **[🔗 Epic 6 - API & Consumption](../E6-API-Consumption/README.md)**: Usage and implementation needs
+- **[🎯 Fleeti Fields Database](./databases/fleeti-fields/README.md)**: Field definitions
+- **[💾 Storage Strategy](../E4-Storage-Data-Management/README.md)**: Storage tier details
 
 ---
 
