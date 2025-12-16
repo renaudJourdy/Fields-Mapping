@@ -1,14 +1,15 @@
 **Status:** 🎯 Structure Created - Content To Be Developed
 
-This section defines the three critical databases that serve as the single source of truth for field definitions and mappings in the Fleeti Telemetry Mapping system.
+This section defines the core databases that serve as the single source of truth for field definitions and mappings in the Fleeti Telemetry Mapping system.
 
 # Purpose
 
 The databases section provides:
 
 - **Provider Fields Database**: Complete catalog of all provider-specific telemetry fields
-- **Fleeti Fields Database**: Complete catalog of all Fleeti telemetry fields (~343+ fields)
+- **Fleeti Fields Database**: Complete catalog of all Fleeti canonical telemetry fields
 - **Mapping Fields Database**: Field transformation rules linking provider fields to Fleeti fields
+- **Change History Database** (Optional): Audit trail of all changes to fields and mappings
 
 **These databases are the definitive source of truth** for field definitions. Reference documents (like the schema specification) provide the big picture and help with prioritization, but field definitions come from these databases.
 
@@ -56,6 +57,20 @@ Field transformation rules and priority chains linking provider fields to Fleeti
 - Transformation logic
 
 **Purpose:** Links provider fields to Fleeti fields with transformation logic.
+
+---
+
+## [📝 Change History Database](./4-change-history/README.md) (Optional)
+
+Complete audit trail of all changes to fields and mappings for versioning and compliance.
+
+**Contents:**
+- Change records for all field and mapping modifications
+- Change metadata (who, when, why)
+- Version tracking
+- YAML sync status
+
+**Purpose:** Maintains audit trail and enables change tracking, rollback planning, and compliance.
 
 ---
 

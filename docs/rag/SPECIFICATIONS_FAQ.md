@@ -18,6 +18,8 @@
 8. [Documentation Focus & Philosophy](#8-documentation-focus--philosophy)
 9. [Naming Conventions](#9-naming-conventions)
 10. [Status Computation & Top Status](#10-status-computation--top-status)
+11. [Markdown Heading Levels for Notion](#11-markdown-heading-levels-for-notion)
+12. [Mapping Fields Database Generation](#12-mapping-fields-database-generation)
 
 ---
 
@@ -555,6 +557,110 @@ Data Forwarding from Navixy:
 **Rationale:** Notion automatically uses the page/file name as the page title. The H1 in markdown creates a duplicate title. Remove the H1 and shift all headings down: H2 → H1, H3 → H2, H4 → H3, etc.
 
 **Rule:** Always remove the H1 page title and shift all headings down by one level: H2 → H1, H3 → H2, H4 → H3, etc.
+
+---
+
+## 12. Mapping Fields Database Generation
+
+### Q: How do I determine priority order for prioritized mappings?
+
+**A:** Priority order is determined by parsing the `Computation Approach` column in the Fleeti Fields CSV export. The `>` symbol indicates priority order.
+
+**Pattern:**
+- `field1>field2>field3` means `field1` has priority 1, `field2` has priority 2, `field3` has priority 3
+- Example: `hdop>avl_io_182` means `hdop` has priority 1, `avl_io_182` has priority 2
+
+**Fallback:** If no `>` symbol is present, use the order from the comma-separated `💽 Provider Field (db)` list (first field = priority 1, second = priority 2, etc.).
+
+**Example:**
+- Fleeti Field: `location_precision_hdop`
+- Computation Approach: `hdop>avl_io_182`
+- Provider Fields: `["hdop", "avl_io_182"]`
+- Priority JSON: `[{"priority": 1, "field": "hdop"}, {"priority": 2, "field": "avl_io_182"}]`
+- Priority Order: `hdop (1) > avl_io_182 (2)`
+
+---
+
+### Q: What does the Status field mean in Fleeti Fields Database exports?
+
+**A:** The `Status` field indicates whether a mapping already exists for that Fleeti field.
+
+- **`inactive`**: NO mapping exists yet - **FOCUS ON THESE** when generating mapping entries
+- **`active`**: Mapping already exists - **IGNORE THESE** when generating new mappings
+
+**Rule:** Only process Fleeti Fields with `Status = inactive` when generating Mapping Fields Database entries. Skip all fields with `Status = active`.
+
+---
+
+### Q: How should calculated fields be processed?
+
+**A:** Calculated fields must be processed AFTER their dependency fields. Never ignore calculated fields - they always need mapping entries.
+
+**Processing Order:**
+1. Identify calculated fields: `Field Type = calculated` and empty `💽 Provider Field (db)` column
+2. Extract dependencies from `Dependencies` column (Notion links to other Fleeti Fields)
+3. Sort by dependency depth: Process fields with no dependencies first, then fields that depend on them
+4. Extract calculation logic from `Computation Approach` column (contains actual formulas/code)
+5. Generate mapping entry with `Mapping Type = calculated`
+
+**Example:**
+- Fleeti Field: `location_cardinal_direction`
+- Dependencies: `location_heading`
+- Computation Approach: Contains actual code: `dirs = ["N","NE",...]; cardinal = dirs[Math.floor((heading + 22.5) % 360 / 45)];`
+- **Process `location_heading` first, then `location_cardinal_direction`**
+
+---
+
+### Q: How do I extract field names from Notion relation columns?
+
+**A:** Notion exports relation columns with URLs. Extract only the field name, ignoring the URL.
+
+**Pattern:** `field_name (https://www.notion.so/field_name-...)`
+
+**Extraction Logic:**
+- Split by `(` to separate field name from URL
+- Take first part (field name)
+- Trim whitespace
+- For comma-separated: `"hdop (...), avl_io_182 (...)"` → Split by comma, then extract each field name
+
+**Examples:**
+- `lat (https://www.notion.so/lat-...)` → `lat`
+- `"hdop (...), avl_io_182 (...)"` → `["hdop", "avl_io_182"]`
+- Empty value → `[]` (no provider fields)
+
+---
+
+### Q: Which columns should be omitted from the generated Mapping Fields CSV?
+
+**A:** Omit Notion-specific metadata columns that don't exist in the Mapping Fields Database schema:
+
+- **`Modified By`**: Notion Person type - omit from CSV
+- **`Change History`**: Notion Relation type - omit from CSV (Change History database not yet defined)
+
+**Rule:** Leave these fields empty/omitted in the generated CSV. Focus only on columns that exist in the Mapping Fields Database schema.
+
+---
+
+### Q: Should I handle unit conversions when generating mapping entries?
+
+**A:** No. Unit conversion is not relevant for mapping creation. Focus only on creating mapping entries that link Provider Fields to Fleeti Fields. Unit conversions are handled separately in the transformation pipeline.
+
+**Rule:** Ignore unit differences between Provider Fields and Fleeti Fields when generating mapping entries. Focus on field relationships and mapping types only.
+
+---
+
+### Q: What information does the Computation Approach column contain?
+
+**A:** The `Computation Approach` column contains different types of information depending on the field type:
+
+1. **Direct mappings**: Source references like `(Latitude)`, `(Heading)`
+2. **Prioritized mappings**: Priority order using `>` symbol, e.g., `hdop>avl_io_182`
+3. **Calculated fields**: Actual formulas or code, e.g., `dirs = ["N","NE",...]; cardinal = dirs[Math.floor((heading + 22.5) % 360 / 45)];`
+
+**Rule:** Parse the `Computation Approach` column to extract:
+- Priority order for prioritized mappings (`>` symbol)
+- Calculation formulas/code for calculated fields
+- Source references for direct mappings
 
 ---
 

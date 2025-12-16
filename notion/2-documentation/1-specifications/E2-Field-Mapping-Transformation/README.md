@@ -21,6 +21,7 @@ This epic converts provider telemetry into unified Fleeti telemetry format (~343
 - Computing calculated fields (derived from telemetry)
 - Transforming fields (combining telemetry with static asset metadata)
 - I/O to semantic field mapping (raw I/O → semantic fields)
+- Generating transformation metadata (which config, which fields selected, which rules applied)
 
 **Out of Scope:**
 - Status computation (Epic 3)

@@ -26,24 +26,18 @@ The Provider Fields Database catalogs all provider-specific telemetry fields fro
 | **Unit** | Text | ❌ No | Provider unit (if applicable) | `km/h`, `m/s`, `mph` | Enables unit conversion to Fleeti standard units. Important for fields like speed, temperature, fuel level. |
 | **Example Value** | Text | ❌ No | Example value from provider | `65.5` | Helps developers understand expected values. Useful for testing and validation. Documents observed value ranges. |
 | **Description** | Text | ✅ Yes | What provider field represents | `CAN bus speed reading` | Critical for understanding field purpose. Helps with mapping decisions and troubleshooting. |
-| **Availability** | Select | ✅ Yes | Field availability | `always`, `conditional`, `rare`, `deprecated` | Indicates reliability of field. Important for priority rules and fallback strategies. |
+| **Availability** | Select | ✅ Yes | Field availability | `always`, `conditional`, `rare`, `deprecated`, `unknown` | Indicates reliability of field. Important for priority rules and fallback strategies. |
 | **Fleeti Fields** | Relation | ❌ No | Links to Fleeti Fields DB (many-to-many via Field Mappings) | (Relation) | Shows which Fleeti fields use this provider field. Useful for impact analysis when provider field changes. |
 | **Field Mappings** | Relation | ❌ No | Links to Field Mappings DB (one-to-many) | (Relation) | Direct link to mapping rules. Enables quick access to how this field is used in transformations. |
-| **Status** | Select | ✅ Yes | Field status | `active`, `deprecated`, `unavailable` | Tracks field lifecycle. Deprecated fields should not be used in new mappings. Critical for data quality. |
+| **Status** | Select | ✅ Yes | Field status | `active`, `deprecated`, `unavailable`,`pending` | Tracks field lifecycle. Deprecated fields should not be used in new mappings. Critical for data quality. |
 | **Version Added** | Text | ✅ Yes | Version when field was documented | `1.0.0` | Tracks when field was discovered/added. Useful for versioning and change tracking. |
 | **Last Modified** | Date | ✅ Yes | Last modification date | `2025-01-15` | Tracks recent changes. Enables "recently modified" views and change notifications. |
-| **Modified By** | Person | ✅ Yes | Who last modified | (Notion person) | Accountability and audit trail. Enables collaboration and questions about changes. |
 | **Notes** | Text | ❌ No | Additional notes | `Requires CAN bus connection` | Captures important context, limitations, or special requirements. Helps developers understand field constraints. |
 
 ## Primary Key
 
 **Field Name** serves as the primary key. Combined with **Provider**, it uniquely identifies each provider field.
 
-## Indexes & Performance
-
-- **Index on Provider + Field Name**: Fast lookups by provider and field name
-- **Index on Status**: Efficient filtering of active fields
-- **Index on Field Mappings**: Quick access to related mappings
 
 ## Validation Rules
 
