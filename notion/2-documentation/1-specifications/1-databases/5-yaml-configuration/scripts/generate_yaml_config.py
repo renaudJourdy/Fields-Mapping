@@ -12,10 +12,12 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from collections import defaultdict
 
-# Input file
-MAPPING_FIELDS_CSV = Path(__file__).parent / "Mapping-Fields-Navixy-2025-01-16.csv"
+# Input file - CSV is in the mapping-fields/scripts folder
+# Script is in: 5-yaml-configuration/scripts/
+# CSV is in: 3-mapping-fields/scripts/
+MAPPING_FIELDS_CSV = Path(__file__).parent.parent.parent / "3-mapping-fields" / "scripts" / "Mapping-Fields-Navixy-2025-01-16.csv"
 
-# Output file
+# Output file - YAML should be generated in the same scripts folder as this script
 OUTPUT_YAML = Path(__file__).parent / "navixy-mapping.yaml"
 
 

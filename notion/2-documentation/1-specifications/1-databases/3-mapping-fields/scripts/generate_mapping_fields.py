@@ -10,11 +10,14 @@ import re
 from datetime import date
 from pathlib import Path
 
-# Input files
-PROVIDER_FIELDS_CSV = Path(__file__).parent.parent / "1-provider-fields" / "export" / "Provider Field (db) 12-16-25.csv"
-FLEETI_FIELDS_CSV = Path(__file__).parent.parent / "2-fleeti-fields" / "export" / "Fleeti Fields (db) 12-16-25.csv"
+# Input files - CSVs are in the respective database export folders
+# Script is in: 3-mapping-fields/scripts/
+# Provider Fields CSV is in: 1-provider-fields/export/
+# Fleeti Fields CSV is in: 2-fleeti-fields/export/
+PROVIDER_FIELDS_CSV = Path(__file__).parent.parent.parent / "1-provider-fields" / "export" / "Provider Field (db) 12-16-25.csv"
+FLEETI_FIELDS_CSV = Path(__file__).parent.parent.parent / "2-fleeti-fields" / "export" / "Fleeti Fields (db) 12-16-25.csv"
 
-# Output file
+# Output file - CSV should be generated in the same scripts folder as this script
 OUTPUT_CSV = Path(__file__).parent / "Mapping-Fields-Navixy-2025-01-16.csv"
 
 def extract_field_name_from_notion_link(link_text):

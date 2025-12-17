@@ -1,14 +1,17 @@
-**Status:** 🎯 Structure Created - Content To Be Developed
+**Status:** 🎯 In Progress
 
 # Purpose
 
 The Fleeti Fields Database is the complete catalog of all **Fleeti canonical telemetry fields** organized by section. This database serves as the **single source of truth** for Fleeti telemetry field definitions.
 
 **Important Distinction:**
-- **Provider Fields** (300+ fields): Provider-specific telemetry fields from Navixy, Teltonika, OEM, etc. These are documented in the [Provider Fields Database](../1-provider-fields/README.md).
+
+- **Provider Fields** (300+ fields): Provider-specific telemetry fields from Navixy, Teltonika, OEM, etc. These are documented in the [Provider Fields Database](https://www.notion.so/1-provider-fields/README.md).
 - **Fleeti Fields**: Canonical semantic telemetry fields that represent the unified Fleeti telemetry model. Multiple provider fields may map to a single Fleeti field (e.g., `can_speed`, `obd_speed`, `speed` all map to `motion.speed`).
 
-The complete list of Fleeti fields is documented in the [Schema Specification](../../../docs/legacy/fleeti-telemetry-schema-specification.md).
+The complete list of Fleeti fields is documented in the [Schema Specification](https://www.notion.so/docs/legacy/fleeti-telemetry-schema-specification.md).
+
+---
 
 # What This Database Contains
 
@@ -19,12 +22,14 @@ The complete list of Fleeti fields is documented in the [Schema Specification](.
 - **Transformation requirements**: How fields are computed (direct, prioritized, calculated, transformed)
 - **Visibility**: Customer-facing vs internal fields
 
+---
+
 # Database Structure
 
 ## Column Definitions
 
 | Column Name | Type | Required | Description | Example | Why It's Important |
-|-------------|------|----------|-------------|---------|-------------------|
+| --- | --- | --- | --- | --- | --- |
 | **Field Name** | Title | ✅ Yes | Stable field identifier - primary key | `fuel.consumption.cumulative` | Primary key - stable identifier that uniquely identifies each Fleeti field. This is the canonical reference used throughout the system. **Does not change** even if the field is moved to a different path in the telemetry object. Used for references, relations, and stable identification. |
 | **Field Path** | Text | ✅ Yes | Full hierarchical path in telemetry object (section → sub-objects → field) | `fuel.consumption.cumulative` | Current technical path in the telemetry JSON structure. Follows the structure: section (e.g., `fuel`, `location`) → sub-objects (e.g., `consumption`, `precision`) → field (e.g., `cumulative`, `hdop`). **Can change** if field is reorganized (e.g., moved from `fuel.consumption.cumulative` to `fuel.total.consumption`). Used in YAML config generation and API responses. Critical for consistency. |
 | **Category** | Select | ✅ Yes | Section/category | `fuel`, `location`, `motion`, `status`, `power`, `diagnostics`, `sensors`, `driving_behavior`, `device`, `connectivity`, `io`, `driver`, `other`, `metadata` | Organizes fields by domain. Enables filtering and grouping. Critical for schema organization. |
@@ -40,7 +45,7 @@ The complete list of Fleeti fields is documented in the [Schema Specification](.
 | **Provider Fields** | Relation | ❌ No | Links to Provider Fields DB (many-to-many via Field Mappings) | (Relation) | Shows which provider fields map to this Fleeti field. Useful for impact analysis. |
 | **Field Mappings** | Relation | ❌ No | Links to Field Mappings DB (one-to-many) | (Relation) | Direct access to mapping rules. Critical for configuration generation. |
 | **Dependencies** | Relation | ❌ No | Other Fleeti fields this depends on | Links to other Fleeti Fields | Tracks field dependencies. Critical for calculated/transformed fields. Ensures correct evaluation order. Prevents circular dependencies. |
-| **Computation Approach** | Text | ❌ No | High-level description of how field is computed (generic, not provider-specific) | `Derived from heading using cardinal direction calculation`, `Prioritized from multiple speed sources (CAN > OBD > GPS)`, `Combined with static asset metadata (tank capacity)` | Generic description of computation approach. **Note:** Provider-specific formulas, priority rules, and transformation logic are documented in the [Mapping Fields Database](../3-mapping-fields/README.md), not here. This field provides high-level understanding only. |
+| **Computation Approach** | Text | ❌ No | High-level description of how field is computed (generic, not provider-specific) | `Derived from heading using cardinal direction calculation`, `Prioritized from multiple speed sources (CAN > OBD > GPS)`, `Combined with static asset metadata (tank capacity)` | Generic description of computation approach. **Note:** Provider-specific formulas, priority rules, and transformation logic are documented in the [Mapping Fields Database](https://www.notion.so/3-mapping-fields/README.md), not here. This field provides high-level understanding only. |
 | **Status** | Select | ✅ Yes | Field status | `active`, `deprecated`, `planned`, `under_review` | Tracks field lifecycle. Deprecated fields should not be used in new code. Critical for data quality. |
 | **Version Added** | Text | ✅ Yes | Version when field was added | `1.0.0` | Version tracking. Enables change history and migration planning. |
 | **Change History** | Relation | ❌ No | Links to Change History DB (one-to-many) | (Relation) | Complete audit trail of changes. Important for compliance and troubleshooting. |
@@ -49,10 +54,9 @@ The complete list of Fleeti fields is documented in the [Schema Specification](.
 
 ## Primary Key
 
-**Field Name** serves as the primary key. Must be unique and follow dot-separated naming convention (e.g., `fuel.consumption.cumulative`, `location.latitude`). 
+**Field Name** serves as the primary key. Must be unique and follow dot-separated naming convention (e.g., `fuel.consumption.cumulative`, `location.latitude`).
 
 **Important:** Field Name is a **stable identifier** that does not change even if the field is reorganized in the telemetry structure. Field Path can be updated independently to reflect the current technical location in the JSON structure.
-
 
 ## Validation Rules
 
@@ -65,14 +69,16 @@ The complete list of Fleeti fields is documented in the [Schema Specification](.
 
 ## Important: Provider-Specific Logic
 
-**Calculation formulas, transformation rules, and priority chains are provider-specific** and are documented in the [🔀 Mapping Fields Database](../3-mapping-fields/README.md), not in this database.
+**Calculation formulas, transformation rules, and priority chains are provider-specific** and are documented in the [🔀 Mapping Fields Database](https://www.notion.so/3-mapping-fields/README.md), not in this database.
 
 **Why?**
+
 - A single Fleeti field (e.g., `motion.speed`) can have multiple provider fields mapping to it (`can_speed`, `obd_speed`, `speed`)
 - Each provider may require different formulas, unit conversions, or priority rules
 - The Mapping Fields Database contains the actual transformation logic per provider
 
 **This Database Contains:**
+
 - ✅ Semantic field definitions (what the field represents)
 - ✅ Field structure and data types
 - ✅ High-level computation approach (generic description)
@@ -80,6 +86,7 @@ The complete list of Fleeti fields is documented in the [Schema Specification](.
 - ✅ API/WebSocket exposure
 
 **Mapping Fields Database Contains:**
+
 - ✅ Provider-specific calculation formulas
 - ✅ Priority chains (which provider field to use first, second, etc.)
 - ✅ Transformation rules combining telemetry with static data
@@ -89,39 +96,48 @@ The complete list of Fleeti fields is documented in the [Schema Specification](.
 ## Calculated Fields (Formulas)
 
 **Formula 1: Mapping Status**
+
 ```
 if(empty(prop("Field Mappings")), "⚠️ Unmapped", "✅ Mapped")
 ```
+
 Purpose: Visual indicator of mapping completeness. Helps identify fields needing mapping.
 
 **Formula 2: Has Dependencies**
+
 ```
 if(empty(prop("Dependencies")), "No", "Yes")
 ```
+
 Purpose: Quick indicator if field has dependencies. Important for calculated/transformed fields.
 
 **Formula 3: Days Since Last Modified**
+
 ```
 dateBetween(prop("Last Modified"), now(), "days")
 ```
+
 Purpose: Tracks how recently field was updated. Useful for change tracking.
 
 # How to Use
 
 This database is used to:
+
 - Define Fleeti telemetry structure
 - Prioritize field implementation
 - Generate configuration files
 - Reference field definitions in specifications
 
+---
+
 # Related Documentation
 
-- **[Schema Specification](../../../docs/legacy/fleeti-telemetry-schema-specification.md)**: Big picture reference (not definitive)
-- **[🔀 Mapping Fields Database](../mapping-fields/README.md)**: How provider fields map to Fleeti fields
-- **[Field Mappings](../../2-field-mappings/fleeti-fields-catalog.md)**: Field catalog documentation
+- **Schema Specification**: Big picture reference (not definitive)
+- **🔀 Mapping Fields Database**: How provider fields map to Fleeti fields
+- **Provider Fields**: Field catalog documentation
 
 ---
 
-**Last Updated:** 2025-01-XX  
-**Status:** 🎯 Structure Created - Content To Be Developed
+# Fleeti Fields Database
 
+[Fleeti Fields (db)](https://www.notion.so/2c73e766c901801d9ec1dbd299d1e30e?pvs=21)
