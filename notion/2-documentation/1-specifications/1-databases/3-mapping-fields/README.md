@@ -43,7 +43,7 @@ Columns are organized into logical groups for clarity and YAML generation workfl
 | Column Name | Type | Required | Description | Example | Why It's Important |
 |-------------|------|----------|-------------|---------|-------------------|
 | **Priority JSON** | Text | Conditional | Structured priority data in JSON (for prioritized mappings) | `[{"priority": 1, "field": "can_speed"}, {"priority": 2, "field": "obd_speed"}]` | Machine-readable priority order. Used directly in YAML config generation. Required for `prioritized` mappings. |
-| **Calculation Formula** | Text | Conditional | Formula/logic (format varies by Calculation Type) | See below | Documents calculation logic. **Format varies by Calculation Type:**<br>- `function_reference`: Function call string (e.g., `derive_cardinal_direction(heading)`)<br>- `formula`: Parseable expression (e.g., `(field1 / field2) * 100`)<br>- `code_based`: Implementation description/algorithm. Required for `calculated` mappings. |
+| **Computation Approach** | Rollup | Conditional | Computation logic rolled up from Fleeti Fields Database relation | See below | **Notion rollup field** that automatically pulls the `Computation Approach` value from the related Fleeti Field entry. Documents computation logic from the Fleeti Fields Database. Used as comments in generated YAML configuration. Required for `calculated` mappings. When exported to CSV, appears as a regular column. |
 | **Transformation Rule** | Text | Conditional | Transformation logic (for transformed fields) | `(fuel.level_percent / 100) * static.tank_capacity_liters` | Documents transformation combining telemetry with static data. Required for `transformed` mappings. Used in config generation. |
 | **I/O Mapping Config** | Text | Conditional | I/O mapping configuration in JSON (for io_mapped fields) | `{"default_source": "io.inputs.individual.input_1", "installation_metadata": "asset.installation.ignition_input_number"}` | Configuration for I/O to semantic field mapping. Required for `io_mapped` type. Links raw I/O to semantic meaning via installation metadata. |
 | **Service Integration** | Text | Conditional | External service fields needed (for transformed/asset_integrated fields) | `asset.installation.ignition_input_number`, `static.tank_capacity_liters`, `geofence.id`, `driver.id` | Documents which external service fields are required. Can reference multiple services: Asset Service (properties, installation), Accessory Service, Geofence Service, Driver Service, etc. Required for `transformed` and `asset_integrated` mappings. Helps identify dependencies. |
@@ -53,7 +53,7 @@ Columns are organized into logical groups for clarity and YAML generation workfl
 | Column Name | Type | Required | Description | Example | Why It's Important |
 |-------------|------|----------|-------------|---------|-------------------|
 | **Dependencies** | Relation | ❌ No | Other Fleeti fields this depends on | Links to other Fleeti Fields | Tracks field dependencies using **Field Names** (stable identifiers). Critical for calculated/transformed fields. Ensures correct evaluation order. Prevents circular dependencies. Backend resolves Field Names to Field Paths at runtime. |
-| **Calculation Type** | Select | Conditional | How calculation is executed (for calculated mappings) | `formula` (parseable), `function_reference` (backend function), `code_based` (complex logic) | Determines how calculation is implemented. Required for `calculated` mappings. Critical for configuration generation and backend implementation. |
+| **Calculation Type** | Select | Conditional | How calculation is executed (for calculated mappings) | `formula` (parseable), `function_reference` (backend function) | Determines how calculation is implemented. Required for `calculated` mappings. Critical for configuration generation and backend implementation. Use `function_reference` for all function calls (default), `formula` only for simple math expressions. |
 
 ### Group 5: Error Handling & Defaults (Optional - System defaults available)
 
@@ -67,9 +67,8 @@ Columns are organized into logical groups for clarity and YAML generation workfl
 
 | Column Name | Type | Required | Description | Example | Why It's Important |
 |-------------|------|----------|-------------|---------|-------------------|
-| **Backend Function Name** | Text | Conditional | Function name in backend registry | `derive_cardinal_direction` | **Required** for `function_reference` type. Must exist in backend FUNCTION_REGISTRY. Links to backend implementation. Can be auto-extracted from Calculation Formula. Enables function lookup in backend. **Optional** for `code_based` (indicates planned function for future migration). |
+| **Backend Function Name** | Text | Conditional | Function name in backend registry | `derive_cardinal_direction` | **Required** for `function_reference` type. Must exist in backend FUNCTION_REGISTRY. Links to backend implementation. Can be auto-extracted from Computation Approach. Enables function lookup in backend. |
 | **Function Parameters** | Text | Conditional | Structured parameter mapping (JSON or structured text) | `{"heading": "location_heading"}` or `heading: location_heading` | **Required** for `function_reference` type. Maps function parameter names to **Fleeti Field Names** (stable identifiers). Format: `param_name: "fleeti_field_name"` or JSON `{"param_name": "fleeti_field_name"}`. Documents function signature and enables parameter resolution in YAML. Backend resolves Field Names to Field Paths at runtime. |
-| **Implementation Location** | Text | Conditional | File path or documentation link to backend code | `telemetry-transformation-service/src/functions/cardinal.py:derive_cardinal_direction` | **Required** for `code_based` and `function_reference` types. Points to actual code implementation. Enables code navigation and developer guidance. |
 
 ### Group 7: Metadata (Required)
 
@@ -101,16 +100,13 @@ Columns are organized into logical groups for clarity and YAML generation workfl
 - **Optional**: Unit Conversion (auto-generated if Provider Unit ≠ Fleeti Unit), Default Value, Error Handling, Provider Unit, Fleeti Unit, Fleeti Data Type
 
 ### Calculated Mapping
-- **Required**: Mapping Name, Fleeti Field, Fleeti Field Path, Provider, Mapping Type = `calculated`, Calculation Type, Calculation Formula, Status, Configuration Level
+- **Required**: Mapping Name, Fleeti Field, Fleeti Field Path, Provider, Mapping Type = `calculated`, Calculation Type, Computation Approach, Status, Configuration Level
 - **If Calculation Type = `function_reference`**: 
-  - **Required**: Backend Function Name (must exist in FUNCTION_REGISTRY), Function Parameters (structured mapping), Implementation Location
-  - **Optional**: Dependencies (should include all field paths referenced in Function Parameters)
-- **If Calculation Type = `formula`**:
-  - **Required**: Calculation Formula (parseable mathematical expression)
-  - **Optional**: Dependencies (should include all field paths referenced in formula)
-- **If Calculation Type = `code_based`**:
-  - **Required**: Implementation Location, Calculation Formula (implementation description)
-  - **Optional**: Backend Function Name (for future migration), Dependencies
+  - **Required**: Backend Function Name (must exist in FUNCTION_REGISTRY), Function Parameters (structured mapping)
+  - **Optional**: Dependencies (should include all field names referenced in Function Parameters)
+- **If Calculation Type = `formula`** (kept for future use):
+  - **Required**: Computation Approach (parseable mathematical expression)
+  - **Optional**: Dependencies (should include all field names referenced in formula)
 - **Optional (all types)**: Error Handling, Fleeti Unit, Fleeti Data Type
 
 ### Transformed Mapping
@@ -140,15 +136,14 @@ Columns are organized into logical groups for clarity and YAML generation workfl
 - **Provider Field Paths**: Must match Field Path from referenced Provider fields
 - **Mapping Type**: Must match requirements for selected type
 - **Priority JSON**: Required if Mapping Type = `prioritized`, must be valid JSON
-- **Calculation Formula**: Required if Mapping Type = `calculated` (format varies by Calculation Type)
+- **Computation Approach**: Required if Mapping Type = `calculated` (automatically populated via Notion rollup from Fleeti Fields Database relation)
 - **Calculation Type**: Required if Mapping Type = `calculated`
 - **Backend Function Name**: Required if Calculation Type = `function_reference` (must exist in backend FUNCTION_REGISTRY)
 - **Function Parameters**: Required if Calculation Type = `function_reference`, must be structured mapping (JSON or structured text)
-- **Implementation Location**: Required if Calculation Type = `code_based` or `function_reference`
 - **Transformation Rule**: Required if Mapping Type = `transformed`
 - **I/O Mapping Config**: Required if Mapping Type = `io_mapped`, must be valid JSON
 - **Service Integration**: Required if Mapping Type = `transformed` or `asset_integrated`
-- **Dependencies**: Cannot create circular dependencies; all field paths in Function Parameters must exist in Dependencies
+- **Dependencies**: Cannot create circular dependencies; all field names in Function Parameters must exist in Dependencies
 - **Status**: Cannot be `active` if required fields are missing
 - **Unit Conversion**: Can be auto-generated when Provider Unit ≠ Fleeti Unit
 
@@ -161,14 +156,14 @@ This table shows how database columns map to YAML configuration fields:
 | Database Column | YAML Field | Notes |
 |----------------|------------|-------|
 | **Fleeti Field** (Name) | YAML key (e.g., `location_latitude:`) | **Used as top-level mapping key** (stable identifier) |
-| **Fleeti Field Path** | YAML comment `# Field Path: ...` | For reference/documentation only (resolved at runtime) |
+| **Fleeti Field Path** | YAML comment `# Field Path: ...` | For reference/documentation only |
 | **Mapping Type** | `type: "direct"` / `"prioritized"` / etc. | Direct mapping |
 | **Provider Field Paths** | `source: "..."` or `sources: [...]` | Single path or array for prioritized |
 | **Priority JSON** | `sources: [{priority, field, path}]` | Parsed into sources array |
-| **Calculation Type** | `calculation_type: "function_reference"` / `"formula"` / `"code_based"` | Determines YAML structure |
+| **Calculation Type** | `calculation_type: "function_reference"` / `"formula"` | Determines YAML structure |
 | **Backend Function Name** | `function: "function_name"` | Only for `function_reference` |
 | **Function Parameters** | `parameters: {param: "field_name"}` | Structured mapping using **Field Names** (not Field Paths) |
-| **Calculation Formula** | `formula: "..."` | Format varies by Calculation Type (may use Field Names) |
+| **Computation Approach** | `# Computation Approach: ...` | YAML comment (multi-line support). Populated via Notion rollup from Fleeti Fields Database relation |
 | **Transformation Rule** | `transformation: "..."` | For `transformed` type |
 | **I/O Mapping Config** | `default_source`, `installation_metadata` | Parsed JSON for `io_mapped` |
 | **Service Integration** | `service_fields: [...]` | Array of external service field paths (can reference multiple services: asset, accessory, geofence, driver, etc.) |
@@ -177,7 +172,6 @@ This table shows how database columns map to YAML configuration fields:
 | **Fleeti Data Type** | `data_type: "..."` | Used in YAML |
 | **Error Handling** | `error_handling: "..."` | Optional, defaults applied if missing |
 | **Unit Conversion** | `unit_conversion: "..."` | Only if units differ |
-| **Implementation Location** | YAML comment `# Implementation: ...` | Documentation only (YAML comments) |
 
 **Important:** YAML uses **Field Names** (stable identifiers) as keys and in dependencies/parameters. Backend resolves Field Name → Field Path at runtime using a lookup table.
 
@@ -185,50 +179,51 @@ This table shows how database columns map to YAML configuration fields:
 
 1. **Database Entry Creation**
    - Create mapping entry with `Calculation Type = function_reference`
+   - Link to Fleeti Field via relation (automatically populates `Computation Approach` via Notion rollup)
    - Populate `Backend Function Name` (must exist in backend FUNCTION_REGISTRY)
-   - Populate `Function Parameters` as structured mapping: `{"param_name": "fleeti.field.path"}`
-   - Populate `Implementation Location` (file path)
+   - Populate `Function Parameters` as structured mapping: `{"param_name": "fleeti_field_name"}`
 
 2. **YAML Generation**
    - Generate YAML with `function` and `parameters` fields
-   - Add implementation guidance as YAML comments
+   - Add `Computation Approach` as YAML comments (multi-line support)
    - Include dependencies from `Dependencies` column
 
 3. **Backend Validation**
    - Backend loads YAML configuration
    - Validates function exists in FUNCTION_REGISTRY
    - Validates parameter names match function signature
-   - Validates field paths exist in dependencies
+   - Validates Field Names exist in dependencies
 
 4. **Backend Execution**
-   - Backend maps function parameters to field values using field paths
+   - Backend resolves Field Names to Field Paths using lookup table
+   - Backend maps function parameters to field values using resolved Field Paths
    - Calls function from registry with mapped parameters
    - Handles errors according to `error_handling` strategy
 
 ## Example: Function Reference Workflow
 
 **Database Entry:**
-- Fleeti Field: `location_cardinal_direction` (Field Name - stable)
-- Fleeti Field Path: `location.cardinal_direction` (for reference)
+- Fleeti Field: `location_cardinal_direction`
+- Fleeti Field Path: `location.cardinal_direction`
 - Calculation Type: `function_reference`
+- Computation Approach: `Derived from location.heading`
 - Backend Function Name: `derive_cardinal_direction`
-- Function Parameters: `{"heading": "location_heading"}` (Field Name, not Field Path)
-- Dependencies: `location_heading` (Field Name)
-- Implementation Location: `telemetry-transformation-service/src/functions/cardinal.py`
+- Function Parameters: `{"heading": "location_heading"}`
+- Dependencies: `location_heading`
 
 **Generated YAML:**
 ```yaml
-location_cardinal_direction:  # Field Name (stable), NOT Field Path
+location_cardinal_direction:
   type: "calculated"
   calculation_type: "function_reference"
   function: "derive_cardinal_direction"
   parameters:
     heading: "location_heading"  # Field Name, not Field Path
-  # Implementation: telemetry-transformation-service/src/functions/cardinal.py
-  # Field Path: location.cardinal_direction (resolved at runtime)
   dependencies:
     - "location_heading"  # Field Name, not Field Path
   data_type: "string"
+  # Field Path: location.cardinal_direction (resolved at runtime)
+  # Computation Approach: Derived from location.heading
 ```
 
 **Backend Execution:**

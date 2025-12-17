@@ -40,7 +40,7 @@ mappings:
   location_latitude:  # Field Name (never changes)
     type: "direct"
     source: "lat"
-    # Field Path: location.latitude (resolved at runtime)
+    # Field Path: location.latitude
 ```
 
 **Backend Lookup:**
@@ -86,14 +86,14 @@ Join on `Provider Fields` column (may be multiple, comma-separated) to retrieve:
 version: "1.0.0"
 provider: "navixy"
 mappings:
-  location_latitude:  # Field Name (stable) - NOT location.latitude (Field Path)
+  location_latitude:
     type: "direct"
     source: "lat"
     unit: "degrees"
     data_type: "number"
-    # Field Path: location.latitude (resolved at runtime)
+    # Field Path: location.latitude
   
-  motion_speed:  # Field Name (stable)
+  motion_speed:
     type: "prioritized"
     sources:
       - priority: 1
@@ -110,7 +110,7 @@ mappings:
     error_handling: "use_fallback"
     # Field Path: motion.speed (resolved at runtime)
   
-  location_cardinal_direction:  # Field Name (stable)
+  location_cardinal_direction:
     type: "calculated"
     calculation_type: "function_reference"
     function: "derive_cardinal_direction"
@@ -132,60 +132,115 @@ The YAML configuration supports a **Function Registry Pattern** that makes confi
 2. **Parameter Mapping**: Structured mapping of function parameters to Fleeti field names (stable identifiers)
 3. **Validation**: Backend can validate function existence and parameter correctness
 4. **Implementation Guidance**: YAML comments provide developer guidance without breaking parsing
-5. **Stable Configuration**: Uses Field Names (stable) instead of Field Paths (can change), making configs resilient to path changes
+5. **Stable Configuration**: Uses Field Names instead of Field Paths, making configs resilient to path changes
 
 ### Calculation Execution Modes
 
-There are three calculation execution modes, each with different YAML structures:
+There are two calculation execution modes, each with different YAML structures:
 
-#### 1. Function Reference (`function_reference`) - **Preferred**
+#### 1. Function Reference (`function_reference`) - **Default for All Calculated Fields**
 
-**When to Use:** Function already exists in backend function registry
+**When to Use:** 
+- Function exists (or should exist) in backend function registry
+- **Default choice** for all calculated fields - use this for function calls
+- Can be implemented as a pure function (takes inputs, returns output)
+- Reusable across providers or contexts
+- All calculated logic should use `function_reference` - functions can handle complex logic internally
+
+**Decision Rule:** Use `function_reference` for all calculated fields that require function calls. Use `formula` only for simple mathematical expressions that can be parsed and evaluated directly.
 
 **YAML Structure:**
 ```yaml
 mappings:
-  {Fleeti Field Name}:  # Field Name (stable), NOT Field Path
+  {Fleeti Field Name}:
     type: "calculated"
     calculation_type: "function_reference"
     function: "function_name"  # Must exist in FUNCTION_REGISTRY
-    parameters:                # Maps function params to Field Names (stable)
+    formula: "(field1 / field2) * 100"  # Optional: embed formula if available and embeddable
+    parameters:
       param1: "fleeti_field_name_1"
       param2: "fleeti_field_name_2"
     dependencies:
       - "fleeti_field_name_1"  # Field Names, not Field Paths
       - "fleeti_field_name_2"
     data_type: {Fleeti Data Type}
-    # Field Path: {Fleeti Field Path} (resolved at runtime)
+    # Implementation: path/to/implementation.py
+    # Description: What the function does
+    # Algorithm: Step-by-step algorithm description
+    # Field Path: {Fleeti Field Path}
 ```
 
-**Example:**
+**Example 1: Function reference without formula**
 ```yaml
 mappings:
-  location_cardinal_direction:  # Field Name (stable)
+  location_cardinal_direction:
     type: "calculated"
     calculation_type: "function_reference"
     function: "derive_cardinal_direction"
     parameters:
       heading: "location_heading"  # Field Name, not Field Path
-    # Implementation guidance (YAML comments - ignored by parser)
     # Implementation: telemetry-transformation-service/src/functions/cardinal.py
     # Description: Converts heading angle (0-359°) to cardinal direction
-    # Algorithm: Add 22.5° offset, divide by 45°, map to 8 directions
+    # Algorithm: Add 22.5° offset, divide by 45°, map to 8 directions (N, NE, E, SE, S, SW, W, NW)
     # Field Path: location.cardinal_direction (resolved at runtime)
     dependencies:
       - "location_heading"  # Field Name, not Field Path
     data_type: "string"
 ```
 
-#### 2. Formula (`formula`) - **For Simple Math**
+**Example 2: Function reference with embeddable formula**
+```yaml
+mappings:
+  fuel_consumption_rate:
+    type: "calculated"
+    calculation_type: "function_reference"
+    function: "calculate_fuel_consumption_rate"
+    formula: "(fuel_consumed_trip / trip_distance) * 100"  # Optional: embed formula if available
+    parameters:
+      fuel_consumed: "fuel_consumed_trip"
+      distance: "trip_distance"
+    # Implementation: telemetry-transformation-service/src/functions/fuel.py
+    # Description: Calculates fuel consumption rate as percentage
+    # Algorithm: Divide fuel consumed by trip distance, multiply by 100
+    # Field Path: fuel.consumption_rate (resolved at runtime)
+    dependencies:
+      - "fuel_consumed_trip"
+      - "trip_distance"
+    data_type: "number"
+```
 
-**When to Use:** Simple mathematical expressions that can be parsed and evaluated directly
+**Example 3: Function reference with complex logic (implementation details in comments)**
+```yaml
+mappings:
+  location_geocoded_address:
+    type: "calculated"
+    calculation_type: "function_reference"
+    function: "geocode_location"
+    parameters:
+      latitude: "location_latitude"
+      longitude: "location_longitude"
+    # Implementation: telemetry-transformation-service/src/functions/geocoding.py
+    # Description: Converts lat/lng to formatted address using Google Geocoding API
+    # Algorithm:
+    #   1. Call Google Geocoding API with lat/lng
+    #   2. Extract formatted_address from response
+    #   3. Cache result for 24 hours (same location)
+    #   4. Return formatted address string
+    # Field Path: location.geocoded_address (resolved at runtime)
+    dependencies:
+      - "location_latitude"
+      - "location_longitude"
+    data_type: "string"
+```
+
+#### 2. Formula (`formula`) - **For Simple Math Only**
+
+**When to Use:** Simple mathematical expressions that can be parsed and evaluated directly without requiring a function call. Use sparingly - prefer `function_reference` for most calculations.
 
 **YAML Structure:**
 ```yaml
 mappings:
-  {Fleeti Field Name}:  # Field Name (stable)
+  {Fleeti Field Name}:
     type: "calculated"
     calculation_type: "formula"
     formula: "(field_name1 / field_name2) * 100"  # Parseable expression using Field Names
@@ -193,13 +248,13 @@ mappings:
       - "field_name1"  # Field Names, not Field Paths
       - "field_name2"
     data_type: {Fleeti Data Type}
-    # Field Path: {Fleeti Field Path} (resolved at runtime)
+    # Field Path: {Fleeti Field Path}
 ```
 
 **Example:**
 ```yaml
 mappings:
-  fuel_consumption_rate:  # Field Name (stable)
+  fuel_consumption_rate:
     type: "calculated"
     calculation_type: "formula"
     formula: "(fuel_consumed_trip / trip_distance) * 100"  # Field Names in formula
@@ -210,45 +265,7 @@ mappings:
     # Field Path: fuel.consumption_rate (resolved at runtime)
 ```
 
-#### 3. Code-Based (`code_based`) - **Temporary/Development**
-
-**When to Use:** Complex logic requiring implementation, or function not yet in registry
-
-**YAML Structure:**
-```yaml
-mappings:
-  {Fleeti Field Name}:  # Field Name (stable)
-    type: "calculated"
-    calculation_type: "code_based"
-    formula: "..."  # Implementation description/algorithm
-    implementation: "path/to/implementation.py"  # Where to implement
-    dependencies:
-      - {Dependency Field Name}  # Field Names, not Field Paths
-    data_type: {Fleeti Data Type}
-    # Field Path: {Fleeti Field Path} (resolved at runtime)
-```
-
-**Example:**
-```yaml
-mappings:
-  location_geocoded_address:  # Field Name (stable)
-    type: "calculated"
-    calculation_type: "code_based"
-    formula: "Use external API (Google Geocoding) to convert lat/lng to address"
-    implementation: "telemetry-transformation-service/src/functions/geocoding.py"
-    # Implementation guidance (YAML comments)
-    # Function to implement: geocode_location(latitude: float, longitude: float) -> str
-    # Steps:
-    #   1. Call Google Geocoding API with lat/lng
-    #   2. Extract formatted_address from response
-    #   3. Cache result for 24 hours (same location)
-    #   4. Return formatted address string
-    # Field Path: location.geocoded_address (resolved at runtime)
-    dependencies:
-      - "location_latitude"  # Field Names, not Field Paths
-      - "location_longitude"
-    data_type: "string"
-```
+**Note:** For most calculations, prefer `function_reference` even if a formula exists. The `formula` type should only be used for very simple expressions that don't warrant a function call. If a formula can be embedded, include it as an optional `formula` parameter in `function_reference` instead.
 
 ### Parameter Mapping Format
 
@@ -299,12 +316,12 @@ These comments are:
 
 ```yaml
 mappings:
-  {Fleeti Field Name}:  # Field Name (stable), NOT Field Path
+  {Fleeti Field Name}:
     type: "direct"
     source: {Provider Field Paths}
     unit: {Fleeti Unit}
     data_type: {Fleeti Data Type}
-    # Field Path: {Fleeti Field Path} (resolved at runtime)
+    # Field Path: {Fleeti Field Path}
 ```
 
 **Optional Columns (if provided):**
@@ -316,13 +333,13 @@ mappings:
 
 ```yaml
 mappings:
-  location_latitude:  # Field Name (stable)
+  location_latitude:
     type: "direct"
     source: "lat"
     unit: "degrees"
     data_type: "number"
     default: null
-    # Field Path: location.latitude (resolved at runtime)
+    # Field Path: location.latitude
 ```
 
 **Note:** `unit_conversion` should only be included if Provider Unit ≠ Fleeti Unit and both are non-empty. See Auto-Generation Rules section for details.
@@ -349,7 +366,7 @@ mappings:
 
 ```yaml
 mappings:
-  {Fleeti Field Name}:  # Field Name (stable), NOT Field Path
+  {Fleeti Field Name}:
     type: "prioritized"
     sources:
       - priority: {priority}
@@ -359,7 +376,7 @@ mappings:
     unit: {Fleeti Unit}
     data_type: {Fleeti Data Type}
     error_handling: {Error Handling or "use_fallback"}
-    # Field Path: {Fleeti Field Path} (resolved at runtime)
+    # Field Path: {Fleeti Field Path}
 ```
 
 **Auto-Generation Rules:**
@@ -370,7 +387,7 @@ mappings:
 
 ```yaml
 mappings:
-  location_precision_hdop:  # Field Name (stable)
+  location_precision_hdop:
     type: "prioritized"
     sources:
       - priority: 1
@@ -393,7 +410,7 @@ mappings:
 - `Fleeti Field` (Name - stable identifier)
 - `Fleeti Field Path` (for reference/documentation)
 - `Calculation Type` (determines YAML structure)
-- `Calculation Formula` (format varies by Calculation Type)
+- `Computation Approach` (automatically populated via Notion rollup from Fleeti Fields Database relation)
 - `Fleeti Data Type`
 
 **YAML Generation varies by Calculation Type:**
@@ -404,114 +421,88 @@ mappings:
 - `Backend Function Name` → Maps to `function` field
 - `Function Parameters` → Maps to `parameters` field (structured mapping using Field Names)
 
+**Optional Additional Columns:**
+- `Computation Approach` → Maps to `# Computation Approach:` comment (multi-line support)
+
 **YAML Generation:**
 
 ```yaml
 mappings:
-  {Fleeti Field Name}:  # Field Name (stable), NOT Field Path
+  {Fleeti Field Name}:
     type: "calculated"
     calculation_type: "function_reference"
     function: {Backend Function Name}  # Must exist in FUNCTION_REGISTRY
-    parameters:                        # Structured: param_name -> Field Name (stable)
+    parameters:
       {param1}: "{fleeti_field_name_1}"
       {param2}: "{fleeti_field_name_2}"
     dependencies:
       - "{fleeti_field_name_1}"  # Field Names, not Field Paths
       - "{fleeti_field_name_2}"
     data_type: {Fleeti Data Type}
-    # Field Path: {Fleeti Field Path} (resolved at runtime)
+    # Field Path: {Fleeti Field Path}
+    # Computation Approach: {Computation Approach from Fleeti Fields CSV}
 ```
 
-**Example:**
+**Example 1: Function reference with computation approach**
 
 ```yaml
 mappings:
-  location_cardinal_direction:  # Field Name (stable)
+  location_cardinal_direction:
     type: "calculated"
     calculation_type: "function_reference"
     function: "derive_cardinal_direction"
     parameters:
       heading: "location_heading"  # Field Name, not Field Path
-    # Implementation: telemetry-transformation-service/src/functions/cardinal.py
-    # Description: Converts heading (0-359°) to cardinal direction
-    # Field Path: location.cardinal_direction (resolved at runtime)
     dependencies:
       - "location_heading"  # Field Name, not Field Path
     data_type: "string"
+    # Field Path: location.cardinal_direction (resolved at runtime)
+    # Computation Approach: Derived from location.heading
+    #   dirs = ["N","NE","E","SE","S","SW","W","NW"];
+    #   cardinal = dirs[Math.floor((heading + 22.5) % 360 / 45)];
 ```
 
-#### If `calculation_type = "formula"`:
+**Example 2: Function reference with multi-line computation approach**
+
+```yaml
+mappings:
+  location_geocoded_address:
+    type: "calculated"
+    calculation_type: "function_reference"
+    function: "geocode_location"
+    parameters:
+      latitude: "location_latitude"
+      longitude: "location_longitude"
+    dependencies:
+      - "location_latitude"
+      - "location_longitude"
+    data_type: "string"
+    # Field Path: location.geocoded_address (resolved at runtime)
+    # Computation Approach: Use external API (Google) to convert latitude and longitude into geocoded address.
+```
+
+#### If `calculation_type = "formula"` (kept for future use):
 
 **Required Additional Columns:**
-- `Calculation Formula` → Parseable mathematical expression (using Field Names)
+- `Computation Approach` → Parseable mathematical expression (using Field Names)
 
 **YAML Generation:**
 
 ```yaml
 mappings:
-  {Fleeti Field Name}:  # Field Name (stable)
+  {Fleeti Field Name}:
     type: "calculated"
     calculation_type: "formula"
-    formula: {Calculation Formula}  # Parseable expression using Field Names
+    formula: {Computation Approach}  # Parseable expression using Field Names
     dependencies:
       - {Dependency Field Name 1}  # Field Names, not Field Paths
       - {Dependency Field Name 2}
     data_type: {Fleeti Data Type}
-    # Field Path: {Fleeti Field Path} (resolved at runtime)
+    # Field Path: {Fleeti Field Path}
 ```
 
-**Example:**
+**Note:** The `formula` type is kept for future use. Currently, all calculated fields use `function_reference` type with computation approach stored as comments.
 
-```yaml
-mappings:
-  fuel_consumption_rate:  # Field Name (stable)
-    type: "calculated"
-    calculation_type: "formula"
-    formula: "(fuel_consumed_trip / trip_distance) * 100"  # Field Names in formula
-    dependencies:
-      - "fuel_consumed_trip"  # Field Names
-      - "trip_distance"
-    data_type: "number"
-    # Field Path: fuel.consumption_rate (resolved at runtime)
-```
-
-#### If `calculation_type = "code_based"`:
-
-**Required Additional Columns:**
-- `Calculation Formula` → Implementation description/algorithm
-- `Implementation Location` → Maps to `implementation` field
-
-**YAML Generation:**
-
-```yaml
-mappings:
-  {Fleeti Field Name}:  # Field Name (stable)
-    type: "calculated"
-    calculation_type: "code_based"
-    formula: {Calculation Formula}  # Implementation description
-    implementation: {Implementation Location}
-    dependencies:
-      - {Dependency Field Name 1}  # Field Names, not Field Paths
-    data_type: {Fleeti Data Type}
-    # Field Path: {Fleeti Field Path} (resolved at runtime)
-```
-
-**Example:**
-
-```yaml
-mappings:
-  location_geocoded_address:  # Field Name (stable)
-    type: "calculated"
-    calculation_type: "code_based"
-    formula: "Use external API (Google) to convert latitude and longitude into geocoded address."
-    implementation: "telemetry-transformation-service/src/functions/geocoding.py"
-    # Function to implement: geocode_location(latitude: float, longitude: float) -> str
-    # Field Path: location.geocoded_address (resolved at runtime)
-    dependencies:
-      - "location_latitude"  # Field Names, not Field Paths
-      - "location_longitude"
-    data_type: "string"
-```
 
 ---
 
@@ -528,21 +519,21 @@ mappings:
 
 ```yaml
 mappings:
-  {Fleeti Field Name}:  # Field Name (stable)
+  {Fleeti Field Name}:
     type: "transformed"
     transformation: {Transformation Rule}  # May reference Field Names
     service_fields:
       - {Service Field 1}  # Can be from Asset, Accessory, Geofence, Driver, etc.
       - {Service Field 2}
     data_type: {Fleeti Data Type}
-    # Field Path: {Fleeti Field Path} (resolved at runtime)
+    # Field Path: {Fleeti Field Path}
 ```
 
 **Example:**
 
 ```yaml
 mappings:
-  fuel_level_liters:  # Field Name (stable)
+  fuel_level_liters:
     type: "transformed"
     transformation: "(fuel_level_percent / 100) * static.tank_capacity_liters"  # Field Names in formula
     service_fields:
@@ -553,7 +544,7 @@ mappings:
     # Field Path: fuel.level_liters (resolved at runtime)
 
 mappings:
-  geofence_name:  # Field Name (stable)
+  geofence_name:
     type: "transformed"
     transformation: "geofence.name"  # References Geofence Service field
     service_fields:
@@ -582,19 +573,19 @@ mappings:
 
 ```yaml
 mappings:
-  {Fleeti Field Name}:  # Field Name (stable)
+  {Fleeti Field Name}:
     type: "io_mapped"
     default_source: {default_source from JSON}
     installation_metadata: {installation_metadata from JSON}
     data_type: {Fleeti Data Type}
-    # Field Path: {Fleeti Field Path} (resolved at runtime)
+    # Field Path: {Fleeti Field Path}
 ```
 
 **Example:**
 
 ```yaml
 mappings:
-  power_ignition:  # Field Name (stable)
+  power_ignition:
     type: "io_mapped"
     default_source: "io.inputs.individual.input_1"
     installation_metadata: "asset.installation.ignition_input_number"
@@ -616,20 +607,20 @@ mappings:
 
 ```yaml
 mappings:
-  {Fleeti Field Name}:  # Field Name (stable)
+  {Fleeti Field Name}:
     type: "asset_integrated"
     service_fields:
       - {Service Field 1}  # Can be from Asset, Accessory, Geofence, Driver, etc.
       - {Service Field 2}
     data_type: {Fleeti Data Type}
-    # Field Path: {Fleeti Field Path} (resolved at runtime)
+    # Field Path: {Fleeti Field Path}
 ```
 
 **Example:**
 
 ```yaml
 mappings:
-  asset_installation_ignition_input_number:  # Field Name (stable)
+  asset_installation_ignition_input_number:
     type: "asset_integrated"
     service_fields:
       - "asset.installation.ignition_input_number"  # Asset Service field
@@ -637,7 +628,7 @@ mappings:
     # Field Path: asset.installation.ignition_input_number (resolved at runtime)
 
 mappings:
-  accessory_sensor_type:  # Field Name (stable)
+  accessory_sensor_type:
     type: "asset_integrated"
     service_fields:
       - "accessory.id"  # Accessory Service field
@@ -699,7 +690,7 @@ FIELD_NAME_TO_PATH = {
 }
 
 def resolve_field_path(field_name):
-    """Resolve Field Name (stable) to Field Path (current location)"""
+    """Resolve Field Name to Field Path"""
     return FIELD_NAME_TO_PATH.get(field_name, field_name)
 ```
 
@@ -730,7 +721,7 @@ def load_mapping_config(yaml_path):
     
     config = yaml.safe_load(open(yaml_path))
     
-    for field_name, mapping in config["mappings"].items():  # field_name is Field Name (stable)
+    for field_name, mapping in config["mappings"].items():
         # Resolve Field Name to Field Path for reference
         field_path = resolve_field_path(field_name)
         
@@ -760,7 +751,7 @@ def load_mapping_config(yaml_path):
                             f"Required parameter '{param_name}' missing for function '{func_name}'"
                         )
                 
-                # Validate Field Names exist in dependencies (Field Names, not Field Paths)
+                # Validate Field Names exist in dependencies
                 for param_name, field_name_param in mapping["parameters"].items():
                     if field_name_param not in mapping.get("dependencies", []):
                         raise ValueError(
@@ -800,12 +791,6 @@ def execute_calculated_field(mapping, telemetry_data):
     elif mapping["calculation_type"] == "formula":
         # Parse and evaluate formula
         return evaluate_formula(mapping["formula"], telemetry_data, mapping["dependencies"])
-    
-    elif mapping["calculation_type"] == "code_based":
-        # This should not be executed - function needs to be implemented first
-        raise NotImplementedError(
-            f"Code-based calculation for '{mapping.get('implementation')}' not yet implemented"
-        )
 ```
 
 ### Parameter Mapping Resolution
@@ -1005,7 +990,7 @@ unit_conversion: "Convert from - to none"           # Empty unit
 ### Input: Mapping Fields CSV Row
 
 ```csv
-Mapping Name,Fleeti Field,Fleeti Field Path,Provider,Mapping Type,Status,Configuration Level,Provider Fields,Provider Field Paths,Provider Unit,Priority JSON,Calculation Formula,Transformation Rule,I/O Mapping Config,Service Integration,Dependencies,Calculation Type,Default Value,Error Handling,Unit Conversion,Backend Function Name,Function Parameters,Implementation Location,Fleeti Unit,Fleeti Data Type,Version Added,Last Modified,Notes
+Mapping Name,Fleeti Field,Fleeti Field Path,Provider,Mapping Type,Status,Configuration Level,Provider Fields,Provider Field Paths,Provider Unit,Priority JSON,Computation Approach,Transformation Rule,I/O Mapping Config,Service Integration,Dependencies,Calculation Type,Default Value,Error Handling,Unit Conversion,Backend Function Name,Function Parameters,Fleeti Unit,Fleeti Data Type,Version Added,Last Modified,Notes
 location.precision.hdop from Navixy,location_precision_hdop,location.precision.hdop,navixy,prioritized,planned,default,"hdop, avl_io_182","hdop, params.avl_io_182","none, none","[{""priority"": 1, ""field"": ""hdop""}, {""priority"": 2, ""field"": ""avl_io_182""}]",,,,,,,,,use_fallback,,,none,number,1.0.0,2025-01-16,Prioritized mapping: Horizontal Dilution of Precision
 ```
 

@@ -1,0 +1,130 @@
+version: "1.0.0"
+provider: "navixy"
+mappings:
+  location_latitude:
+    type: direct
+    source: lat
+    unit: degrees
+    data_type: number
+    error_handling: return_null
+    # Field Path: location.latitude
+
+  location_longitude:
+    type: direct
+    source: lng
+    unit: degrees
+    data_type: number
+    error_handling: return_null
+    # Field Path: location.longitude
+
+  location_altitude:
+    type: direct
+    source: alt
+    unit: meters
+    data_type: number
+    error_handling: return_null
+    # Field Path: location.altitude
+
+  location_heading:
+    type: direct
+    source: heading
+    unit: degrees
+    data_type: number
+    error_handling: return_null
+    # Field Path: location.heading
+
+  location_precision_fix_quality:
+    type: direct
+    source: params.avl_io_69
+    unit: none
+    data_type: number
+    error_handling: return_null
+    # Field Path: location.precision.fix_quality
+
+  location_precision_satellites:
+    type: direct
+    source: satellites
+    unit: none
+    data_type: number
+    error_handling: return_null
+    # Field Path: location.precision.satellites
+
+  location_precision_hdop:
+    type: prioritized
+    sources:
+    - priority: 1
+      field: hdop
+      path: hdop
+    - priority: 2
+      field: avl_io_182
+      path: params.avl_io_182
+    unit: none
+    data_type: number
+    error_handling: use_fallback
+    # Field Path: location.precision.hdop
+
+  location_precision_pdop:
+    type: prioritized
+    sources:
+    - priority: 1
+      field: pdop
+      path: pdop
+    - priority: 2
+      field: avl_io_181
+      path: params.avl_io_181
+    unit: none
+    data_type: number
+    error_handling: use_fallback
+    # Field Path: location.precision.pdop
+
+  location_cardinal_direction:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_cardinal_direction
+    parameters:
+      heading: location_heading
+    dependencies:
+    - location_heading
+    data_type: string
+    error_handling: return_null
+    # Field Path: location.cardinal_direction
+    # Computation Approach: Derived from location.heading
+    # dirs = ["N","NE","E","SE","S","SW","W","NW"];
+    # cardinal = dirs[Math.floor((heading + 22.5) % 360 / 45)];
+    # Description: Calculated field: Cardinal direction (N, NE, E, SE, S, SW, W, NW)
+
+  location_geocoded_address:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_geocoded_address
+    parameters:
+      latitude: location_latitude
+      longitude: location_longitude
+    dependencies:
+    - location_latitude
+    - location_longitude
+    data_type: string
+    error_handling: return_null
+    # Field Path: location.geocoded_address
+    # Computation Approach: Use external API (Google) to convert latitude and longitude into geocoded address.
+    # Description: Calculated field: Single string representation of the location
+
+  location_last_changed_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_last_changed_at
+    parameters:
+      latitude: location_latitude
+      longitude: location_longitude
+    dependencies:
+    - location_latitude
+    - location_longitude
+    data_type: datetime
+    error_handling: return_null
+    # Field Path: location.last_changed_at
+    # Computation Approach: Backend compares current position with previous.
+    # if (lat !== prev.lat || lon !== prev.lon) {
+    # location_last_changed_at= now();
+    # }
+    # Description: Calculated field: Unix Epoch timestamp (milliseconds, number) when location/heading last changed significantly (threshold applied to filter GPS noise). Used for dwell-time calculations and "parked since X" features.
+

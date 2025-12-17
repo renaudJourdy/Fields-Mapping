@@ -157,19 +157,16 @@ def parse_priority_order(computation_approach, provider_fields):
     return [(i+1, field) for i, field in enumerate(provider_fields)]
 
 def determine_calculation_type(computation_approach, fleeti_name):
-    """Determine calculation type from Computation Approach (improved detection)"""
-    if not computation_approach:
-        return None
+    """Determine calculation type from Computation Approach.
+    
+    Returns 'formula' for simple parseable mathematical expressions.
+    Returns 'function_reference' for all other computation approaches.
+    Returns None if computation_approach is empty (invalid mapping).
+    """
+    if not computation_approach or not computation_approach.strip():
+        return None  # Cannot determine type without computation approach
     
     computation_lower = computation_approach.lower()
-    
-    # Check for API calls (external services) - check first before formula
-    if 'api' in computation_lower or 'external' in computation_lower:
-        return 'code_based'
-    
-    # Check for code patterns (complex logic)
-    if '=' in computation_approach or 'if (' in computation_approach or 'Math.' in computation_approach:
-        return 'code_based'
     
     # Check for parseable formulas (simple math expressions)
     # Must be a mathematical expression, not a sentence
@@ -181,22 +178,15 @@ def determine_calculation_type(computation_approach, fleeti_name):
             'use' not in computation_lower and
             'convert' not in computation_lower and
             'from' not in computation_lower and
+            'api' not in computation_lower and
             len(computation_approach.split()) < 10):  # Short expressions only
             return 'formula'
     
-    # Check for function references (patterns like "Derived from", "Convert from")
-    # For now, default to code_based until function is implemented
-    # Will be migrated to function_reference later
-    if any(pattern in computation_lower for pattern in ['derived from', 'convert from', 'calculate from']):
-        return 'code_based'  # Will be migrated to function_reference when function is implemented
-    
-    return 'code_based'  # Default to code_based
+    # All other calculated fields use function_reference type
+    return 'function_reference'
 
 def extract_backend_function_name(fleeti_name, fleeti_path, computation_approach, calculation_type):
     """Extract backend function name for function_reference type"""
-    if calculation_type != 'function_reference':
-        return ''
-    
     computation_lower = computation_approach.lower() if computation_approach else ''
     
     # Try to extract from computation approach
@@ -253,25 +243,6 @@ def extract_function_parameters(dependency_names, computation_approach, calculat
     
     return json.dumps(params_dict)
 
-def generate_implementation_location(fleeti_field, calculation_type):
-    """Generate implementation location for code_based type"""
-    if calculation_type != 'code_based':
-        return ''
-    
-    category = fleeti_field.get('Category', 'general')
-    
-    # Map category to function module
-    category_module_map = {
-        'location': 'cardinal',
-        'motion': 'motion',
-        'fuel': 'fuel',
-        'power': 'power',
-        'status': 'status',
-        'general': 'general'
-    }
-    
-    module = category_module_map.get(category.lower(), 'general')
-    return f"telemetry-transformation-service/src/functions/{module}.py"
 
 def read_csv_file(file_path):
     """Read CSV file and return list of dictionaries"""
@@ -341,16 +312,37 @@ def main():
             dependency_field_names = keep_dependencies_as_field_names(dependency_names, fleeti_lookup)
             calculation_type = determine_calculation_type(computation_approach, fleeti_name)
             
-            # Extract backend function name and parameters for function_reference
-            backend_function_name = extract_backend_function_name(
-                fleeti_name, fleeti_path, computation_approach, calculation_type
-            )
-            function_parameters = extract_function_parameters(
-                dependency_field_names, computation_approach, calculation_type
-            )
-            implementation_location = generate_implementation_location(
-                fleeti_field, calculation_type
-            )
+            # Skip mapping if no computation approach (invalid calculated field)
+            if not calculation_type:
+                print(f"Warning: Skipping calculated field '{fleeti_name}' - missing Computation Approach")
+                continue
+            
+            # Extract backend function name and parameters only for function_reference type
+            backend_function_name = ''
+            function_parameters = ''
+            
+            if calculation_type == 'function_reference':
+                # For function_reference type, both function name and parameters are required
+                # Skip if dependencies are missing (cannot generate valid function parameters)
+                if not dependency_field_names:
+                    print(f"Warning: Skipping calculated field '{fleeti_name}' - missing Dependencies (required for function_reference)")
+                    continue
+                
+                # Extract backend function name and parameters for function_reference
+                backend_function_name = extract_backend_function_name(
+                    fleeti_name, fleeti_path, computation_approach, calculation_type
+                )
+                function_parameters = extract_function_parameters(
+                    dependency_field_names, computation_approach, calculation_type
+                )
+                
+                # Validate that function_reference has both function name and parameters
+                if not backend_function_name:
+                    print(f"Warning: Skipping calculated field '{fleeti_name}' - missing Backend Function Name")
+                    continue
+                if not function_parameters:
+                    print(f"Warning: Skipping calculated field '{fleeti_name}' - missing Function Parameters")
+                    continue
             
             mapping_entry = {
                 'Mapping Name': f"{fleeti_path} from {provider_name.capitalize()}",
@@ -364,18 +356,17 @@ def main():
                 'Provider Field Paths': '',  # Empty for calculated
                 'Provider Unit': '',  # Empty for calculated
                 'Priority JSON': '',
-                'Calculation Formula': computation_approach,
+                'Computation Approach': computation_approach,
                 'Transformation Rule': '',
                 'I/O Mapping Config': '',
                 'Service Integration': '',
-                'Dependencies': ', '.join(dependency_field_names) if dependency_field_names else '',  # Use Field Names (stable), not Field Paths
+                'Dependencies': ', '.join(dependency_field_names) if dependency_field_names else '',
                 'Calculation Type': calculation_type or '',
                 'Default Value': '',
                 'Error Handling': '',
                 'Unit Conversion': '',
                 'Backend Function Name': backend_function_name,
                 'Function Parameters': function_parameters,
-                'Implementation Location': implementation_location,
                 'Fleeti Unit': fleeti_unit,
                 'Fleeti Data Type': fleeti_data_type,
                 'Version Added': '1.0.0',
@@ -406,7 +397,7 @@ def main():
                 'Provider Field Paths': ', '.join(provider_field_paths),
                 'Provider Unit': ', '.join([u if u else 'none' for u in provider_units]),
                 'Priority JSON': priority_json,
-                'Calculation Formula': '',
+                'Computation Approach': '',
                 'Transformation Rule': '',
                 'I/O Mapping Config': '',
                 'Service Integration': '',
@@ -417,7 +408,6 @@ def main():
                 'Unit Conversion': unit_conversion,
                 'Backend Function Name': '',
                 'Function Parameters': '',
-                'Implementation Location': '',
                 'Fleeti Unit': fleeti_unit,
                 'Fleeti Data Type': fleeti_data_type,
                 'Version Added': '1.0.0',
@@ -445,7 +435,7 @@ def main():
                 'Provider Field Paths': provider_field_paths[0] if provider_field_paths else provider_field_name,
                 'Provider Unit': provider_units[0] if provider_units else '',
                 'Priority JSON': '',
-                'Calculation Formula': '',
+                'Computation Approach': '',
                 'Transformation Rule': '',
                 'I/O Mapping Config': '',
                 'Service Integration': '',
@@ -456,7 +446,6 @@ def main():
                 'Unit Conversion': unit_conversion,
                 'Backend Function Name': '',
                 'Function Parameters': '',
-                'Implementation Location': '',
                 'Fleeti Unit': fleeti_unit,
                 'Fleeti Data Type': fleeti_data_type,
                 'Version Added': '1.0.0',
@@ -513,13 +502,13 @@ def main():
             # Group 2: Source Fields
             'Provider Fields', 'Provider Field Paths', 'Provider Unit',
             # Group 3: Mapping Logic
-            'Priority JSON', 'Calculation Formula', 'Transformation Rule', 'I/O Mapping Config', 'Service Integration',
+            'Priority JSON', 'Computation Approach', 'Transformation Rule', 'I/O Mapping Config', 'Service Integration',
             # Group 4: Dependencies & Execution Order
             'Dependencies', 'Calculation Type',
             # Group 5: Error Handling & Defaults
             'Default Value', 'Error Handling', 'Unit Conversion',
             # Group 6: Backend Implementation
-            'Backend Function Name', 'Function Parameters', 'Implementation Location',
+            'Backend Function Name', 'Function Parameters',
             # Group 7: Metadata
             'Fleeti Unit', 'Fleeti Data Type', 'Version Added', 'Last Modified', 'Notes'
         ]
