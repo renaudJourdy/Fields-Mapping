@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 """
-Generate Mapping Fields Database CSV from Provider Fields and Fleeti Fields exports.
-Follows the specifications in docs/prompts/GENERATE_MAPPING_FIELDS_PROMPT.md
+Generate Mapping Fields Database CSV from Fleeti Fields Database exports.
+
+This script transforms Fleeti Fields Database CSV exports (from Notion) into Mapping Fields
+Database entries. It generates mapping rules that link provider fields to Fleeti fields,
+determining transformation logic, priorities, and calculation rules.
+
+Input:  input/Fleeti Fields (db) 12-18-25.csv (Notion export format)
+Output: Mapping-Fields-Navixy-2025-01-16.csv (provider-specific mapping configuration)
+
+See specifications/MAPPING_FIELDS_GENERATION_SPEC.md for detailed documentation.
 """
 
 import csv
@@ -10,18 +18,31 @@ import re
 from datetime import date
 from pathlib import Path
 
-# Input files - CSVs are in the respective database export folders
+# Input file - Fleeti Fields CSV is in the input folder
 # Script is in: 3-mapping-fields/scripts/
-# Provider Fields CSV is in: 1-provider-fields/export/
-# Fleeti Fields CSV is in: 2-fleeti-fields/export/
-PROVIDER_FIELDS_CSV = Path(__file__).parent.parent.parent / "1-provider-fields" / "export" / "Provider Field (db) 12-16-25.csv"
-FLEETI_FIELDS_CSV = Path(__file__).parent.parent.parent / "2-fleeti-fields" / "export" / "Fleeti Fields (db) 12-16-25.csv"
+# Fleeti Fields CSV is in: 3-mapping-fields/scripts/input/
+FLEETI_FIELDS_CSV = Path(__file__).parent / "input" / "Fleeti Fields (db) 12-18-25.csv"
 
 # Output file - CSV should be generated in the same scripts folder as this script
 OUTPUT_CSV = Path(__file__).parent / "Mapping-Fields-Navixy-2025-01-16.csv"
 
 def extract_field_name_from_notion_link(link_text):
-    """Extract field name from Notion link format: 'field_name (https://...)'"""
+    """Extract field name from Notion link format: 'field_name (https://...)' or plain field_name"""
+    if not link_text or not link_text.strip():
+        return ""
+    
+    # Check if it's a Notion link format
+    if '(' in link_text and 'https://' in link_text:
+        # Extract field name before opening parenthesis
+        match = re.match(r'^([^(]+)', link_text.strip())
+        if match:
+            return match.group(1).strip()
+    
+    # Not a Notion link, return as-is
+    return link_text.strip()
+
+def extract_field_names_from_notion_links(link_text):
+    """Extract multiple field names from comma-separated Notion links"""
     if not link_text or not link_text.strip():
         return []
     
@@ -29,38 +50,47 @@ def extract_field_name_from_notion_link(link_text):
     fields = []
     for part in link_text.split(','):
         part = part.strip()
-        # Extract field name before opening parenthesis
-        match = re.match(r'^([^(]+)', part)
-        if match:
-            field_name = match.group(1).strip()
-            if field_name:
-                fields.append(field_name)
+        field_name = extract_field_name_from_notion_link(part)
+        if field_name:
+            fields.append(field_name)
     
     return fields
 
-def get_provider_field_paths(provider_field_names, provider_lookup):
-    """Get provider field paths from provider field names"""
+def infer_provider_field_path(provider_field_name):
+    """Infer provider field path from field name.
+    
+    Simple fields: use name as path (e.g., 'lat' -> 'lat')
+    Complex fields: infer from name (e.g., 'avl_io_69' -> 'params.avl_io_69')
+    """
+    if not provider_field_name:
+        return ''
+    
+    # Check if it's an AVL IO field
+    if provider_field_name.startswith('avl_io_'):
+        return f'params.{provider_field_name}'
+    
+    # Simple fields: use name as path
+    return provider_field_name
+
+def get_provider_field_paths(provider_field_names):
+    """Get provider field paths by inferring from field names.
+    
+    Args:
+        provider_field_names: List of provider field names
+        
+    Returns:
+        List of provider field paths (e.g., ['lat', 'params.avl_io_69'])
+    """
     paths = []
     for name in provider_field_names:
-        provider_field = provider_lookup.get(name)
-        if provider_field:
-            path = provider_field.get('Field Path', name)
-            paths.append(path)
-        else:
-            paths.append(name)  # Fallback to name if not found
+        path = infer_provider_field_path(name)
+        paths.append(path)
     return paths
 
-def get_provider_units(provider_field_names, provider_lookup):
-    """Get provider units from provider field names"""
-    units = []
-    for name in provider_field_names:
-        provider_field = provider_lookup.get(name)
-        if provider_field:
-            unit = provider_field.get('Unit', '').strip()
-            units.append(unit if unit else '')
-        else:
-            units.append('')
-    return units
+def get_provider_units(provider_field_names):
+    """Get provider units - leave empty since we don't have Provider Fields CSV"""
+    # Return empty list since we don't have provider field metadata
+    return [''] * len(provider_field_names)
 
 def normalize_unit(unit):
     """Normalize unit for comparison (per updated spec)"""
@@ -79,15 +109,26 @@ def normalize_unit(unit):
     return equivalence.get(unit_lower, unit_lower)
 
 def auto_generate_unit_conversion(provider_units, fleeti_unit):
-    """Auto-generate unit conversion rule if units differ (per updated spec)"""
+    """Auto-generate unit conversion rule if units differ.
+    
+    Currently returns empty string - unit conversion should be manually specified.
+    This function is kept for future enhancement.
+    
+    Args:
+        provider_units: List of provider field units
+        fleeti_unit: Fleeti field unit
+        
+    Returns:
+        Empty string (unit conversion left for manual specification)
+    """
     if not fleeti_unit or not provider_units:
         return ''
     
-    # Normalize units
+    # Normalize units for comparison
     fleeti_normalized = normalize_unit(fleeti_unit)
     provider_normalized = normalize_unit(provider_units[0] if provider_units else None)
     
-    # Skip if units are equivalent or same (per updated spec)
+    # Skip if units are equivalent or same
     if not provider_normalized or not fleeti_normalized:
         return ''  # Skip for empty/unknown units
     
@@ -95,20 +136,15 @@ def auto_generate_unit_conversion(provider_units, fleeti_unit):
         return ''  # Skip for same/equivalent units
     
     # Units differ - return empty (conversion should be manually specified)
-    # The updated spec says to skip unit_conversion generation
     return ''
 
 def extract_dependencies_from_notion_links(links_text):
-    """Extract dependency field names from Dependencies column"""
+    """Extract dependency field names from Dependencies column (with Notion links)"""
     if not links_text or not links_text.strip():
         return []
     
-    # Extract field names from Notion links
-    dependencies = []
-    # Pattern: field_name (https://...)
-    pattern = r'([a-z_][a-z0-9_]*(?:_[a-z0-9_]*)*)\s*\(https://'
-    matches = re.findall(pattern, links_text)
-    return matches
+    # Use the new function to extract field names from Notion links
+    return extract_field_names_from_notion_links(links_text)
 
 def keep_dependencies_as_field_names(dependency_names, fleeti_lookup):
     """Keep dependencies as Field Names (stable identifiers), not convert to Field Paths.
@@ -129,7 +165,19 @@ def keep_dependencies_as_field_names(dependency_names, fleeti_lookup):
     return validated_names
 
 def parse_priority_order(computation_approach, provider_fields):
-    """Parse priority order from Computation Approach column"""
+    """Parse priority order from Computation Approach column.
+    
+    Supports '>' syntax to specify priority order (e.g., 'hdop>avl_io_182').
+    If no priority specified, uses order from provider fields list.
+    
+    Args:
+        computation_approach: Computation Approach text (may contain priority syntax)
+        provider_fields: List of provider field names
+        
+    Returns:
+        List of tuples (priority, field_name) sorted by priority
+        Example: [(1, 'hdop'), (2, 'avl_io_182')]
+    """
     if not computation_approach:
         # Fallback: use order from provider fields list
         return [(i+1, field) for i, field in enumerate(provider_fields)]
@@ -189,7 +237,22 @@ def determine_calculation_type(computation_approach, fleeti_name):
     return 'function_reference'
 
 def extract_backend_function_name(fleeti_name, fleeti_path, computation_approach, calculation_type):
-    """Extract backend function name for function_reference type"""
+    """Extract backend function name for function_reference type.
+    
+    Infers function name from field name/path using consistent naming convention:
+    - Removes category prefixes (location_, motion_, etc.)
+    - Adds 'derive_' prefix
+    - Example: location_cardinal_direction -> derive_cardinal_direction
+    
+    Args:
+        fleeti_name: Fleeti field name (e.g., 'location_cardinal_direction')
+        fleeti_path: Fleeti field path (e.g., 'location.cardinal_direction')
+        computation_approach: Computation approach text
+        calculation_type: Calculation type ('function_reference' or 'formula')
+        
+    Returns:
+        Backend function name (e.g., 'derive_cardinal_direction')
+    """
     computation_lower = computation_approach.lower() if computation_approach else ''
     
     # Try to extract from computation approach
@@ -217,45 +280,114 @@ def extract_backend_function_name(fleeti_name, fleeti_path, computation_approach
     # Fallback: use field name with derive prefix
     return f"derive_{fleeti_name}"
 
-def extract_function_parameters(dependency_names, computation_approach, calculation_type):
+def extract_function_parameters(dependency_names, provider_field_names, computation_approach, calculation_type):
     """Extract structured parameter mapping for function_reference type.
     
-    Auto-generates parameters from dependencies (always Fleeti field names, no prefix).
-    Uses Field Names (stable identifiers) instead of Field Paths.
-    Backend resolves Field Name → Field Path at runtime.
+    Generates new format with fleeti:/provider: keys:
+    - Single param: {"fleeti": "location_heading"} (default)
+    - Multiple params: {"fleeti": ["location_latitude", "location_longitude"]}
+    - Provider fields: {"provider": "heading"} (when provider field is used)
     
-    Note: This function generates Fleeti field references (no prefix). For provider field
-    access, use the `provider:` prefix format manually in the CSV/Notion database.
-    Example: {"raw_lat": "provider:lat"} for direct provider field access.
+    Uses Field Names (stable identifiers) for Fleeti fields.
+    Uses field names for provider fields.
+    
+    Logic:
+    - If computation approach mentions a simple field name (like "heading") that could be
+      a provider field, and the dependency is a Fleeti field that might be derived from that
+      provider field, use provider.
+    - If computation approach mentions a provider field name directly, use provider.
+    - Otherwise, default to using Fleeti fields from dependencies.
     """
-    if calculation_type != 'function_reference' or not dependency_names:
+    if calculation_type != 'function_reference':
         return ''
     
-    # Simple heuristic: if single dependency, use field name as param
+    # Check if computation approach mentions a simple field name that could be a provider field
+    use_provider = False
+    inferred_provider_field = None
+    
+    if computation_approach:
+        comp_lower = computation_approach.lower()
+        
+        # Check if computation mentions any explicit provider field names
+        if provider_field_names:
+            for provider_field in provider_field_names:
+                pattern = r'\b' + re.escape(provider_field.lower()) + r'\b'
+                if re.search(pattern, comp_lower):
+                    use_provider = True
+                    inferred_provider_field = provider_field
+                    break
+        
+        # If no explicit provider field but computation mentions a simple field name
+        # that matches the last part of a dependency (e.g., "heading" from "location_heading"),
+        # infer it might be a provider field
+        # BUT: if the simple name is part of a dependency name (e.g., "latitude" in "location_latitude"),
+        # it's NOT a provider field - it's referring to the Fleeti field
+        if not use_provider and dependency_names:
+            # Look for simple field names in computation (single word, no underscores)
+            simple_field_pattern = r'\b([a-z]+)\b'
+            matches = re.findall(simple_field_pattern, comp_lower)
+            for match in matches:
+                # Skip common words that are not field names
+                if match in ['from', 'use', 'convert', 'into', 'to', 'the', 'a', 'an', 'and', 'or', 'if', 'then', 'else', 'when', 'where']:
+                    continue
+                
+                # Check if this simple name is part of any dependency name
+                is_part_of_dependency = False
+                for dep in dependency_names:
+                    if match in dep.lower() and (dep.lower().endswith('_' + match) or dep.lower() == match):
+                        # The simple name is part of a dependency - don't use as provider field
+                        is_part_of_dependency = True
+                        break
+                
+                # Only use as provider field if it's NOT part of a dependency
+                # and it matches the last part of a dependency (e.g., "heading" from "location_heading")
+                if not is_part_of_dependency:
+                    for dep in dependency_names:
+                        if dep.endswith('_' + match) or dep == match:
+                            # This could be a provider field - use it
+                            use_provider = True
+                            inferred_provider_field = match
+                            break
+                    if use_provider:
+                        break
+    
+    # If we have provider fields and no dependencies, use provider
+    if provider_field_names and not dependency_names:
+        use_provider = True
+        inferred_provider_field = provider_field_names[0] if provider_field_names else None
+    
+    if use_provider:
+        # Use provider fields
+        if inferred_provider_field:
+            return json.dumps({"provider": inferred_provider_field})
+        elif provider_field_names:
+            if len(provider_field_names) == 1:
+                return json.dumps({"provider": provider_field_names[0]})
+            else:
+                return json.dumps({"provider": provider_field_names})
+    
+    # Default: use Fleeti fields from dependencies
+    if not dependency_names:
+        return ''
+    
     if len(dependency_names) == 1:
-        # Extract parameter name from field name (last part after underscore)
-        field_name = dependency_names[0]
-        param_name = field_name.split('_')[-1]  # Use last part of field name
-        # Auto-generated: always uses Fleeti field name (no provider: prefix)
-        params_dict = {param_name: field_name}  # Use Field Name, not Field Path
-        return json.dumps(params_dict)
-    
-    # Multiple dependencies: try to infer parameter names
-    # This is a placeholder - would need more sophisticated parsing
-    params_dict = {}
-    for i, field_name in enumerate(dependency_names):
-        param_name = field_name.split('_')[-1]  # Use last part of field name as param name
-        # If duplicate, add index
-        if param_name in params_dict:
-            param_name = f"{param_name}_{i+1}"
-        # Auto-generated: always uses Fleeti field name (no provider: prefix)
-        params_dict[param_name] = field_name  # Use Field Name, not Field Path
-    
-    return json.dumps(params_dict)
+        return json.dumps({"fleeti": dependency_names[0]})
+    else:
+        return json.dumps({"fleeti": dependency_names})
 
 
 def read_csv_file(file_path):
-    """Read CSV file and return list of dictionaries"""
+    """Read CSV file and return list of dictionaries.
+    
+    Uses utf-8-sig encoding to handle BOM (Byte Order Mark) that may be present
+    in Notion CSV exports.
+    
+    Args:
+        file_path: Path to CSV file
+        
+    Returns:
+        List of dictionaries, one per row, with column names as keys
+    """
     with open(file_path, 'r', encoding='utf-8-sig') as f:  # utf-8-sig handles BOM
         reader = csv.DictReader(f)
         rows = list(reader)
@@ -265,21 +397,24 @@ def read_csv_file(file_path):
         return rows
 
 def main():
-    # Read input CSVs
-    print(f"Reading Provider Fields CSV: {PROVIDER_FIELDS_CSV}")
-    provider_fields = read_csv_file(PROVIDER_FIELDS_CSV)
+    """
+    Main processing function.
     
+    Processing flow:
+    1. Read and filter Fleeti Fields CSV (only inactive fields)
+    2. For each inactive field, determine mapping type and generate entry
+    3. Sort calculated mappings by dependency depth
+    4. Write output CSV with exact column order matching export format
+    """
+    # Read input CSV
     print(f"Reading Fleeti Fields CSV: {FLEETI_FIELDS_CSV}")
     fleeti_fields = read_csv_file(FLEETI_FIELDS_CSV)
     
-    # Filter inactive Fleeti Fields
+    # Filter inactive Fleeti Fields (active fields are already mapped)
     inactive_fleeti_fields = [f for f in fleeti_fields if f.get('Status', '').strip().lower() == 'inactive']
     print(f"Found {len(inactive_fleeti_fields)} inactive Fleeti Fields")
     
-    # Create provider fields lookup by name
-    provider_lookup = {pf['Name']: pf for pf in provider_fields}
-    
-    # Create Fleeti fields lookup by name
+    # Create Fleeti fields lookup by name for dependency validation
     fleeti_lookup = {ff['Name']: ff for ff in fleeti_fields}
     
     # Generate mapping entries
@@ -290,30 +425,31 @@ def main():
     prioritized_mappings = []
     calculated_mappings = []
     
+    # Process each inactive Fleeti field and generate mapping entry
     for fleeti_field in inactive_fleeti_fields:
-        fleeti_name = fleeti_field['Name']
-        fleeti_path = fleeti_field['Field Path']
-        field_type = fleeti_field['Field Type']
+        # Extract core field information from CSV
+        fleeti_name = fleeti_field['Name']  # Stable identifier (e.g., 'location_latitude')
+        fleeti_path = fleeti_field['Field Path']  # JSON path (e.g., 'location.latitude')
+        field_type = fleeti_field['Field Type']  # 'direct' or 'calculated'
         computation_approach = fleeti_field.get('Computation Approach', '').strip()
-        dependencies_text = fleeti_field.get('Dependencies', '').strip()
-        provider_field_links = fleeti_field.get('💽 Provider Field (db)', '').strip()
+        dependencies_text = fleeti_field.get('Dependencies', '').strip()  # May contain Notion links
+        provider_field_links = fleeti_field.get('💽 Provider Field (db)', '').strip()  # May contain Notion links
         
-        # Extract provider field names
-        provider_field_names = extract_field_name_from_notion_link(provider_field_links)
+        # Extract provider field names from Notion links (e.g., 'lat (https://...)' -> 'lat')
+        provider_field_names = extract_field_names_from_notion_links(provider_field_links)
         
-        # Get provider name (should be navixy for all)
+        # Provider name is hardcoded to 'navixy' since all input data is for Navixy provider
         provider_name = 'navixy'
-        if provider_field_names:
-            # Get provider from first provider field
-            first_provider_field = provider_lookup.get(provider_field_names[0])
-            if first_provider_field:
-                provider_name = first_provider_field.get('Provider', 'navixy')
         
-        # Get Fleeti field metadata
+        # Extract Fleeti field metadata from CSV
         fleeti_unit = fleeti_field.get('Unit', '').strip()
         fleeti_data_type = fleeti_field.get('Data Type', '').strip()
+        version_added = fleeti_field.get('Version Added', '1.0.0').strip()  # Read from CSV, not hardcoded
         
-        # Determine mapping type
+        # Determine mapping type based on field type and number of provider fields
+        # - Calculated: field_type == 'calculated' OR no provider fields + calculated
+        # - Prioritized: 2+ provider fields
+        # - Direct: 1 provider field
         if field_type == 'calculated' or (not provider_field_names and field_type == 'calculated'):
             # Calculated field
             dependency_names = extract_dependencies_from_notion_links(dependencies_text)
@@ -343,7 +479,7 @@ def main():
                     fleeti_name, fleeti_path, computation_approach, calculation_type
                 )
                 function_parameters = extract_function_parameters(
-                    dependency_field_names, computation_approach, calculation_type
+                    dependency_field_names, provider_field_names, computation_approach, calculation_type
                 )
                 
                 # Validate that function_reference has both function name and parameters
@@ -355,7 +491,7 @@ def main():
                     continue
             
             mapping_entry = {
-                'Mapping Name': f"{fleeti_path} from {provider_name.capitalize()}",
+                'Name': f"{fleeti_path} from {provider_name.capitalize()}",
                 'Fleeti Field': fleeti_name,
                 'Fleeti Field Path': fleeti_path,
                 'Provider': provider_name,
@@ -379,9 +515,9 @@ def main():
                 'Function Parameters': function_parameters,
                 'Fleeti Unit': fleeti_unit,
                 'Fleeti Data Type': fleeti_data_type,
-                'Version Added': '1.0.0',
-                'Last Modified': '2025-01-16',
-                'Notes': f'Calculated field: {fleeti_field.get("Description", "")}'
+                'Version Added': version_added,
+                'Notes': f'Calculated field: {fleeti_field.get("Description", "")}',
+                '💽 YAML Configurations (db)': ''  # Empty, manual input
             }
             calculated_mappings.append((fleeti_field, mapping_entry, dependency_names))
         
@@ -391,12 +527,12 @@ def main():
             priority_json = json.dumps([{"priority": p, "field": f} for p, f in priority_order])
             
             # Get provider field paths and units
-            provider_field_paths = get_provider_field_paths(provider_field_names, provider_lookup)
-            provider_units = get_provider_units(provider_field_names, provider_lookup)
+            provider_field_paths = get_provider_field_paths(provider_field_names)
+            provider_units = get_provider_units(provider_field_names)
             unit_conversion = auto_generate_unit_conversion(provider_units, fleeti_unit)
             
             mapping_entry = {
-                'Mapping Name': f"{fleeti_path} from {provider_name.capitalize()}",
+                'Name': f"{fleeti_path} from {provider_name.capitalize()}",
                 'Fleeti Field': fleeti_name,
                 'Fleeti Field Path': fleeti_path,
                 'Provider': provider_name,
@@ -404,8 +540,8 @@ def main():
                 'Status': 'planned',
                 'Configuration Level': 'default',
                 'Provider Fields': ', '.join(provider_field_names),
-                'Provider Field Paths': ', '.join(provider_field_paths),
-                'Provider Unit': ', '.join([u if u else 'none' for u in provider_units]),
+                'Provider Field Paths': ','.join(provider_field_paths),
+                'Provider Unit': ', '.join([u if u else '-' for u in provider_units]) if any(provider_units) else '',
                 'Priority JSON': priority_json,
                 'Computation Approach': '',
                 'Transformation Rule': '',
@@ -420,21 +556,21 @@ def main():
                 'Function Parameters': '',
                 'Fleeti Unit': fleeti_unit,
                 'Fleeti Data Type': fleeti_data_type,
-                'Version Added': '1.0.0',
-                'Last Modified': '2025-01-16',
-                'Notes': f'Prioritized mapping: {fleeti_field.get("Description", "")}'
+                'Version Added': version_added,
+                'Notes': f'Prioritized mapping: {fleeti_field.get("Description", "")}',
+                '💽 YAML Configurations (db)': ''  # Empty, manual input
             }
             prioritized_mappings.append(mapping_entry)
         
         elif len(provider_field_names) == 1:
             # Direct mapping
             provider_field_name = provider_field_names[0]
-            provider_field_paths = get_provider_field_paths([provider_field_name], provider_lookup)
-            provider_units = get_provider_units([provider_field_name], provider_lookup)
+            provider_field_paths = get_provider_field_paths([provider_field_name])
+            provider_units = get_provider_units([provider_field_name])
             unit_conversion = auto_generate_unit_conversion(provider_units, fleeti_unit)
             
             mapping_entry = {
-                'Mapping Name': f"{fleeti_path} from {provider_name.capitalize()}",
+                'Name': f"{fleeti_path} from {provider_name.capitalize()}",
                 'Fleeti Field': fleeti_name,
                 'Fleeti Field Path': fleeti_path,
                 'Provider': provider_name,
@@ -458,15 +594,30 @@ def main():
                 'Function Parameters': '',
                 'Fleeti Unit': fleeti_unit,
                 'Fleeti Data Type': fleeti_data_type,
-                'Version Added': '1.0.0',
-                'Last Modified': '2025-01-16',
-                'Notes': f'Direct mapping: {fleeti_field.get("Description", "")}'
+                'Version Added': version_added,
+                'Notes': f'Direct mapping: {fleeti_field.get("Description", "")}',
+                '💽 YAML Configurations (db)': ''  # Empty, manual input
             }
             direct_mappings.append(mapping_entry)
     
     # Sort calculated mappings by dependencies (dependencies first)
+    # This ensures correct evaluation order: dependencies are processed before dependents
     def get_dependency_depth(fleeti_field, all_fleeti_fields, visited=None):
-        """Calculate dependency depth for topological sort with cycle detection"""
+        """Calculate dependency depth for topological sort with cycle detection.
+        
+        Returns the maximum depth of dependencies for a field. Fields with no dependencies
+        have depth 0. Fields that depend on other calculated fields have higher depth.
+        
+        Handles circular dependencies gracefully by returning 0 when a cycle is detected.
+        
+        Args:
+            fleeti_field: Fleeti field dictionary
+            all_fleeti_fields: List of all Fleeti fields for lookup
+            visited: Set of visited field names (for cycle detection)
+            
+        Returns:
+            Dependency depth (0 = no dependencies, higher = deeper dependency chain)
+        """
         if visited is None:
             visited = set()
         
@@ -505,22 +656,35 @@ def main():
     
     # Write output CSV
     if all_mappings:
-        # Reorganized column order matching README structure
+        # Column order matching export CSV exactly
         fieldnames = [
-            # Group 1: Core Identification
-            'Mapping Name', 'Fleeti Field', 'Fleeti Field Path', 'Provider', 'Mapping Type', 'Status', 'Configuration Level',
-            # Group 2: Source Fields
-            'Provider Fields', 'Provider Field Paths', 'Provider Unit',
-            # Group 3: Mapping Logic
-            'Priority JSON', 'Computation Approach', 'Transformation Rule', 'I/O Mapping Config', 'Service Integration',
-            # Group 4: Dependencies & Execution Order
-            'Dependencies', 'Calculation Type',
-            # Group 5: Error Handling & Defaults
-            'Default Value', 'Error Handling', 'Unit Conversion',
-            # Group 6: Backend Implementation
-            'Backend Function Name', 'Function Parameters',
-            # Group 7: Metadata
-            'Fleeti Unit', 'Fleeti Data Type', 'Version Added', 'Last Modified', 'Notes'
+            'Name',  # Mapping Name
+            'Backend Function Name',
+            'Calculation Type',
+            'Computation Approach',
+            'Configuration Level',
+            'Default Value',
+            'Dependencies',
+            'Error Handling',
+            'Fleeti Data Type',
+            'Fleeti Field',
+            'Fleeti Field Path',
+            'Fleeti Unit',
+            'Function Parameters',
+            'I/O Mapping Config',
+            'Mapping Type',
+            'Notes',
+            'Priority JSON',
+            'Provider',
+            'Provider Field Paths',
+            'Provider Fields',
+            'Provider Unit',
+            'Service Integration',
+            'Status',
+            'Transformation Rule',
+            'Unit Conversion',
+            'Version Added',
+            '💽 YAML Configurations (db)'
         ]
         
         with open(OUTPUT_CSV, 'w', newline='', encoding='utf-8') as f:
