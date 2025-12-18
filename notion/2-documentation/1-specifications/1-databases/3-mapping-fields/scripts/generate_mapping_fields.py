@@ -220,8 +220,13 @@ def extract_backend_function_name(fleeti_name, fleeti_path, computation_approach
 def extract_function_parameters(dependency_names, computation_approach, calculation_type):
     """Extract structured parameter mapping for function_reference type.
     
+    Auto-generates parameters from dependencies (always Fleeti field names, no prefix).
     Uses Field Names (stable identifiers) instead of Field Paths.
     Backend resolves Field Name → Field Path at runtime.
+    
+    Note: This function generates Fleeti field references (no prefix). For provider field
+    access, use the `provider:` prefix format manually in the CSV/Notion database.
+    Example: {"raw_lat": "provider:lat"} for direct provider field access.
     """
     if calculation_type != 'function_reference' or not dependency_names:
         return ''
@@ -231,6 +236,7 @@ def extract_function_parameters(dependency_names, computation_approach, calculat
         # Extract parameter name from field name (last part after underscore)
         field_name = dependency_names[0]
         param_name = field_name.split('_')[-1]  # Use last part of field name
+        # Auto-generated: always uses Fleeti field name (no provider: prefix)
         params_dict = {param_name: field_name}  # Use Field Name, not Field Path
         return json.dumps(params_dict)
     
@@ -242,6 +248,7 @@ def extract_function_parameters(dependency_names, computation_approach, calculat
         # If duplicate, add index
         if param_name in params_dict:
             param_name = f"{param_name}_{i+1}"
+        # Auto-generated: always uses Fleeti field name (no provider: prefix)
         params_dict[param_name] = field_name  # Use Field Name, not Field Path
     
     return json.dumps(params_dict)

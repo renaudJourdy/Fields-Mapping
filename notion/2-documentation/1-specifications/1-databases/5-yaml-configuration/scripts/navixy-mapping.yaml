@@ -82,7 +82,7 @@ mappings:
     calculation_type: function_reference
     function: derive_cardinal_direction
     parameters:
-      heading: location_heading
+      provider: heading
     dependencies:
     - location_heading
     data_type: string
@@ -98,8 +98,9 @@ mappings:
     calculation_type: function_reference
     function: derive_geocoded_address
     parameters:
-      latitude: location_latitude
-      longitude: location_longitude
+      fleeti:
+      - location_latitude
+      - location_longitude
     dependencies:
     - location_latitude
     - location_longitude
@@ -114,8 +115,9 @@ mappings:
     calculation_type: function_reference
     function: derive_last_changed_at
     parameters:
-      latitude: location_latitude
-      longitude: location_longitude
+      fleeti:
+      - location_latitude
+      - location_longitude
     dependencies:
     - location_latitude
     - location_longitude

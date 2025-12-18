@@ -9,13 +9,14 @@ import json
 import re
 import yaml
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Any
 from collections import defaultdict
 
-# Input file - CSV is in the mapping-fields/scripts folder
+# Input file - CSV is in the input folder (Notion export format)
 # Script is in: 5-yaml-configuration/scripts/
-# CSV is in: 3-mapping-fields/scripts/
-MAPPING_FIELDS_CSV = Path(__file__).parent.parent.parent / "3-mapping-fields" / "scripts" / "Mapping-Fields-Navixy-2025-01-16.csv"
+# CSV is in: 5-yaml-configuration/scripts/input/
+INPUT_DIR = Path(__file__).parent / "input"
+MAPPING_FIELDS_CSV = INPUT_DIR / "Mapping Fields (db) 12-18-25 copy.csv"
 
 # Output file - YAML should be generated in the same scripts folder as this script
 OUTPUT_YAML = Path(__file__).parent / "navixy-mapping.yaml"
@@ -62,14 +63,31 @@ def should_generate_unit_conversion(provider_unit: str, fleeti_unit: str) -> boo
     return True
 
 
+def extract_field_name_from_notion_link(link_text: str) -> str:
+    """Extract field name from Notion link format: 'field_name (https://...)' or plain field_name"""
+    if not link_text or not link_text.strip():
+        return ""
+    
+    # Check if it's a Notion link format
+    if '(' in link_text and 'https://' in link_text:
+        # Extract field name before opening parenthesis
+        match = re.match(r'^([^(]+)', link_text.strip())
+        if match:
+            return match.group(1).strip()
+    
+    # Not a Notion link, return as-is
+    return link_text.strip()
+
+
 def parse_dependencies(deps_str: str) -> List[str]:
-    """Parse dependencies string (comma-separated field names)"""
+    """Parse dependencies string (comma-separated field names, may include Notion links)"""
     if not deps_str or not deps_str.strip():
         return []
     
     # Split by comma and clean up
     deps = [d.strip() for d in deps_str.split(',')]
-    return [d for d in deps if d]
+    # Extract field names from Notion links
+    return [extract_field_name_from_notion_link(d) for d in deps if d]
 
 
 def parse_priority_json(priority_json_str: str) -> List[Dict]:
@@ -107,30 +125,131 @@ def parse_provider_units(units_str: str) -> List[str]:
     return [u.strip() for u in units_str.split(',') if u.strip()]
 
 
-def parse_function_parameters(params_str: str) -> Optional[Dict[str, str]]:
-    """Parse Function Parameters (JSON or structured text)"""
+def parse_function_parameters(params_str: str) -> Optional[Dict[str, Any]]:
+    """Parse Function Parameters (JSON or structured text) and convert to simple prefix-based structure.
+    
+    Input format (from CSV): 
+    - New format: {"provider": "heading"} or {"fleeti": "location_heading"} or {"fleeti": ["location_latitude", "location_longitude"]}
+    - Legacy format: {"heading": "location_heading"} or {"raw_lat": "provider:lat"}
+    
+    Output format (for YAML): 
+    - Single param: {"fleeti": "location_heading"} or {"provider": "heading"}
+    - Multiple params: {"fleeti": ["location_latitude", "location_longitude"]} or {"provider": ["lat", "lng"]}
+    - Mixed: {"fleeti": ["location_latitude"], "provider": "heading"}
+    
+    Simple structure: "fleeti" key for Fleeti fields, "provider" key for provider fields.
+    """
     if not params_str or not params_str.strip():
         return None
     
-    # Try JSON first
+    # Try JSON first, but handle duplicate keys manually
+    params_dict = None
     try:
-        return json.loads(params_str)
+        params_dict = json.loads(params_str)
     except json.JSONDecodeError:
-        pass
+        # Try structured text format: param_name: "fleeti_field_name" or param_name: "provider:field_path"
+        params_dict = {}
+        for line in params_str.split('\n'):
+            line = line.strip()
+            if ':' in line:
+                parts = line.split(':', 1)
+                if len(parts) == 2:
+                    param_name = parts[0].strip()
+                    field_ref = parts[1].strip().strip('"\'')
+                    if param_name and field_ref:
+                        params_dict[param_name] = field_ref
+        if not params_dict:
+            return None
     
-    # Try structured text format: param_name: "fleeti_field_name"
-    params = {}
-    for line in params_str.split('\n'):
-        line = line.strip()
-        if ':' in line:
-            parts = line.split(':', 1)
-            if len(parts) == 2:
-                param_name = parts[0].strip()
-                field_name = parts[1].strip().strip('"\'')
-                if param_name and field_name:
-                    params[param_name] = field_name
+    # Check if already in new format (keys are "fleeti" or "provider")
+    if params_dict and ('fleeti' in params_dict or 'provider' in params_dict):
+        # Handle duplicate keys by parsing raw string
+        # JSON doesn't support duplicate keys, so we need to parse manually
+        fleeti_values = []
+        provider_values = []
+        
+        # Parse raw string to find all "fleeti" and "provider" keys
+        # Look for patterns like: "fleeti": "value" or "fleeti": ["value1", "value2"]
+        fleeti_pattern = r'"fleeti"\s*:\s*"([^"]+)"'
+        provider_pattern = r'"provider"\s*:\s*"([^"]+)"'
+        
+        # Find all fleeti values
+        for match in re.finditer(fleeti_pattern, params_str):
+            fleeti_values.append(match.group(1))
+        
+        # Find all provider values
+        for match in re.finditer(provider_pattern, params_str):
+            provider_values.append(match.group(1))
+        
+        # Also check if there's an array format
+        fleeti_array_pattern = r'"fleeti"\s*:\s*\[(.*?)\]'
+        provider_array_pattern = r'"provider"\s*:\s*\[(.*?)\]'
+        
+        fleeti_array_match = re.search(fleeti_array_pattern, params_str)
+        if fleeti_array_match:
+            # Parse array values
+            array_content = fleeti_array_match.group(1)
+            # Extract quoted strings from array
+            array_values = re.findall(r'"([^"]+)"', array_content)
+            fleeti_values = array_values
+        
+        provider_array_match = re.search(provider_array_pattern, params_str)
+        if provider_array_match:
+            # Parse array values
+            array_content = provider_array_match.group(1)
+            # Extract quoted strings from array
+            array_values = re.findall(r'"([^"]+)"', array_content)
+            provider_values = array_values
+        
+        # Build result
+        result = {}
+        if fleeti_values:
+            if len(fleeti_values) == 1:
+                result['fleeti'] = fleeti_values[0]
+            else:
+                result['fleeti'] = fleeti_values
+        
+        if provider_values:
+            if len(provider_values) == 1:
+                result['provider'] = provider_values[0]
+            else:
+                result['provider'] = provider_values
+        
+        return result if result else None
     
-    return params if params else None
+    # Legacy format: Convert from param_name -> field_ref to fleeti/provider structure
+    # Group parameters by source (fleeti vs provider)
+    fleeti_params = []
+    provider_params = []
+    
+    for param_name, field_ref in params_dict.items():
+        # Check if field_ref has provider: prefix
+        if isinstance(field_ref, str) and field_ref.startswith('provider:'):
+            # Provider field - extract path after provider: prefix
+            provider_path = field_ref[9:].strip()  # Remove "provider:" prefix
+            provider_params.append(provider_path)
+        else:
+            # Fleeti field (default, no prefix)
+            fleeti_params.append(field_ref)
+    
+    # Build simple result structure
+    result = {}
+    
+    # Add fleeti parameters (if any)
+    if fleeti_params:
+        if len(fleeti_params) == 1:
+            result['fleeti'] = fleeti_params[0]
+        else:
+            result['fleeti'] = fleeti_params
+    
+    # Add provider parameters (if any)
+    if provider_params:
+        if len(provider_params) == 1:
+            result['provider'] = provider_params[0]
+        else:
+            result['provider'] = provider_params
+    
+    return result if result else None
 
 
 def build_dependency_graph(mappings: List[Dict]) -> Tuple[Dict[str, List[str]], Dict[str, Dict]]:
@@ -206,9 +325,12 @@ def topological_sort(mappings: List[Dict]) -> List[Dict]:
 
 def generate_direct_mapping(mapping: Dict) -> Dict:
     """Generate YAML for direct mapping"""
-    field_name = mapping['Fleeti Field']
-    field_path = mapping['Fleeti Field Path']
-    provider_path = mapping['Provider Field Paths'].strip()
+    # Extract field name from Notion link if present
+    fleeti_field_raw = mapping.get('Fleeti Field', '').strip()
+    field_name = extract_field_name_from_notion_link(fleeti_field_raw)
+    
+    field_path = mapping.get('Fleeti Field Path', '').strip()
+    provider_path = mapping.get('Provider Field Paths', '').strip()
     fleeti_unit = mapping.get('Fleeti Unit', '').strip()
     fleeti_data_type = mapping.get('Fleeti Data Type', '').strip()
     
@@ -251,8 +373,11 @@ def generate_direct_mapping(mapping: Dict) -> Dict:
 
 def generate_prioritized_mapping(mapping: Dict) -> Dict:
     """Generate YAML for prioritized mapping"""
-    field_name = mapping['Fleeti Field']
-    field_path = mapping['Fleeti Field Path']
+    # Extract field name from Notion link if present
+    fleeti_field_raw = mapping.get('Fleeti Field', '').strip()
+    field_name = extract_field_name_from_notion_link(fleeti_field_raw)
+    
+    field_path = mapping.get('Fleeti Field Path', '').strip()
     priority_json = mapping.get('Priority JSON', '').strip()
     fleeti_unit = mapping.get('Fleeti Unit', '').strip()
     fleeti_data_type = mapping.get('Fleeti Data Type', '').strip()
@@ -261,8 +386,19 @@ def generate_prioritized_mapping(mapping: Dict) -> Dict:
     priorities = parse_priority_json(priority_json)
     
     # Parse provider fields, paths, and units
-    provider_fields = parse_provider_fields(mapping.get('Provider Fields', ''))
-    provider_paths = parse_provider_paths(mapping.get('Provider Field Paths', ''))
+    # Extract field names from Notion links if present
+    provider_fields_raw = mapping.get('Provider Fields', '').strip()
+    provider_paths_raw = mapping.get('Provider Field Paths', '').strip()
+    
+    # Parse comma-separated values and extract from Notion links
+    provider_fields = []
+    if provider_fields_raw:
+        for field in provider_fields_raw.split(','):
+            field = field.strip()
+            if field:
+                provider_fields.append(extract_field_name_from_notion_link(field))
+    
+    provider_paths = parse_provider_paths(provider_paths_raw)
     provider_units = parse_provider_units(mapping.get('Provider Unit', ''))
     
     # Build sources array
@@ -316,8 +452,11 @@ def generate_prioritized_mapping(mapping: Dict) -> Dict:
 
 def generate_calculated_mapping(mapping: Dict) -> Dict:
     """Generate YAML for calculated mapping"""
-    field_name = mapping['Fleeti Field']
-    field_path = mapping['Fleeti Field Path']
+    # Extract field name from Notion link if present
+    fleeti_field_raw = mapping.get('Fleeti Field', '').strip()
+    field_name = extract_field_name_from_notion_link(fleeti_field_raw)
+    
+    field_path = mapping.get('Fleeti Field Path', '').strip()
     calculation_type = mapping.get('Calculation Type', '').strip()
     computation_approach = mapping.get('Computation Approach', '').strip()
     fleeti_data_type = mapping.get('Fleeti Data Type', '').strip()
@@ -338,8 +477,7 @@ def generate_calculated_mapping(mapping: Dict) -> Dict:
         
         # Auto-extract function name if missing
         if not backend_function:
-            # Try to infer from field name
-            field_name = mapping['Fleeti Field']
+            # Try to infer from field name (already extracted from Notion link)
             # Remove category prefix (location_, motion_, etc.)
             field_part = field_name
             for prefix in ['location_', 'motion_', 'fuel_', 'power_', 'status_']:
@@ -362,20 +500,17 @@ def generate_calculated_mapping(mapping: Dict) -> Dict:
         if backend_function:
             yaml_entry['function'] = backend_function
         
-        # Function parameters
+        # Function parameters - parse and convert to prefix structure
         function_params = parse_function_parameters(mapping.get('Function Parameters', ''))
         if not function_params:
             # Auto-generate parameters from dependencies if missing
             deps = parse_dependencies(mapping.get('Dependencies', ''))
             if deps:
-                function_params = {}
-                for dep in deps:
-                    # Use last part of field name as parameter name
-                    param_name = dep.split('_')[-1]
-                    # Handle duplicates
-                    if param_name in function_params:
-                        param_name = dep.replace('location_', '').replace('_', '_')
-                    function_params[param_name] = dep
+                # Auto-generate: all dependencies are Fleeti fields (default)
+                if len(deps) == 1:
+                    function_params = {'fleeti': deps[0]}
+                else:
+                    function_params = {'fleeti': deps}
         
         if function_params:
             yaml_entry['parameters'] = function_params
@@ -419,8 +554,10 @@ def generate_calculated_mapping(mapping: Dict) -> Dict:
 
 def generate_yaml_entry(mapping: Dict) -> Tuple[str, Dict]:
     """Generate YAML entry for a mapping"""
-    mapping_type = mapping['Mapping Type']
-    field_name = mapping['Fleeti Field']  # Use Field Name as key (stable identifier)
+    mapping_type = mapping.get('Mapping Type', '').strip()
+    # Extract field name from Notion link if present
+    fleeti_field_raw = mapping.get('Fleeti Field', '').strip()
+    field_name = extract_field_name_from_notion_link(fleeti_field_raw)  # Use Field Name as key (stable identifier)
     
     if mapping_type == 'direct':
         yaml_data = generate_direct_mapping(mapping)
@@ -487,10 +624,65 @@ def format_yaml_with_comments(data: Dict) -> str:
 
 
 def read_csv_file(file_path: Path) -> List[Dict]:
-    """Read CSV file and return list of dictionaries"""
+    """Read CSV file and return list of dictionaries.
+    
+    Handles Notion export format with different column names and Notion links.
+    """
     with open(file_path, 'r', encoding='utf-8-sig') as f:
         reader = csv.DictReader(f)
-        return list(reader)
+        rows = list(reader)
+        
+        # Normalize column names for compatibility
+        # Notion export may have different column order/names
+        normalized_rows = []
+        for row in rows:
+            normalized = {}
+            for key, value in row.items():
+                # Map Notion export column names to expected names
+                if key == 'Fleeti Field':
+                    normalized['Fleeti Field'] = value
+                elif key == 'Fleeti Field Path':
+                    normalized['Fleeti Field Path'] = value
+                elif key == 'Mapping Type':
+                    normalized['Mapping Type'] = value
+                elif key == 'Provider Field Paths':
+                    normalized['Provider Field Paths'] = value
+                elif key == 'Provider Fields':
+                    normalized['Provider Fields'] = value
+                elif key == 'Fleeti Unit':
+                    normalized['Fleeti Unit'] = value
+                elif key == 'Fleeti Data Type':
+                    normalized['Fleeti Data Type'] = value
+                elif key == 'Priority JSON':
+                    normalized['Priority JSON'] = value
+                elif key == 'Computation Approach':
+                    normalized['Computation Approach'] = value
+                elif key == 'Function Parameters':
+                    normalized['Function Parameters'] = value
+                elif key == 'Dependencies':
+                    normalized['Dependencies'] = value
+                elif key == 'Calculation Type':
+                    normalized['Calculation Type'] = value
+                elif key == 'Backend Function Name':
+                    normalized['Backend Function Name'] = value
+                elif key == 'Error Handling':
+                    normalized['Error Handling'] = value
+                elif key == 'Default Value':
+                    normalized['Default Value'] = value
+                elif key == 'Status':
+                    normalized['Status'] = value
+                elif key == 'Notes':
+                    normalized['Notes'] = value
+                elif key == 'Provider':
+                    normalized['Provider'] = value
+                elif key == 'Provider Unit':
+                    normalized['Provider Unit'] = value
+                # Keep all other columns as-is
+                else:
+                    normalized[key] = value
+            normalized_rows.append(normalized)
+        
+        return normalized_rows
 
 
 def main():
