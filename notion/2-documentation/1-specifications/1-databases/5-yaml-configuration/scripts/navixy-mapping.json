@@ -1,0 +1,152 @@
+{
+    "location_latitude": [
+        {
+            "priority": 1,
+            "type": "direct",
+            "source_type": "provider",
+            "provider": "navixy",
+            "field": "lat",
+            "path": "lat",
+            "description": "Latitude in decimal degrees from Navixy"
+        }
+    ],
+    "location_longitude": [
+        {
+            "priority": 1,
+            "type": "direct",
+            "source_type": "provider",
+            "provider": "navixy",
+            "field": "lng",
+            "path": "lng",
+            "description": "Longitude in decimal degrees from Navixy"
+        }
+    ],
+    "location_altitude": [
+        {
+            "priority": 1,
+            "type": "direct",
+            "source_type": "provider",
+            "provider": "navixy",
+            "field": "alt",
+            "path": "alt",
+            "description": "Altitude in meters from Navixy"
+        }
+    ],
+    "location_heading": [
+        {
+            "priority": 1,
+            "type": "direct",
+            "source_type": "provider",
+            "provider": "navixy",
+            "field": "heading",
+            "path": "heading",
+            "description": "Heading in degrees (0-359) from Navixy"
+        }
+    ],
+    "location_precision_fix_quality": [
+        {
+            "priority": 1,
+            "type": "direct",
+            "source_type": "provider",
+            "provider": "navixy",
+            "field": "avl_io_69",
+            "path": "params.avl_io_69",
+            "description": "GNSS Status: 0 - GNSS OFF, 1 – GNSS ON with fix, 2 - GNSS ON without fix, 3 - GNSS sleep, 4 - GNSS ON with fix, invalid data"
+        }
+    ],
+    "location_precision_satellites": [
+        {
+            "priority": 1,
+            "type": "direct",
+            "source_type": "provider",
+            "provider": "navixy",
+            "field": "satellites",
+            "path": "satellites",
+            "description": "Number of satellites in fix from Navixy"
+        }
+    ],
+    "location_precision_hdop": [
+        {
+            "priority": 1,
+            "type": "direct",
+            "source_type": "provider",
+            "provider": "navixy",
+            "field": "hdop",
+            "path": "hdop",
+            "description": "Horizontal Dilution of Precision from hdop field"
+        },
+        {
+            "priority": 2,
+            "type": "direct",
+            "source_type": "provider",
+            "provider": "navixy",
+            "field": "avl_io_182",
+            "path": "params.avl_io_182",
+            "description": "Horizontal Dilution of Precision from avl_io_182"
+        }
+    ],
+    "location_precision_pdop": [
+        {
+            "priority": 1,
+            "type": "direct",
+            "source_type": "provider",
+            "provider": "navixy",
+            "field": "pdop",
+            "path": "pdop",
+            "description": "Position Dilution of Precision from pdop field"
+        },
+        {
+            "priority": 2,
+            "type": "direct",
+            "source_type": "provider",
+            "provider": "navixy",
+            "field": "avl_io_181",
+            "path": "params.avl_io_181",
+            "description": "Position Dilution of Precision from avl_io_181"
+        }
+    ],
+    "location_cardinal_direction": [
+        {
+            "priority": 1,
+            "type": "calculated",
+            "calculation_type": "function_reference",
+            "function": "derive_cardinal_direction",
+            "parameters": {
+                "fleeti": [
+                    "location_heading"
+                ]
+            },
+            "description": "Derived from location.heading"
+        }
+    ],
+    "location_geocoded_address": [
+        {
+            "priority": 1,
+            "type": "calculated",
+            "calculation_type": "function_reference",
+            "function": "derive_geocoded_address",
+            "parameters": {
+                "fleeti": [
+                    "location_latitude",
+                    "location_longitude"
+                ]
+            },
+            "description": "Use external API (Google) to convert latitude and longitude into geocoded address"
+        }
+    ],
+    "location_last_changed_at": [
+        {
+            "priority": 1,
+            "type": "calculated",
+            "calculation_type": "function_reference",
+            "function": "derive_last_changed_at",
+            "parameters": {
+                "fleeti": [
+                    "location_latitude",
+                    "location_longitude"
+                ]
+            },
+            "description": "Backend compares current position with previous. If location changed, set timestamp to now()"
+        }
+    ]
+}

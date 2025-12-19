@@ -31,11 +31,56 @@
 | Vehicle.Buggy | yes | yes | no | yes |
 | Vehicle.HandlingCart | yes | yes | no | yes |
 
-This matrix defines which status families apply to each asset type/subtype. Backend must check compatibility before evaluating each status family.
+This matrix defines which status families apply to each asset type/subtype. Backend must check compatibility before evaluating each status family.
 
 ---
 
-# **1. Connectivity Status - Trigger Conditions**
+# **Top Status Computation**
+
+**How to determine `status.top_status`:**
+
+Top Status selects the highest-priority status family based on conditional priority rules. Priority applies when specific status conditions are met.
+
+**Priority rules (in order):**
+
+1. **Connectivity**: Takes priority when status is `"offline"`
+2. **Immobilization**: Takes priority when status is `"immobilized"`
+3. **Engine**: Takes priority when status is `"running"`
+4. **Transit**: Applies when none of the above conditions are met (status is `"in_transit"` or `"parked"`)
+5. **Connectivity**: Fallback when none of the above apply (status is `"online"`)
+
+**Computation steps:**
+
+1. Check asset type/subtype compatibility for each status family (see compatibility matrix above)
+2. Evaluate status families in priority order:
+   - If Connectivity is compatible and status = `"offline"` → `top_status = connectivity (offline)`
+   - Else if Immobilization is compatible and status = `"immobilized"` → `top_status = immobilization (immobilized)`
+   - Else if Engine is compatible and status = `"running"` → `top_status = engine (running)`
+   - Else if Transit is compatible → `top_status = transit (in_transit or parked)`
+   - Else → `top_status = connectivity (online)` [fallback]
+3. Connectivity always applies as fallback (`"online"`) if no higher-priority conditions are met
+
+**Compatibility rules:**
+
+- **Connectivity**: All asset types
+- **Immobilization**: Vehicles + Equipment.Undefined + Equipment.ElectricGenerator
+- **Engine**: Equipment (all) + Vehicles.Agricultural + Vehicles.Machine
+- **Transit**: Phones + Equipment.Undefined + All Vehicles (except Sites and some Equipment)
+
+**Examples:**
+
+- Vehicle.Car with online connectivity, free immobilization, no engine status → `top_status = connectivity (online)`
+- Equipment.ElectricGenerator with offline connectivity, immobilized, running engine → `top_status = connectivity (offline)`
+- Site.Coldroom with online connectivity only → `top_status = connectivity (online)`
+- Phone with online connectivity, in_transit → `top_status = connectivity (online)`
+- Vehicle.Car with online connectivity, immobilized → `top_status = immobilization (immobilized)`
+- Vehicle.Agricultural with online connectivity, free immobilization, running engine → `top_status = engine (running)`
+
+**Note:** Each status family's code is determined independently according to its own trigger conditions (see sections below). Top Status simply selects which family takes priority based on the conditional rules above.
+
+---
+
+# **1. Connectivity Status - Trigger Conditions**
 
 **How to determine online vs offline:**
 

@@ -278,7 +278,11 @@ def extract_fields_from_json(json_structure: str, base_path: str = '') -> Dict[s
                         # This is a nested object with timestamp - store it as-is
                         fields[current_path] = value
                     else:
-                        # Regular nested object - recurse to extract nested fields
+                        # Regular nested object - store parent path first, then recurse
+                        # This ensures parent containers are also available for matching
+                        # Example: status.statuses (object container) is stored, not just status.statuses.connectivity
+                        fields[current_path] = value
+                        # Then recurse to extract nested fields
                         traverse(value, current_path)
                 elif isinstance(value, list):
                     # Value is an array
@@ -326,7 +330,8 @@ def extract_structure_from_text(json_text: str, base_path: str = '') -> Dict[str
     """Extract field structure from JSON-like text with type descriptions.
     
     This is a fallback when JSON parsing fails due to type descriptions.
-    It extracts field paths by parsing the JSON structure syntax.
+    It extracts field paths by parsing the JSON structure syntax, handling
+    nested objects correctly by matching braces.
     
     Args:
         json_text: JSON-like text with type descriptions
@@ -337,36 +342,107 @@ def extract_structure_from_text(json_text: str, base_path: str = '') -> Dict[str
     """
     fields = {}
     
-    # Extract all key-value pairs from JSON structure
-    # Pattern: "key": "value" or "key": { ... }
-    key_pattern = r'"([^"]+)":\s*(?:"([^"]+)"|(\{[^}]*\})|(\[[^\]]*\]))'
+    def find_matching_brace(text: str, start_pos: int) -> int:
+        """Find the matching closing brace for an opening brace at start_pos."""
+        depth = 0
+        i = start_pos
+        while i < len(text):
+            if text[i] == '{':
+                depth += 1
+            elif text[i] == '}':
+                depth -= 1
+                if depth == 0:
+                    return i
+            i += 1
+        return -1
+    
+    def find_matching_bracket(text: str, start_pos: int) -> int:
+        """Find the matching closing bracket for an opening bracket at start_pos."""
+        depth = 0
+        i = start_pos
+        while i < len(text):
+            if text[i] == '[':
+                depth += 1
+            elif text[i] == ']':
+                depth -= 1
+                if depth == 0:
+                    return i
+            i += 1
+        return -1
     
     def extract_nested(path: str, text: str, depth: int = 0):
-        """Recursively extract nested structures."""
-        if depth > 10:  # Prevent infinite recursion
+        """Recursively extract nested structures, handling nested braces correctly."""
+        if depth > 20:  # Prevent infinite recursion
             return
         
-        # Find all key-value pairs at current level
-        matches = re.finditer(key_pattern, text)
-        for match in matches:
+        # Pattern to find key-value pairs: "key": ...
+        key_pattern = r'"([^"]+)":\s*'
+        
+        i = 0
+        while i < len(text):
+            # Find next key
+            match = re.search(key_pattern, text[i:])
+            if not match:
+                break
+            
+            key_start = i + match.start()
+            key_end = i + match.end()
             key = match.group(1)
             current_path = f"{path}.{key}" if path else key
             
-            # Check if value is an object
-            if match.group(3):  # Object
-                obj_text = match.group(3)
-                fields[current_path] = {}  # Placeholder
-                extract_nested(current_path, obj_text, depth + 1)
-            elif match.group(4):  # Array
-                array_text = match.group(4)
-                array_path = f"{current_path}[]"
-                fields[array_path] = []  # Placeholder
-                # Try to extract array item structure
-                if '{' in array_text:
-                    extract_nested(current_path, array_text, depth + 1)
+            # Skip whitespace after colon
+            value_start = key_end
+            while value_start < len(text) and text[value_start] in ' \t\n':
+                value_start += 1
+            
+            if value_start >= len(text):
+                break
+            
+            # Determine value type
+            if text[value_start] == '"':
+                # String value - find closing quote
+                quote_end = value_start + 1
+                while quote_end < len(text):
+                    if text[quote_end] == '"' and text[quote_end - 1] != '\\':
+                        break
+                    quote_end += 1
+                if quote_end < len(text):
+                    value = text[value_start + 1:quote_end]
+                    fields[current_path] = value
+                    i = quote_end + 1
+                else:
+                    i = value_start + 1
+            elif text[value_start] == '{':
+                # Object value - find matching brace
+                brace_end = find_matching_brace(text, value_start)
+                if brace_end > value_start:
+                    obj_text = text[value_start + 1:brace_end]
+                    fields[current_path] = {}  # Placeholder
+                    extract_nested(current_path, obj_text, depth + 1)
+                    i = brace_end + 1
+                else:
+                    i = value_start + 1
+            elif text[value_start] == '[':
+                # Array value - find matching bracket
+                bracket_end = find_matching_bracket(text, value_start)
+                if bracket_end > value_start:
+                    array_text = text[value_start + 1:bracket_end]
+                    array_path = f"{current_path}[]"
+                    fields[array_path] = []  # Placeholder
+                    # Try to extract array item structure
+                    if '{' in array_text:
+                        extract_nested(current_path, array_text, depth + 1)
+                    i = bracket_end + 1
+                else:
+                    i = value_start + 1
             else:
-                # Simple value
-                fields[current_path] = match.group(2) if match.group(2) else ""
+                # Simple value (number, boolean, null) - find next comma or brace
+                value_end = value_start
+                while value_end < len(text) and text[value_end] not in ',}':
+                    value_end += 1
+                value = text[value_start:value_end].strip()
+                fields[current_path] = value
+                i = value_end
     
     # Remove outer braces and extract
     cleaned = json_text.strip()
@@ -704,16 +780,102 @@ def format_json_structure(json_value: Any) -> str:
     # Wrap in triple quotes for CSV (escape quotes properly)
     return f'"""{json_str}"""'
 
+def find_closest_json_field(table_path: str, json_fields: Dict[str, Any]) -> Optional[str]:
+    """Find closest matching JSON field path for a table field path.
+    
+    This function handles cases where table paths don't exactly match JSON paths,
+    such as when table uses array notation `[]` but JSON has an object structure.
+    
+    Matching strategies (in order):
+    1. Exact match
+    2. Remove array notation `[]` and try match (e.g., `status.statuses[]` → `status.statuses`)
+    3. Remove array item property notation `[].` and try match (e.g., `status.statuses[].code` → `status.statuses.code`)
+    4. Partial match (table path is prefix of JSON path)
+    5. Normalized match (remove all array notation and compare)
+    
+    Args:
+        table_path: Field path from table (e.g., "status.statuses[]")
+        json_fields: Dictionary of JSON field paths to values
+        
+    Returns:
+        Closest matching JSON field path, or None if no match found
+    """
+    # Strategy 1: Exact match
+    if table_path in json_fields:
+        return table_path
+    
+    # Strategy 2: Remove array notation `[]` from end
+    # Example: "status.statuses[]" → "status.statuses"
+    path_without_array = table_path.rstrip('[]')
+    if path_without_array in json_fields:
+        return path_without_array
+    
+    # Strategy 3: Remove array item property notation `[].`
+    # Example: "status.statuses[].code" → "status.statuses.code"
+    path_without_array_prop = re.sub(r'\[\]\.', '.', table_path)
+    if path_without_array_prop in json_fields:
+        return path_without_array_prop
+    
+    # Strategy 4: Partial match - check if table path (normalized) is a prefix of any JSON path
+    # Example: "status.statuses" matches "status.statuses.connectivity"
+    clean_table_path = path_without_array.rstrip('.')
+    for json_path in json_fields.keys():
+        # Check if normalized table path is a prefix of JSON path
+        if json_path.startswith(clean_table_path + '.') or json_path == clean_table_path:
+            return json_path
+    
+    # Strategy 5: Normalized match - remove all array notation from both and compare
+    # Example: "status.statuses[]" matches "status.statuses" (object)
+    clean_table = re.sub(r'\[\]', '', table_path).rstrip('.')
+    for json_path in json_fields.keys():
+        clean_json = re.sub(r'\[\]', '', json_path).rstrip('.')
+        if clean_table == clean_json:
+            return json_path
+    
+    # Strategy 6: Try matching parent path if table path has array notation
+    # Example: "status.statuses[].last_changed_at" might match "status.statuses" (parent object)
+    if '[]' in table_path:
+        # Extract parent path before array notation
+        parent_match = re.match(r'^(.+?)\[', table_path)
+        if parent_match:
+            parent_path = parent_match.group(1)
+            if parent_path in json_fields:
+                return parent_path
+    
+    # Strategy 7: Try matching by removing parent prefix from table path
+    # Example: Table has "status.statuses[]" but JSON might have "statuses" (missing status prefix)
+    # This handles cases where JSON extraction didn't preserve full path
+    # NOTE: We return the JSON field path (statuses) not the table path (status.statuses)
+    # because the JSON fields dict only contains what was extracted from JSON
+    if '.' in table_path:
+        # Try removing first segment (e.g., "status.statuses[]" → "statuses[]")
+        parts = table_path.split('.', 1)
+        if len(parts) > 1:
+            remaining_path = parts[1]
+            # Remove array notation and try match
+            remaining_clean = remaining_path.rstrip('[]')
+            if remaining_clean in json_fields:
+                # Found match - return the JSON field path (what exists in json_fields)
+                return remaining_clean
+    
+    # No match found
+    return None
+
 def match_fields_with_table(json_fields: Dict[str, Any], table_rows: List[Dict[str, str]]) -> List[Dict[str, Any]]:
     """Match JSON fields with table rows by field path.
     
+    **IMPORTANT: JSON-first approach**
+    - Field Path and Field Name ALWAYS come from JSON structure (source of truth)
+    - Table provides only metadata: Priority, Source/Logic, Description
+    
     This function performs a two-way matching:
-    1. For each JSON field, find matching table row (if exists)
-    2. For each table row, ensure it's included (even if no JSON field)
+    1. For each JSON field, find matching table row (if exists) - use JSON field_path
+    2. For each table row, try to find matching JSON field (fuzzy matching) - use JSON field_path if found
     
     This ensures:
-    - All JSON fields are included (even if not in table)
-    - All table rows are included (even if computed, not in JSON)
+    - All JSON fields are included (even if not in table) - uses JSON field_path
+    - All table rows are included (even if computed, not in JSON) - tries to match JSON first
+    - Field paths always reflect JSON structure, not table notation
     
     Args:
         json_fields: Dictionary of field paths to JSON values (from JSON structure)
@@ -721,51 +883,123 @@ def match_fields_with_table(json_fields: Dict[str, Any], table_rows: List[Dict[s
         
     Returns:
         List of matched field dictionaries ready for CSV generation
+        Each dict contains:
+        - field_path: Always from JSON structure (source of truth)
+        - json_value: JSON value from structure
+        - priority: From table (if matched)
+        - source_logic: From table (if matched)
+        - description: From table (if matched)
+        - matched: Boolean indicating if table metadata was found
     """
     matched_fields = []
     
     # Create lookup dictionary for fast table row lookup by field path
-    # Key: field_path (e.g., "location.latitude")
+    # Key: field_path from table (e.g., "location.latitude" or "status.statuses[]")
     # Value: table row dict with priority, source_logic, description
     table_lookup = {row['field_path']: row for row in table_rows}
     
-    # Step 1: Process all JSON fields
+    # Track which table rows have been matched to avoid duplicates
+    matched_table_paths = set()
+    
+    # Step 1: Process all JSON fields (JSON-first approach)
     # For each field found in JSON structure, try to find matching table row
-    for field_path, json_value in json_fields.items():
-        table_row = table_lookup.get(field_path)
+    for json_field_path, json_value in json_fields.items():
+        # Try exact match first
+        table_row = table_lookup.get(json_field_path)
         
         if table_row:
-            # Found matching table row - use table metadata
+            # Found exact matching table row - use JSON field_path with table metadata
             matched_fields.append({
-                'field_path': field_path,
+                'field_path': json_field_path,  # Always use JSON path (source of truth)
                 'json_value': json_value,
                 'priority': table_row['priority'],
                 'source_logic': table_row['source_logic'],
                 'description': table_row['description'],
                 'matched': True  # Flag indicating we have table metadata
             })
+            matched_table_paths.add(table_row['field_path'])
         else:
-            # JSON field exists but no table row - generate with defaults
-            # This can happen if JSON structure has fields not documented in table
-            matched_fields.append({
-                'field_path': field_path,
-                'json_value': json_value,
-                'priority': '',
-                'source_logic': '',
-                'description': '',
-                'matched': False  # Flag indicating no table metadata
-            })
+            # No exact match - try fuzzy matching (table might use different notation)
+            # Example: JSON has "status.statuses" (object) but table has "status.statuses[]" (array)
+            closest_table_path = None
+            for table_path in table_lookup.keys():
+                # Try to match by comparing normalized paths
+                json_normalized = json_field_path.replace('[]', '').replace('[].', '.')
+                table_normalized = table_path.replace('[]', '').replace('[].', '.')
+                if json_normalized == table_normalized:
+                    closest_table_path = table_path
+                    break
+            
+            if closest_table_path:
+                # Found fuzzy match - use JSON field_path with table metadata
+                table_row = table_lookup[closest_table_path]
+                matched_fields.append({
+                    'field_path': json_field_path,  # Always use JSON path (source of truth)
+                    'json_value': json_value,
+                    'priority': table_row['priority'],
+                    'source_logic': table_row['source_logic'],
+                    'description': table_row['description'],
+                    'matched': True
+                })
+                matched_table_paths.add(closest_table_path)
+            else:
+                # JSON field exists but no table row match - generate with defaults
+                # This can happen if JSON structure has fields not documented in table
+                matched_fields.append({
+                    'field_path': json_field_path,  # Always use JSON path
+                    'json_value': json_value,
+                    'priority': '',
+                    'source_logic': '',
+                    'description': '',
+                    'matched': False  # Flag indicating no table metadata
+                })
     
-    # Step 2: Process table rows without JSON fields
+    # Step 2: Process table rows that weren't matched to JSON fields
     # These are typically computed fields that don't appear in JSON structure
     # Example: location.cardinal_direction (computed from location.heading)
-    json_paths = set(json_fields.keys())
+    # BUT: Try to find closest JSON field first using fuzzy matching
+    # IMPORTANT: Always prioritize JSON field paths over table paths
     for table_row in table_rows:
-        if table_row['field_path'] not in json_paths:
-            # Table row exists but no JSON field - include it anyway
-            # This ensures computed/derived fields are included in output
+        table_path = table_row['field_path']
+        
+        # Skip if already matched
+        if table_path in matched_table_paths:
+            continue
+        
+        # Try to find closest JSON field using fuzzy matching
+        # This handles cases like: table has "status.statuses[]" but JSON has "status.statuses" (object)
+        closest_json_path = find_closest_json_field(table_path, json_fields)
+        
+        if closest_json_path:
+            # Found matching JSON field - use JSON field_path with table metadata
+            # IMPORTANT: If table path is more complete (e.g., "status.statuses[]" vs "statuses"),
+            # prefer the table path (without array notation) as it reflects the actual JSON structure
+            # This handles cases where JSON extraction didn't preserve full path
+            # The table path "status.statuses[]" better reflects the JSON structure than "statuses"
+            if '.' in table_path and '.' not in closest_json_path:
+                # Table path is more complete - use it (without array notation) as it reflects JSON structure
+                preferred_path = table_path.rstrip('[]')
+            else:
+                # Use JSON path as-is (it's already complete)
+                preferred_path = closest_json_path
+            
+            json_value = json_fields[closest_json_path]  # Use JSON path to get value from json_fields dict
             matched_fields.append({
-                'field_path': table_row['field_path'],
+                'field_path': preferred_path,  # Use preferred path (table if more complete, else JSON)
+                'json_value': json_value,
+                'priority': table_row['priority'],
+                'source_logic': table_row['source_logic'],
+                'description': table_row['description'],
+                'matched': True
+            })
+            matched_table_paths.add(table_path)
+        else:
+            # No JSON field found - this is a computed field not in JSON structure
+            # This should be rare - most fields should be in JSON
+            # Use table field_path as fallback, but this indicates a potential issue:
+            # either the field is truly computed (not in JSON) or JSON structure is incomplete
+            matched_fields.append({
+                'field_path': table_path,  # Use table path as fallback (computed field without JSON)
                 'json_value': None,  # No JSON value (computed field)
                 'priority': table_row['priority'],
                 'source_logic': table_row['source_logic'],
@@ -776,88 +1010,91 @@ def match_fields_with_table(json_fields: Dict[str, Any], table_rows: List[Dict[s
     return matched_fields
 
 def generate_csv_row(field_data: Dict[str, Any], category: str) -> Dict[str, str]:
-    """Generate CSV row from matched field data.
+    """Generate CSV row from JSON field data.
     
-    This function takes matched field data and generates a complete CSV row
-    with all required columns. It infers missing metadata and uses defaults
-    where appropriate.
+    **JSON-only approach**: This function generates CSV rows directly from JSON structure.
+    Field paths and names come ONLY from JSON. Metadata columns (Priority, Source/Logic,
+    Description) are left empty and can be filled manually later.
     
     Args:
-        field_data: Matched field dictionary containing:
-            - field_path: Field path (e.g., "location.latitude")
-            - json_value: JSON value from structure (may be None)
-            - priority: Priority from table (P0, P1, etc.)
-            - source_logic: Source/Logic text from table
-            - description: Description from table
+        field_data: Field dictionary containing:
+            - field_path: Field path from JSON (e.g., "location.latitude")
+            - json_value: JSON value from structure
         category: Section category (e.g., "location", "motion")
         
     Returns:
         Dictionary with CSV column names as keys, ready for CSV writing
     """
-    # Extract field data
+    # Extract field data (JSON-only, no table metadata)
     field_path = field_data['field_path']
     json_value = field_data.get('json_value')
-    priority = field_data.get('priority', '')
-    source_logic = field_data.get('source_logic', '')
-    description = field_data.get('description', '')
     
     # Generate stable field name identifier from field path
     # Example: "location.latitude" -> "location_latitude"
     field_name = generate_field_name(field_path)
     
-    # Infer all metadata from available information
-    # Field Type: How the field is mapped (direct, calculated, etc.)
-    field_type = infer_field_type(source_logic, description)
+    # Infer field properties from JSON structure only
     # Structure Type: JSON structure (simple_value, value_unit_object, etc.)
-    structure_type = infer_structure_type(field_path, json_value, description)
+    structure_type = infer_structure_type(field_path, json_value, '')
     # Data Type: JSON data type (number, string, boolean, etc.)
-    data_type = infer_data_type(field_path, json_value, structure_type, description)
-    # Unit: Extract from JSON value or description
-    unit = extract_unit_from_json(json_value, description) if json_value else ""
-    # Computation Approach: Extract if calculated
-    computation_approach = extract_computation_approach(source_logic)
-    # Dependencies: Other Fleeti fields this depends on
-    dependencies = extract_dependencies(source_logic, description)
-    # Provider Fields: Provider field references (e.g., "lat", "lng")
-    provider_fields = extract_provider_fields(source_logic)
+    data_type = infer_data_type(field_path, json_value, structure_type, '')
+    # Unit: Extract from JSON value only (no description available)
+    unit = extract_unit_from_json(json_value, '') if json_value else ""
     # JSON Structure: Formatted JSON value for CSV
     json_structure = format_json_structure(json_value) if json_value else ""
+    
+    # Field Type: Infer from JSON structure only (default to 'direct' for fields in JSON)
+    # Since fields are in JSON structure, they're typically direct mappings
+    field_type = 'direct'
+    
+    # Metadata columns are empty (to be filled manually later)
+    computation_approach = ''
+    dependencies = ''
+    description = ''
+    priority = ''
+    provider_fields = ''
     
     # Generate CSV row dictionary matching export format
     # Column order matches the export CSV exactly
     return {
         'Name': field_name,
         'Category': category,
-        'Computation Approach': computation_approach,
+        'Computation Approach': computation_approach,  # Empty - JSON-only
         'Data Type': data_type,
-        'Dependencies': dependencies,
-        'Description': description,
-        'Field Path': field_path,
+        'Dependencies': dependencies,  # Empty - JSON-only
+        'Description': description,  # Empty - JSON-only
+        'Field Path': field_path,  # Always from JSON structure
         'Field Type': field_type,
         'JSON Structure': json_structure,
         'Mapping Fields (db)': '',  # Empty - requires manual input (Notion relation)
         'Notes': '',  # Empty - for manual notes
-        'Priority': priority,
+        'Priority': priority,  # Empty - JSON-only
         'REST API Endpoints': '',  # Empty - requires manual input
         'Status': 'inactive',  # Default for newly generated fields
         'Structure Type': structure_type,
         'Unit': unit,
         'Version Added': '1.0.0',  # Default version
         'WebSocket Contracts': '',  # Empty - requires manual input
-        '💽 Provider Field (db)': provider_fields  # Extracted provider field references
+        '💽 Provider Field (db)': provider_fields  # Empty - JSON-only
     }
 
 def main():
     """Main processing function.
     
+    **JSON-only approach**: Generates Fleeti Fields CSV directly from JSON structures
+    in the markdown specification. Field paths and names come ONLY from JSON.
+    No table matching or fallback mechanisms.
+    
     Orchestrates the entire pipeline:
     1. Read markdown specification file
-    2. Parse sections (extract JSON structures and tables)
+    2. Parse sections (extract JSON structures)
     3. For each section:
-       - Extract fields from JSON structure
-       - Match with table rows
-       - Generate CSV rows
+       - Extract fields from JSON structure recursively
+       - Generate CSV rows directly from JSON fields
     4. Write CSV file with all field entries
+    
+    Metadata columns (Priority, Source/Logic, Description) are left empty
+    and can be filled manually later in Notion.
     
     The output CSV matches the export format exactly and can be imported
     into Notion or used for further processing.
@@ -884,9 +1121,9 @@ def main():
         json_structure = section['json_structure']  # May be None
         table_rows = section['table_rows']  # May be empty list
         
-        # Skip sections without any content (no JSON, no table)
-        # This handles edge cases like "Priority System" section
-        if not json_structure and not table_rows:
+        # Skip sections without JSON structure
+        # JSON is the only source of truth for field definitions
+        if not json_structure:
             continue
         
         print(f"\nProcessing section: {section_title}")
@@ -894,24 +1131,25 @@ def main():
         # Get category for this section (maps to Notion database category)
         category = SECTION_CATEGORY_MAP.get(section_title, "other")
         
-        # Step 3a: Extract all field paths from JSON structure
-        json_fields = {}
+        # Step 3: Extract all field paths from JSON structure and generate CSV rows
+        # JSON-only approach: Generate fields directly from JSON structure
+        # No table matching - field paths and names come ONLY from JSON
         if json_structure:
             # Recursively extract all field paths from JSON
             json_fields = extract_fields_from_json(json_structure)
             print(f"  Extracted {len(json_fields)} fields from JSON")
-        
-        print(f"  Found {len(table_rows)} table rows")
-        
-        # Step 3b: Match JSON fields with table rows
-        # This creates a unified view of all fields (from JSON and table)
-        matched_fields = match_fields_with_table(json_fields, table_rows)
-        print(f"  Generated {len(matched_fields)} field entries")
-        
-        # Step 3c: Generate CSV rows for each matched field
-        for field_data in matched_fields:
-            csv_row = generate_csv_row(field_data, category)
-            all_csv_rows.append(csv_row)
+            
+            # Generate CSV rows directly from JSON fields
+            for field_path, json_value in json_fields.items():
+                # Create field data dictionary with only JSON information
+                field_data = {
+                    'field_path': field_path,
+                    'json_value': json_value
+                }
+                csv_row = generate_csv_row(field_data, category)
+                all_csv_rows.append(csv_row)
+            
+            print(f"  Generated {len(json_fields)} field entries from JSON")
     
     # Step 4: Write CSV file
     if all_csv_rows:
