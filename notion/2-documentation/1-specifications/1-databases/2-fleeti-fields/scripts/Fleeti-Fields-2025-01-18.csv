@@ -88,10 +88,134 @@ motion,motion,,,object,,,motion,,"""""""{""last_updated_at"": ""ISO"", ""speed""
 last_updated_at,power,,,date,,,last_updated_at,,"""""""""2025-01-18T14:30:45Z""""""""",,,,,inactive,simple_value,,1.0.0,,
 ignition_value,power,,,boolean,,,ignition.value,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
 ignition_last_changed_at,power,,,string,,,ignition.last_changed_at,,"""""""""2025-01-18T14:30:45Z""""""""",,,,,inactive,simple_value,,1.0.0,,
-inputs_individual_input_1,io,,,boolean,,,inputs.individual.input_1,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
-inputs_individual_input_2,io,,,boolean,,,inputs.individual.input_2,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
-inputs_individual_input_3,io,,,boolean,,,inputs.individual.input_3,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
-inputs_individual_input_4,io,,,boolean,,,inputs.individual.input_4,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
+inputs_individual_input_1,io,"Prioritized: Navixy avl_io_1 (path: params.avl_io_1, priority 1), then extract bit 0 from inputs bitmask using extract_bit_from_bitmask function (priority 2) - Digital Input 1 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., ignition, door sensor) is defined in asset.installation.* metadata. Used to compute canonical fields like power.ignition.
+
+Pseudo code:
+if (avl_io_1 is available) {
+  io_input_1 = avl_io_1  // direct mapping from root level packet
+} else if (inputs bitmask is available) {
+  io_input_1 = extractBit(inputs, 0)  // extract bit 0 from Digital Inputs Bitmask
+} else {
+  io_input_1 = null
+}","[
+  {
+    ""priority"": 1,
+    ""type"": ""direct"",
+    ""source_type"": ""provider"",
+    ""provider"": ""navixy"",
+    ""field"": ""avl_io_1"",
+    ""path"": ""params.avl_io_1"",
+    ""description"": ""Digital Input 1 from Navixy""
+  },
+  {
+    ""priority"": 2,
+    ""type"": ""calculated"",
+    ""calculation_type"": ""function_reference"",
+    ""function"": ""extract_bit_from_bitmask"",
+    ""parameters"": {
+      ""provider"": {
+        ""navixy"": ""inputs""
+      }
+    },
+    ""description"": ""Extract bit 0 from Digital Inputs Bitmask""
+  }
+]",boolean,,Digital Input 1,inputs.individual.input_1,,"""""""""boolean""""""""",,"Navixy: avl_io_1 (Digital Input 1), inputs (Digital Inputs Bitmask, bit 0)	Digital input 1 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., ignition, door sensor) is defined in asset.installation.* metadata. Used to compute canonical fields like power.ignition. If only bitmask is available, transformation pipeline extracts bit 0.So basically, we take AVLIO1 as a priority input direct mapping, and we take inputs from root level packet plug. We have a bit mask, and we take the bit 0. ",,,inactive,simple_value,,1.0.0,,
+inputs_individual_input_2,io,"Prioritized: Navixy avl_io_2 (path: params.avl_io_2, priority 1), then extract bit 1 from inputs bitmask using extract_bit_from_bitmask function (priority 2) - Digital Input 2 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., door sensor, alarm) is defined in asset.installation.* metadata. Used to compute canonical fields.
+
+Pseudo code:
+if (avl_io_2 is available) {
+  io_input_2 = avl_io_2  // direct mapping from root level packet
+} else if (inputs bitmask is available) {
+  io_input_2 = extractBit(inputs, 1)  // extract bit 1 from Digital Inputs Bitmask
+} else {
+  io_input_2 = null
+}","[
+  {
+    ""priority"": 1,
+    ""type"": ""direct"",
+    ""source_type"": ""provider"",
+    ""provider"": ""navixy"",
+    ""field"": ""avl_io_2"",
+    ""path"": ""params.avl_io_2"",
+    ""description"": ""Digital Input 2 from Navixy""
+  },
+  {
+    ""priority"": 2,
+    ""type"": ""calculated"",
+    ""calculation_type"": ""function_reference"",
+    ""function"": ""extract_bit_from_bitmask"",
+    ""parameters"": {
+      ""provider"": {
+        ""navixy"": ""inputs""
+      }
+    },
+    ""description"": ""Extract bit 1 from Digital Inputs Bitmask""
+  }
+]",boolean,,Digital Input 2,inputs.individual.input_2,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
+inputs_individual_input_3,io,"Prioritized: Navixy avl_io_3 (path: params.avl_io_3, priority 1), then extract bit 2 from inputs bitmask using extract_bit_from_bitmask function (priority 2) - Digital Input 3 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., door sensor, alarm) is defined in asset.installation.* metadata. Used to compute canonical fields.
+
+Pseudo code:
+if (avl_io_3 is available) {
+  io_input_3 = avl_io_3  // direct mapping from root level packet
+} else if (inputs bitmask is available) {
+  io_input_3 = extractBit(inputs, 2)  // extract bit 2 from Digital Inputs Bitmask
+} else {
+  io_input_3 = null
+}","[
+  {
+    ""priority"": 1,
+    ""type"": ""direct"",
+    ""source_type"": ""provider"",
+    ""provider"": ""navixy"",
+    ""field"": ""avl_io_3"",
+    ""path"": ""params.avl_io_3"",
+    ""description"": ""Digital Input 3 from Navixy""
+  },
+  {
+    ""priority"": 2,
+    ""type"": ""calculated"",
+    ""calculation_type"": ""function_reference"",
+    ""function"": ""extract_bit_from_bitmask"",
+    ""parameters"": {
+      ""provider"": {
+        ""navixy"": ""inputs""
+      }
+    },
+    ""description"": ""Extract bit 2 from Digital Inputs Bitmask""
+  }
+]",boolean,,Digital Input 3,inputs.individual.input_3,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
+inputs_individual_input_4,io,"Prioritized: Navixy avl_io_4 (path: params.avl_io_4, priority 1), then extract bit 3 from inputs bitmask using extract_bit_from_bitmask function (priority 2) - Digital Input 4 state (also functions as pulse counter). Values: 0 = low/inactive, 1 = high/active. Pulse count resets when records are saved. Semantic meaning (e.g., door sensor, alarm) is defined in asset.installation.* metadata. Used to compute canonical fields.
+
+Pseudo code:
+if (avl_io_4 is available) {
+  io_input_4 = avl_io_4  // direct mapping from root level packet
+} else if (inputs bitmask is available) {
+  io_input_4 = extractBit(inputs, 3)  // extract bit 3 from Digital Inputs Bitmask
+} else {
+  io_input_4 = null
+}","[
+  {
+    ""priority"": 1,
+    ""type"": ""direct"",
+    ""source_type"": ""provider"",
+    ""provider"": ""navixy"",
+    ""field"": ""avl_io_4"",
+    ""path"": ""params.avl_io_4"",
+    ""description"": ""Digital Input 4 from Navixy""
+  },
+  {
+    ""priority"": 2,
+    ""type"": ""calculated"",
+    ""calculation_type"": ""function_reference"",
+    ""function"": ""extract_bit_from_bitmask"",
+    ""parameters"": {
+      ""provider"": {
+        ""navixy"": ""inputs""
+      }
+    },
+    ""description"": ""Extract bit 3 from Digital Inputs Bitmask""
+  }
+]",boolean,,Digital Input 4,inputs.individual.input_4,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
 outputs_individual_output_1,io,,,boolean,,,outputs.individual.output_1,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
 outputs_individual_output_2,io,,,boolean,,,outputs.individual.output_2,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
 outputs_individual_output_3,io,,,boolean,,,outputs.individual.output_3,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
