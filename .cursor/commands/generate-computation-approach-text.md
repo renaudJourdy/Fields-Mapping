@@ -98,6 +98,19 @@ Pseudo code:
 - Additional details: Extract calculation logic, formulas, or implementation notes from Notes
 - Pseudo code: Generate simple pseudo code (2-5 lines) that shows the implementation logic clearly
 
+**Dependency Optimization (IMPORTANT):**
+- **Prefer Fleeti fields over raw provider fields**: If a Fleeti field already encapsulates prerequisite checks or logic, use that field as a dependency instead of duplicating the checks
+- **Avoid duplicate dependency checks**: If a field already checks prerequisites (e.g., `statuses_immobilization_compatible` checks `asset_type` and `asset_accessories`), use that compatible field as a dependency rather than re-checking the same prerequisites
+- **Example**: For `statuses_immobilization_code`:
+  - ❌ **Bad**: Dependencies include `asset_type`, `asset_accessories` (duplicates checks already done in `statuses_immobilization_compatible`)
+  - ✅ **Good**: Dependencies include `statuses_immobilization_compatible` (which already checks `asset_type` and `asset_accessories`)
+- **Benefits**: 
+  - Cleaner dependency chain
+  - No redundant checks
+  - Better maintainability (single source of truth)
+  - More efficient computation
+- **When to optimize**: If Notes mention prerequisites that are already checked by another Fleeti field, replace those prerequisites with the Fleeti field that encapsulates them
+
 **Pseudo Code Guidelines:**
 - Keep it simple and readable (2-5 lines maximum)
 - Use clear variable names matching the dependencies
@@ -139,6 +152,27 @@ if (current.lat !== previous.lat || current.lng !== previous.lng) {
     location_last_changed_at = now()
   }
 }"`
+
+**Example (Dependency Optimization):**
+- Notes: "immobilized if output state = 1, free if = 0. Check asset has immobilizer accessory. Read output state from outputs_individual_output_1, outputs_individual_output_2, or outputs_individual_output_3 based on asset.installation.immobilizer_output_number"
+- Field: `statuses_immobilization_code`
+- **Optimized Dependencies**: `statuses_immobilization_compatible, asset_installation_immobilizer_output_number, outputs_individual_output_1, outputs_individual_output_2, outputs_individual_output_3`
+- **NOT**: `asset_type, asset_accessories, asset_installation_immobilizer_output_number, outputs_individual_output_1, outputs_individual_output_2, outputs_individual_output_3` (duplicates checks already in `statuses_immobilization_compatible`)
+- Generated: `"Calculated: derive from statuses_immobilization_compatible, asset_installation_immobilizer_output_number, outputs_individual_output_1, outputs_individual_output_2, and outputs_individual_output_3 using derive_statuses_immobilization_code function. Prerequisites: Check statuses_immobilization_compatible (must be true). If false, return null (immobilization not applicable). Read immobilizer output number from asset.installation.immobilizer_output_number (default to 1 if not specified). Read digital output state from the corresponding individual output field: outputs_individual_output_1 (if output_number = 1), outputs_individual_output_2 (if output_number = 2), or outputs_individual_output_3 (if output_number = 3)...
+
+Pseudo code:
+if (!statuses_immobilization_compatible) {
+  return null  // Immobilization not applicable
+}
+output_number = asset_installation_immobilizer_output_number || 1
+if (output_number === 1) {
+  output_state = outputs_individual_output_1
+} else if (output_number === 2) {
+  output_state = outputs_individual_output_2
+} else if (output_number === 3) {
+  output_state = outputs_individual_output_3
+}
+// ... rest of logic"`
 
 ### 4. Transformed Mapping Fields
 
@@ -223,6 +257,7 @@ The generated Computation Approach text must:
 4. **Be developer-friendly**: Clear enough for developers to understand implementation
 5. **Follow established patterns**: Use the patterns above consistently
 6. **Handle edge cases**: If Notes contain unclear or ambiguous information, make reasonable inferences and note them
+7. **Optimize dependencies**: Prefer using Fleeti fields that already encapsulate prerequisite checks instead of duplicating those checks (see Dependency Optimization section above)
 
 ## New Pattern Detection
 

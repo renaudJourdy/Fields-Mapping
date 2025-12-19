@@ -126,31 +126,128 @@ Enables timeline features and status duration calculations.",top_status.last_cha
 Backend compares current top_status.code with previous value. 
 If different, update timestamp to current ISO8601 UTC time. 
 If same, keep previous timestamp unchanged.",,,inactive,simple_value,,1.0.0,,
-statuses_connectivity_code,status,"online if last_updated_at < 24h, offline if ? 24h for vehicles/equipment/phones; 
+statuses_connectivity_code,status,"Calculated: derive from last_updated_at, asset_type, and asset_subtype using derive_statuses_connectivity_code function. Determines online/offline status based on time threshold: Vehicles, Equipment, and Phones use 24h threshold; Coldroom Sites use 1h threshold. Check asset type and subtype: if asset_type === Site (30) AND asset_subtype === Coldroom (10), use 1h threshold; otherwise use 24h threshold. Compare root-level last_updated_at (derived from msg_time) with current time. If difference < threshold ? ""online"", else ? ""offline"". Connectivity is based on the root-level last_updated_at timestamp (derived from msg_time), not GPS location updates.
+
+Pseudo code:
+threshold = (asset_type === Site && asset_subtype === Coldroom) ? 1 : 24  // hours
+time_diff = current_time - last_updated_at
+if (time_diff < threshold) {
+  return ""online""
+} else {
+  return ""offline""
+}","[
+  {
+    ""priority"": 1,
+    ""type"": ""calculated"",
+    ""calculation_type"": ""function_reference"",
+    ""function"": ""derive_statuses_connectivity_code"",
+    ""parameters"": {
+      ""fleeti"": [
+        ""last_updated_at"",
+        ""asset_type"",
+        ""asset_subtype""
+      ]
+    },
+    ""description"": ""Derived from last_updated_at, asset_type, and asset_subtype using time threshold logic""
+  }
+]",string,,"Connectivity status code: ""online"" or ""offline"" based on last_updated_at threshold. Indicates whether the asset has recently communicated with the Fleeti backend. Vehicles, Equipment, and Phones use 24h threshold; Coldroom Sites use 1h threshold.",statuses.connectivity.code,calculated,"""""""""online""""""""",,"online if last_updated_at < 24h, offline if ? 24h for vehicles/equipment/phones; 
 1h threshold for coldroom sites. 
 Check asset subtype: if Site.Coldroom, use 1h threshold; otherwise use 24h threshold. 
 Compare root-level last_updated_at (derived from msg_time) with current time. 
-If difference < threshold ? ""online"", else ? ""offline"".",,string,,"Connectivity status code: ""online"" or ""offline"" based on last_updated_at threshold. Indicates whether the asset has recently communicated with the Fleeti backend. Vehicles, Equipment, and Phones use 24h threshold; Coldroom Sites use 1h threshold.",statuses.connectivity.code,calculated,"""""""""online""""""""",,,,,inactive,simple_value,,1.0.0,,
-statuses_connectivity_compatible,status,"Check asset type/subtype against compatibility matrix (Connectivity: all types). 
-Connectivity status is compatible with all asset types and subtypes. 
-Return true for all assets.",,string,,"Indicates if Connectivity status family is compatible with this asset type/subtype. 
+If difference < threshold ? ""online"", else ? ""offline"".",,,inactive,simple_value,,1.0.0,,
+statuses_connectivity_compatible,status,"Calculated: derive from asset_type and asset_subtype using derive_statuses_connectivity_compatible function. Check asset type/subtype against compatibility matrix (Connectivity: all types). Connectivity status is compatible with all asset types and subtypes. Return true for all assets. Connectivity applies to all asset types (Vehicles, Equipment, Sites, Phones) regardless of subtype.
+
+Pseudo code:
+// Connectivity is compatible with all asset types
+return true","[
+  {
+    ""priority"": 1,
+    ""type"": ""calculated"",
+    ""calculation_type"": ""function_reference"",
+    ""function"": ""derive_statuses_connectivity_compatible"",
+    ""parameters"": {
+      ""fleeti"": [
+        ""asset_type"",
+        ""asset_subtype""
+      ]
+    },
+    ""description"": ""Derived from asset_type and asset_subtype, always returns true for connectivity""
+  }
+]",string,,"Indicates if Connectivity status family is compatible with this asset type/subtype. 
 Connectivity applies to all asset types (Vehicles, Equipment, Sites, Phones) regardless of subtype. 
-Always true.",statuses.connectivity.compatible,calculated,"""""""""true""""""""",,,,,inactive,simple_value,,1.0.0,,
-statuses_connectivity_last_changed_at,status,"Updates when status family code changes (not on every packet). 
+Always true.",statuses.connectivity.compatible,calculated,"""""""""true""""""""",,"Check asset type/subtype against compatibility matrix (Connectivity: all types). 
+Connectivity status is compatible with all asset types and subtypes. 
+Return true for all assets.",,,inactive,simple_value,,1.0.0,,
+statuses_connectivity_last_changed_at,status,"Calculated: derive from statuses_connectivity_code using derive_statuses_connectivity_last_changed_at function. Updates when status family code changes (not on every packet). Backend compares current statuses_connectivity_code with previous value. If different, update timestamp to current ISO8601 UTC time. If same, keep previous timestamp unchanged. Used to calculate duration of current connectivity status (e.g., ""offline for 2h"", ""online since yesterday""). Enables connectivity duration tracking and timeline features.
+
+Pseudo code:
+if (current_statuses_connectivity_code !== previous_statuses_connectivity_code) {
+  statuses_connectivity_last_changed_at = now()  // ISO8601 UTC timestamp
+} else {
+  statuses_connectivity_last_changed_at = previous_statuses_connectivity_last_changed_at  // keep unchanged
+}","[
+  {
+    ""priority"": 1,
+    ""type"": ""calculated"",
+    ""calculation_type"": ""function_reference"",
+    ""function"": ""derive_statuses_connectivity_last_changed_at"",
+    ""parameters"": {
+      ""fleeti"": [
+        ""statuses_connectivity_code""
+      ]
+    },
+    ""description"": ""Derived from statuses_connectivity_code, updates when code changes""
+  }
+]",date,,"ISO8601 timestamp when connectivity status code last changed. 
+Used to calculate duration of current connectivity status (e.g., ""offline for 2h"", ""online since yesterday""). 
+Enables connectivity duration tracking and timeline features.",statuses.connectivity.last_changed_at,calculated,"""""""""2025-01-18T14:30:45Z""""""""",,"Updates when status family code changes (not on every packet). 
 Backend compares current statuses_connectivity_code with previous value. 
 If different, update timestamp to current ISO8601 UTC time. 
-If same, keep previous timestamp unchanged.",,date,,"ISO8601 timestamp when connectivity status code last changed. 
-Used to calculate duration of current connectivity status (e.g., ""offline for 2h"", ""online since yesterday""). 
-Enables connectivity duration tracking and timeline features.",statuses.connectivity.last_changed_at,calculated,"""""""""2025-01-18T14:30:45Z""""""""",,,,,inactive,simple_value,,1.0.0,,
-statuses_immobilization_code,status,"immobilized if io.outputs[N] = 1, free if = 0, immobilizing/releasing based on command tracking. 
-Check asset has immobilizer accessory (asset.accessories contains type_code=""immobilizer""). 
-Read digital output state from io.outputs[N] where N is from asset.installation.immobilizer_output_number. 
-If output = 1 ? ""immobilized"". If output = 0 ? ""free"". 
-If immobilization command sent via REST API ? ""immobilizing"" (persists until output changes to 1 or timeout). 
-If release command sent ? ""releasing"" (persists until output changes to 0 or timeout).",,string,,"Immobilization status code: ""immobilized"", ""free"", ""immobilizing"", or ""releasing"" based on digital output state and command tracking. 
+If same, keep previous timestamp unchanged.",,,inactive,simple_value,,1.0.0,,
+statuses_immobilization_code,status,"Calculated: derive from statuses_immobilization_compatible, asset_installation_immobilizer_output_number, outputs_individual_output_1, outputs_individual_output_2, and outputs_individual_output_3 using derive_statuses_immobilization_code function. Prerequisites: Check statuses_immobilization_compatible (must be true). If false, return null (immobilization not applicable). Read immobilizer output number from asset.installation.immobilizer_output_number (default to 1 if not specified). Read digital output state from the corresponding individual output field: outputs_individual_output_1 (if output_number = 1), outputs_individual_output_2 (if output_number = 2), or outputs_individual_output_3 (if output_number = 3). Status determination: If output state = 1 ? ""immobilized"". If output state = 0 ? ""free"". If immobilization command sent via REST API ? ""immobilizing"" (persists until output changes to 1 or timeout, managed by backend command tracking). If release command sent ? ""releasing"" (persists until output changes to 0 or timeout, managed by backend command tracking).
+
+Pseudo code:
+if (!statuses_immobilization_compatible) {
+  return null  // Immobilization not applicable
+}
+output_number = asset_installation_immobilizer_output_number || 1  // default to 1
+output_state = null
+if (output_number === 1) {
+  output_state = outputs_individual_output_1
+} else if (output_number === 2) {
+  output_state = outputs_individual_output_2
+} else if (output_number === 3) {
+  output_state = outputs_individual_output_3
+}
+if (isImmobilizingCommandActive()) {
+  return ""immobilizing""
+} else if (isReleasingCommandActive()) {
+  return ""releasing""
+} else if (output_state === 1) {
+  return ""immobilized""
+} else if (output_state === 0) {
+  return ""free""
+} else {
+  return null  // output state unavailable
+}",,string,,"Immobilization status code: ""immobilized"", ""free"", ""immobilizing"", or ""releasing"" based on digital output state and command tracking. 
 Indicates whether the vehicle/equipment is currently immobilized (locked), free (unlocked), or in a transition state (immobilizing/releasing) managed by backend command tracking.",statuses.immobilization.code,calculated,"""""""""free""""""""",,,,,inactive,simple_value,,1.0.0,,
-statuses_immobilization_compatible,status,,,string,,,statuses.immobilization.compatible,calculated,"""""""""true""""""""",,,,,inactive,simple_value,,1.0.0,,
-statuses_immobilization_last_changed_at,status,,,date,,,statuses.immobilization.last_changed_at,calculated,"""""""""2025-01-18T14:30:45Z""""""""",,,,,inactive,simple_value,,1.0.0,,
+statuses_immobilization_compatible,status,"Calculated: derive from asset_type and asset_accessories using derive_statuses_immobilization_compatible function. Check asset type/subtype against compatibility matrix (Immobilization: Vehicles and Equipment only). Asset must have asset_type = Vehicle (10) OR Equipment (20). Asset must have immobilizer accessory installed (asset.accessories contains type_code=""immobilizer""). Return true if both conditions are met, false otherwise.
+
+Pseudo code:
+if (asset_type === Vehicle || asset_type === Equipment) {
+  if (hasImmobilizerAccessory(asset_accessories)) {
+    return true
+  }
+}
+return false",,string,,,statuses.immobilization.compatible,calculated,"""""""""true""""""""",,,,,inactive,simple_value,,1.0.0,,
+statuses_immobilization_last_changed_at,status,"Calculated: derive from statuses_immobilization_code using derive_statuses_immobilization_last_changed_at function. Updates when status family code changes (not on every packet). Backend compares current statuses_immobilization_code with previous value. If different, update timestamp to current ISO8601 UTC time. If same, keep previous timestamp unchanged. Used to calculate duration of current immobilization status (e.g., ""immobilized for 2h"", ""free since yesterday""). Enables immobilization duration tracking and timeline features.
+
+Pseudo code:
+if (current_statuses_immobilization_code !== previous_statuses_immobilization_code) {
+  statuses_immobilization_last_changed_at = now()  // ISO8601 UTC timestamp
+} else {
+  statuses_immobilization_last_changed_at = previous_statuses_immobilization_last_changed_at  // keep unchanged
+}",,date,,,statuses.immobilization.last_changed_at,calculated,"""""""""2025-01-18T14:30:45Z""""""""",,,,,inactive,simple_value,,1.0.0,,
 statuses_engine_code,status,,,string,,,statuses.engine.code,calculated,"""""""""running""""""""",,,,,inactive,simple_value,,1.0.0,,
 statuses_engine_compatible,status,,,string,,,statuses.engine.compatible,calculated,"""""""""true""""""""",,,,,inactive,simple_value,,1.0.0,,
 statuses_engine_last_changed_at,status,,,date,,,statuses.engine.last_changed_at,calculated,"""""""""2025-01-18T14:30:45Z""""""""",,,,,inactive,simple_value,,1.0.0,,
