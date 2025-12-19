@@ -24,30 +24,108 @@ asset_installation_ignition_input_number,metadata,,,number,,,asset.installation.
 asset_installation_immobilizer_output_number,metadata,,,number,,,asset.installation.immobilizer_output_number,direct,"""""""2""""""",,,,,inactive,simple_value,,1.0.0,,
 asset_installation_initial_odometer,metadata,,,object,,,asset.installation.initial_odometer,direct,"""""""{""value"": 154000, ""unit"": ""km""}""""""",,,,,inactive,value_unit_object,km,1.0.0,,
 asset_installation_initial_engine_hours,metadata,,,object,,,asset.installation.initial_engine_hours,direct,"""""""{""value"": 4200, ""unit"": ""h""}""""""",,,,,inactive,value_unit_object,h,1.0.0,,
-top_status_family,status,"Family name of highest-priority compatible status family. 
+top_status_family,status,"Calculated: derive from statuses.connectivity.code, statuses.immobilization.code, statuses.engine.code, and statuses.transit.code using derive_top_status_family function. Evaluates status families in conditional priority order: (1) Connectivity if compatible and code = ""offline"", (2) Immobilization if compatible and code = ""immobilized"", (3) Engine if compatible and code = ""running"", (4) Transit if compatible, (5) Connectivity fallback (code = ""online""). Returns the family name (connectivity/immobilization/engine/transit) of the selected status family. Backend must check asset type/subtype compatibility for each status family before evaluation.
+
+Pseudo code:
+if (connectivity.compatible && connectivity.code === ""offline"") {
+  return ""connectivity""
+} else if (immobilization.compatible && immobilization.code === ""immobilized"") {
+  return ""immobilization""
+} else if (engine.compatible && engine.code === ""running"") {
+  return ""engine""
+} else if (transit.compatible) {
+  return ""transit""
+} else {
+  return ""connectivity""  // fallback (online)
+}","[
+  {
+    ""priority"": 1,
+    ""type"": ""calculated"",
+    ""calculation_type"": ""function_reference"",
+    ""function"": ""derive_top_status_family"",
+    ""parameters"": {
+      ""fleeti"": [
+        ""statuses_connectivity_code"",
+        ""statuses_immobilization_code"",
+        ""statuses_engine_code"",
+        ""statuses_transit_code""
+      ]
+    },
+    ""description"": ""Derived from status family codes using conditional priority evaluation""
+  }
+]",string,,"Family name of the highest-priority status family selected for top_status. 
+Used to identify which status family (connectivity, immobilization, engine, or transit) currently has priority based on conditional priority rules.",top_status.family,calculated,"""""""""transit""""""""",,"Family name of highest-priority compatible status family. 
 Evaluate status families in priority order: 
 (1) Connectivity if compatible and code = ""offline"", 
 (2) Immobilization if compatible and code = ""immobilized"", 
 (3) Engine if compatible and code = ""running"", 
 (4) Transit if compatible, 
 (5) Connectivity fallback (code = ""online""). 
-Return the family name (connectivity/immobilization/engine/transit) of the selected status family.",,string,,"Family name of the highest-priority status family selected for top_status. 
-Used to identify which status family (connectivity, immobilization, engine, or transit) currently has priority based on conditional priority rules.",top_status.family,calculated,"""""""""transit""""""""",,,,,inactive,simple_value,,1.0.0,,
-top_status_code,status,"Code from highest-priority compatible status family. 
+Return the family name (connectivity/immobilization/engine/transit) of the selected status family.",,,inactive,simple_value,,1.0.0,,
+top_status_code,status,"Calculated: derive from statuses.connectivity.code, statuses.immobilization.code, statuses.engine.code, and statuses.transit.code using derive_top_status_code function. Evaluates status families in conditional priority order: (1) Connectivity if compatible and code = ""offline"", (2) Immobilization if compatible and code = ""immobilized"", (3) Engine if compatible and code = ""running"", (4) Transit if compatible, (5) Connectivity fallback (code = ""online""). Returns the code value from the selected status family (e.g., ""offline"", ""immobilized"", ""running"", ""in_transit"", ""parked"", ""online""). Backend must check asset type/subtype compatibility for each status family before evaluation.
+
+Pseudo code:
+if (connectivity.compatible && connectivity.code === ""offline"") {
+  return connectivity.code
+} else if (immobilization.compatible && immobilization.code === ""immobilized"") {
+  return immobilization.code
+} else if (engine.compatible && engine.code === ""running"") {
+  return engine.code
+} else if (transit.compatible) {
+  return transit.code
+} else {
+  return connectivity.code  // fallback (""online"")
+}","[
+  {
+    ""priority"": 1,
+    ""type"": ""calculated"",
+    ""calculation_type"": ""function_reference"",
+    ""function"": ""derive_top_status_code"",
+    ""parameters"": {
+      ""fleeti"": [
+        ""statuses_connectivity_code"",
+        ""statuses_immobilization_code"",
+        ""statuses_engine_code"",
+        ""statuses_transit_code""
+      ]
+    },
+    ""description"": ""Derived from status family codes using conditional priority evaluation""
+  }
+]",string,,"Status code from the highest-priority status family selected for top_status. 
+Represents the actual status value (e.g., ""offline"", ""immobilized"", ""running"", ""in_transit"", ""parked"", ""online"") from the prioritized status family.",top_status.code,calculated,"""""""""in_transit""""""""",,"Code from highest-priority compatible status family. 
 Evaluate status families in priority order: 
 (1) Connectivity if compatible and code = ""offline"", 
 (2) Immobilization if compatible and code = ""immobilized"", 
 (3) Engine if compatible and code = ""running"", 
 (4) Transit if compatible, 
 (5) Connectivity fallback (code = ""online""). 
-Return the code value from the selected status family.",,string,,"Status code from the highest-priority status family selected for top_status. 
-Represents the actual status value (e.g., ""offline"", ""immobilized"", ""running"", ""in_transit"", ""parked"", ""online"") from the prioritized status family.",top_status.code,calculated,"""""""""in_transit""""""""",,,,,inactive,simple_value,,1.0.0,,
-top_status_last_changed_at,status,"Updates when top_status.code changes (not on every packet). 
+Return the code value from the selected status family.",,,inactive,simple_value,,1.0.0,,
+top_status_last_changed_at,status,"Calculated: derive from top_status_code using derive_top_status_last_changed_at function. Updates when top_status.code changes (not on every packet). Backend compares current top_status.code with previous value. If different, update timestamp to current ISO8601 UTC time. If same, keep previous timestamp unchanged. Used to calculate duration of current top status state (e.g., ""immobilized for 2 hours"", ""engine running since 10:30""). Enables timeline features and status duration calculations.
+
+Pseudo code:
+if (current_top_status_code !== previous_top_status_code) {
+  top_status_last_changed_at = now()  // ISO8601 UTC timestamp
+} else {
+  top_status_last_changed_at = previous_top_status_last_changed_at  // keep unchanged
+}","[
+  {
+    ""priority"": 1,
+    ""type"": ""calculated"",
+    ""calculation_type"": ""function_reference"",
+    ""function"": ""derive_top_status_last_changed_at"",
+    ""parameters"": {
+      ""fleeti"": [
+        ""top_status_code""
+      ]
+    },
+    ""description"": ""Derived from top_status_code, updates when code changes""
+  }
+]",date,,"ISO8601 timestamp when top_status.code last changed. 
+Used to calculate duration of current top status state (e.g., ""immobilized for 2 hours"", ""engine running since 10:30""). 
+Enables timeline features and status duration calculations.",top_status.last_changed_at,calculated,"""""""""2025-01-18T14:30:45Z""""""""",,"Updates when top_status.code changes (not on every packet). 
 Backend compares current top_status.code with previous value. 
 If different, update timestamp to current ISO8601 UTC time. 
-If same, keep previous timestamp unchanged.",,date,,"ISO8601 timestamp when top_status.code last changed. 
-Used to calculate duration of current top status state (e.g., ""immobilized for 2 hours"", ""engine running since 10:30""). 
-Enables timeline features and status duration calculations.",top_status.last_changed_at,calculated,"""""""""2025-01-18T14:30:45Z""""""""",,,,,inactive,simple_value,,1.0.0,,
+If same, keep previous timestamp unchanged.",,,inactive,simple_value,,1.0.0,,
 statuses_connectivity_code,status,"online if last_updated_at < 24h, offline if ? 24h for vehicles/equipment/phones; 
 1h threshold for coldroom sites. 
 Check asset subtype: if Site.Coldroom, use 1h threshold; otherwise use 24h threshold. 
@@ -88,123 +166,114 @@ motion,motion,,,object,,,motion,,"""""""{""last_updated_at"": ""ISO"", ""speed""
 last_updated_at,power,,,date,,,last_updated_at,,"""""""""2025-01-18T14:30:45Z""""""""",,,,,inactive,simple_value,,1.0.0,,
 ignition_value,power,,,boolean,,,ignition.value,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
 ignition_last_changed_at,power,,,string,,,ignition.last_changed_at,,"""""""""2025-01-18T14:30:45Z""""""""",,,,,inactive,simple_value,,1.0.0,,
-inputs_individual_input_1,io,"Prioritized: Navixy avl_io_1 (path: params.avl_io_1, priority 1), then extract bit 0 from inputs bitmask using extract_bit_from_bitmask function (priority 2) - Digital Input 1 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., ignition, door sensor) is defined in asset.installation.* metadata. Used to compute canonical fields like power.ignition.
+inputs_individual_input_1,io,"Prioritized: extract bit 0 from inputs bitmask at root level using extract_bit_from_bitmask function (priority 1), then Navixy avl_io_1 (path: params.avl_io_1, priority 2) - Digital Input 1 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., ignition, door sensor) is defined in asset.installation.* metadata. Used to compute canonical fields like power.ignition.
 
 Pseudo code:
-if (avl_io_1 is available) {
-  io_input_1 = avl_io_1  // direct mapping from root level packet
-} else if (inputs bitmask is available) {
-  io_input_1 = extractBit(inputs, 0)  // extract bit 0 from Digital Inputs Bitmask
+if (inputs bitmask is available) {
+  io_input_1 = extractBit(inputs, 0)  // extract bit 0 from Digital Inputs Bitmask at root level
+} else if (avl_io_1 is available) {
+  io_input_1 = avl_io_1  // fallback: direct mapping from params.avl_io_1
 } else {
   io_input_1 = null
 }","[
   {
     ""priority"": 1,
+    ""type"": ""calculated"",
+    ""calculation_type"": ""function_reference"",
+    ""function"": ""extract_bit_from_bitmask"",
+    ""parameters"": {
+      ""provider"": {
+        ""navixy"": ""inputs""
+      }
+    },
+    ""description"": ""Extract bit 0 from Digital Inputs Bitmask at root level""
+  },
+  {
+    ""priority"": 2,
     ""type"": ""direct"",
     ""source_type"": ""provider"",
     ""provider"": ""navixy"",
     ""field"": ""avl_io_1"",
     ""path"": ""params.avl_io_1"",
-    ""description"": ""Digital Input 1 from Navixy""
-  },
-  {
-    ""priority"": 2,
-    ""type"": ""calculated"",
-    ""calculation_type"": ""function_reference"",
-    ""function"": ""extract_bit_from_bitmask"",
-    ""parameters"": {
-      ""provider"": {
-        ""navixy"": ""inputs""
-      }
-    },
-    ""description"": ""Extract bit 0 from Digital Inputs Bitmask""
+    ""description"": ""Digital Input 1 from Navixy (fallback)""
   }
 ]",boolean,,Digital Input 1,inputs.individual.input_1,,"""""""""boolean""""""""",,"Navixy: avl_io_1 (Digital Input 1), inputs (Digital Inputs Bitmask, bit 0)	Digital input 1 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., ignition, door sensor) is defined in asset.installation.* metadata. Used to compute canonical fields like power.ignition. If only bitmask is available, transformation pipeline extracts bit 0.So basically, we take AVLIO1 as a priority input direct mapping, and we take inputs from root level packet plug. We have a bit mask, and we take the bit 0. ",,,inactive,simple_value,,1.0.0,,
-inputs_individual_input_2,io,"Prioritized: Navixy avl_io_2 (path: params.avl_io_2, priority 1), then extract bit 1 from inputs bitmask using extract_bit_from_bitmask function (priority 2) - Digital Input 2 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., door sensor, alarm) is defined in asset.installation.* metadata. Used to compute canonical fields.
+inputs_individual_input_2,io,"Prioritized: extract bit 1 from inputs bitmask at root level using extract_bit_from_bitmask function (priority 1), then Navixy avl_io_2 (path: params.avl_io_2, priority 2) - Digital Input 2 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., door sensor, alarm) is defined in asset.installation.* metadata. Used to compute canonical fields.
 
 Pseudo code:
-if (avl_io_2 is available) {
-  io_input_2 = avl_io_2  // direct mapping from root level packet
-} else if (inputs bitmask is available) {
-  io_input_2 = extractBit(inputs, 1)  // extract bit 1 from Digital Inputs Bitmask
+if (inputs bitmask is available) {
+  io_input_2 = extractBit(inputs, 1)  // extract bit 1 from Digital Inputs Bitmask at root level
+} else if (avl_io_2 is available) {
+  io_input_2 = avl_io_2  // fallback: direct mapping from params.avl_io_2
 } else {
   io_input_2 = null
 }","[
   {
     ""priority"": 1,
+    ""type"": ""calculated"",
+    ""calculation_type"": ""function_reference"",
+    ""function"": ""extract_bit_from_bitmask"",
+    ""parameters"": {
+      ""provider"": {
+        ""navixy"": ""inputs""
+      }
+    },
+    ""description"": ""Extract bit 1 from Digital Inputs Bitmask at root level""
+  },
+  {
+    ""priority"": 2,
     ""type"": ""direct"",
     ""source_type"": ""provider"",
     ""provider"": ""navixy"",
     ""field"": ""avl_io_2"",
     ""path"": ""params.avl_io_2"",
-    ""description"": ""Digital Input 2 from Navixy""
-  },
-  {
-    ""priority"": 2,
-    ""type"": ""calculated"",
-    ""calculation_type"": ""function_reference"",
-    ""function"": ""extract_bit_from_bitmask"",
-    ""parameters"": {
-      ""provider"": {
-        ""navixy"": ""inputs""
-      }
-    },
-    ""description"": ""Extract bit 1 from Digital Inputs Bitmask""
+    ""description"": ""Digital Input 2 from Navixy (fallback)""
   }
 ]",boolean,,Digital Input 2,inputs.individual.input_2,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
-inputs_individual_input_3,io,"Prioritized: Navixy avl_io_3 (path: params.avl_io_3, priority 1), then extract bit 2 from inputs bitmask using extract_bit_from_bitmask function (priority 2) - Digital Input 3 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., door sensor, alarm) is defined in asset.installation.* metadata. Used to compute canonical fields.
+inputs_individual_input_3,io,"Prioritized: extract bit 2 from inputs bitmask at root level using extract_bit_from_bitmask function (priority 1), then Navixy avl_io_3 (path: params.avl_io_3, priority 2) - Digital Input 3 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., door sensor, alarm) is defined in asset.installation.* metadata. Used to compute canonical fields.
 
 Pseudo code:
-if (avl_io_3 is available) {
-  io_input_3 = avl_io_3  // direct mapping from root level packet
-} else if (inputs bitmask is available) {
-  io_input_3 = extractBit(inputs, 2)  // extract bit 2 from Digital Inputs Bitmask
+if (inputs bitmask is available) {
+  io_input_3 = extractBit(inputs, 2)  // extract bit 2 from Digital Inputs Bitmask at root level
+} else if (avl_io_3 is available) {
+  io_input_3 = avl_io_3  // fallback: direct mapping from params.avl_io_3
 } else {
   io_input_3 = null
 }","[
   {
     ""priority"": 1,
+    ""type"": ""calculated"",
+    ""calculation_type"": ""function_reference"",
+    ""function"": ""extract_bit_from_bitmask"",
+    ""parameters"": {
+      ""provider"": {
+        ""navixy"": ""inputs""
+      }
+    },
+    ""description"": ""Extract bit 2 from Digital Inputs Bitmask at root level""
+  },
+  {
+    ""priority"": 2,
     ""type"": ""direct"",
     ""source_type"": ""provider"",
     ""provider"": ""navixy"",
     ""field"": ""avl_io_3"",
     ""path"": ""params.avl_io_3"",
-    ""description"": ""Digital Input 3 from Navixy""
-  },
-  {
-    ""priority"": 2,
-    ""type"": ""calculated"",
-    ""calculation_type"": ""function_reference"",
-    ""function"": ""extract_bit_from_bitmask"",
-    ""parameters"": {
-      ""provider"": {
-        ""navixy"": ""inputs""
-      }
-    },
-    ""description"": ""Extract bit 2 from Digital Inputs Bitmask""
+    ""description"": ""Digital Input 3 from Navixy (fallback)""
   }
 ]",boolean,,Digital Input 3,inputs.individual.input_3,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
-inputs_individual_input_4,io,"Prioritized: Navixy avl_io_4 (path: params.avl_io_4, priority 1), then extract bit 3 from inputs bitmask using extract_bit_from_bitmask function (priority 2) - Digital Input 4 state (also functions as pulse counter). Values: 0 = low/inactive, 1 = high/active. Pulse count resets when records are saved. Semantic meaning (e.g., door sensor, alarm) is defined in asset.installation.* metadata. Used to compute canonical fields.
+inputs_individual_input_4,io,"Prioritized: extract bit 3 from inputs bitmask at root level using extract_bit_from_bitmask function (priority 1), then Navixy avl_io_4 (path: params.avl_io_4, priority 2) - Digital Input 4 state (also functions as pulse counter). Values: 0 = low/inactive, 1 = high/active. Pulse count resets when records are saved. Semantic meaning (e.g., door sensor, alarm) is defined in asset.installation.* metadata. Used to compute canonical fields.
 
 Pseudo code:
-if (avl_io_4 is available) {
-  io_input_4 = avl_io_4  // direct mapping from root level packet
-} else if (inputs bitmask is available) {
-  io_input_4 = extractBit(inputs, 3)  // extract bit 3 from Digital Inputs Bitmask
+if (inputs bitmask is available) {
+  io_input_4 = extractBit(inputs, 3)  // extract bit 3 from Digital Inputs Bitmask at root level
+} else if (avl_io_4 is available) {
+  io_input_4 = avl_io_4  // fallback: direct mapping from params.avl_io_4
 } else {
   io_input_4 = null
 }","[
   {
     ""priority"": 1,
-    ""type"": ""direct"",
-    ""source_type"": ""provider"",
-    ""provider"": ""navixy"",
-    ""field"": ""avl_io_4"",
-    ""path"": ""params.avl_io_4"",
-    ""description"": ""Digital Input 4 from Navixy""
-  },
-  {
-    ""priority"": 2,
     ""type"": ""calculated"",
     ""calculation_type"": ""function_reference"",
     ""function"": ""extract_bit_from_bitmask"",
@@ -213,13 +282,111 @@ if (avl_io_4 is available) {
         ""navixy"": ""inputs""
       }
     },
-    ""description"": ""Extract bit 3 from Digital Inputs Bitmask""
+    ""description"": ""Extract bit 3 from Digital Inputs Bitmask at root level""
+  },
+  {
+    ""priority"": 2,
+    ""type"": ""direct"",
+    ""source_type"": ""provider"",
+    ""provider"": ""navixy"",
+    ""field"": ""avl_io_4"",
+    ""path"": ""params.avl_io_4"",
+    ""description"": ""Digital Input 4 from Navixy (fallback)""
   }
 ]",boolean,,Digital Input 4,inputs.individual.input_4,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
-outputs_individual_output_1,io,,,boolean,,,outputs.individual.output_1,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
-outputs_individual_output_2,io,,,boolean,,,outputs.individual.output_2,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
-outputs_individual_output_3,io,,,boolean,,,outputs.individual.output_3,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
-analog_individual_input_1_value,io,,,number,,,analog.individual.input_1.value,,"""""""""15""""""""",,,,,inactive,simple_value,,1.0.0,,
-analog_individual_input_1_unit,io,,,string,,,analog.individual.input_1.unit,,"""""""""V""""""""",,,,,inactive,simple_value,,1.0.0,,
-analog_individual_input_2_value,io,,,number,,,analog.individual.input_2.value,,"""""""""15""""""""",,,,,inactive,simple_value,,1.0.0,,
-analog_individual_input_2_unit,io,,,string,,,analog.individual.input_2.unit,,"""""""""V""""""""",,,,,inactive,simple_value,,1.0.0,,
+outputs_individual_output_1,io,"Prioritized: extract bit 0 from outputs bitmask at root level using extract_bit_from_bitmask function (priority 1), then Navixy avl_io_179 (path: params.avl_io_179, priority 2) - Digital Output 1 state. Values: 0 = inactive, 1 = active. Semantic meaning (e.g., immobilizer relay) is defined in asset.installation.* metadata. Used for immobilization control and status computation.
+
+Pseudo code:
+if (outputs bitmask is available) {
+  io_output_1 = extractBit(outputs, 0)  // extract bit 0 from Output Status Bitmask at root level
+} else if (avl_io_179 is available) {
+  io_output_1 = avl_io_179  // fallback: direct mapping from params.avl_io_179
+} else {
+  io_output_1 = null
+}","[
+  {
+    ""priority"": 1,
+    ""type"": ""calculated"",
+    ""calculation_type"": ""function_reference"",
+    ""function"": ""extract_bit_from_bitmask"",
+    ""parameters"": {
+      ""provider"": {
+        ""navixy"": ""outputs""
+      }
+    },
+    ""description"": ""Extract bit 0 from Output Status Bitmask at root level""
+  },
+  {
+    ""priority"": 2,
+    ""type"": ""direct"",
+    ""source_type"": ""provider"",
+    ""provider"": ""navixy"",
+    ""field"": ""avl_io_179"",
+    ""path"": ""params.avl_io_179"",
+    ""description"": ""Digital Output 1 from Navixy (fallback)""
+  }
+]",boolean,,Digital Output 1,outputs.individual.output_1,,"""""""""boolean""""""""",,"We should use AVL inside the Params object, or in priority to use outputs at the root level of the packet. ",,,inactive,simple_value,,1.0.0,,
+outputs_individual_output_2,io,"Prioritized: extract bit 1 from outputs bitmask at root level using extract_bit_from_bitmask function (priority 1), then Navixy avl_io_180 (path: params.avl_io_180, priority 2) - Digital Output 2 state. Values: 0 = inactive, 1 = active. Semantic meaning (e.g., immobilizer relay) is defined in asset.installation.* metadata. Used for immobilization control and status computation.
+
+Pseudo code:
+if (outputs bitmask is available) {
+  io_output_2 = extractBit(outputs, 1)  // extract bit 1 from Output Status Bitmask at root level
+} else if (avl_io_180 is available) {
+  io_output_2 = avl_io_180  // fallback: direct mapping from params.avl_io_180
+} else {
+  io_output_2 = null
+}","[
+  {
+    ""priority"": 1,
+    ""type"": ""calculated"",
+    ""calculation_type"": ""function_reference"",
+    ""function"": ""extract_bit_from_bitmask"",
+    ""parameters"": {
+      ""provider"": {
+        ""navixy"": ""outputs""
+      }
+    },
+    ""description"": ""Extract bit 1 from Output Status Bitmask at root level""
+  },
+  {
+    ""priority"": 2,
+    ""type"": ""direct"",
+    ""source_type"": ""provider"",
+    ""provider"": ""navixy"",
+    ""field"": ""avl_io_180"",
+    ""path"": ""params.avl_io_180"",
+    ""description"": ""Digital Output 2 from Navixy (fallback)""
+  }
+]",boolean,,Digital Output 2,outputs.individual.output_2,,"""""""""boolean""""""""",,"We should use AVL inside the Params object, or in priority to use outputs at the root level of the packet. ",,,inactive,simple_value,,1.0.0,,
+outputs_individual_output_3,io,"Prioritized: extract bit 2 from outputs bitmask at root level using extract_bit_from_bitmask function (priority 1), then Navixy avl_io_380 (path: params.avl_io_380, priority 2) - Digital Output 3 state. Values: 0 = inactive, 1 = active. Semantic meaning (e.g., immobilizer relay) is defined in asset.installation.* metadata. Used for immobilization control and status computation.
+
+Pseudo code:
+if (outputs bitmask is available) {
+  io_output_3 = extractBit(outputs, 2)  // extract bit 2 from Output Status Bitmask at root level
+} else if (avl_io_380 is available) {
+  io_output_3 = avl_io_380  // fallback: direct mapping from params.avl_io_380
+} else {
+  io_output_3 = null
+}","[
+  {
+    ""priority"": 1,
+    ""type"": ""calculated"",
+    ""calculation_type"": ""function_reference"",
+    ""function"": ""extract_bit_from_bitmask"",
+    ""parameters"": {
+      ""provider"": {
+        ""navixy"": ""outputs""
+      }
+    },
+    ""description"": ""Extract bit 2 from Output Status Bitmask at root level""
+  },
+  {
+    ""priority"": 2,
+    ""type"": ""direct"",
+    ""source_type"": ""provider"",
+    ""provider"": ""navixy"",
+    ""field"": ""avl_io_380"",
+    ""path"": ""params.avl_io_380"",
+    ""description"": ""Digital Output 3 from Navixy (fallback)""
+  }
+]",boolean,,Digital Output 3,outputs.individual.output_3,,"""""""""boolean""""""""",,"We should use AVL inside the Params object, or in priority to use outputs at the root level of the packet. ",,,inactive,simple_value,,1.0.0,,

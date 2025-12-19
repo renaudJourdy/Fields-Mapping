@@ -11,7 +11,7 @@ Generate Computation Structure JSON (Sources JSON) from Computation Approach tex
 
 2. **Check export folder for existing JSON**: Before generating new JSON, check the export folder for existing Computation Structure JSON:
    - **Export folder location**: `notion/2-documentation/1-specifications/1-databases/2-fleeti-fields/export/`
-   - **Look for CSV files**: Find the most recent `Fleeti Fields (db) YYYY-MM-DD.csv` file
+   - **Look for CSV files**: Find the most recent `Fleeti Fields (db) XXXXXXXX.csv` file
    - **Read existing JSON**: For each field name, check if Computation Structure JSON already exists
    - **Preserve existing JSON**: If Computation Structure JSON already exists and is valid, preserve it unless Computation Approach text has changed
 
@@ -181,6 +181,11 @@ Pseudo code:
 
 **Extraction Rules:**
 - Extract function name from `using {function_name} function`
+- **Function name specificity**: Function names must be field-specific and unique
+  - If the function name in Computation Approach is generic (e.g., `derive_last_changed_at`), make it specific based on the target field name
+  - Example: For field `top_status_last_changed_at`, use `derive_top_status_last_changed_at` (not generic `derive_last_changed_at`)
+  - Function names should follow pattern: `derive_{field_name}` or `derive_{category}_{field_name}`
+  - This ensures each field has a unique, identifiable function name
 - Extract dependencies from `derive from {dependencies}` or Dependencies column
 - Dependencies should be Fleeti field names (e.g., `location_heading`, `location_latitude`)
 - Generate description from additional_details or Description column
@@ -285,12 +290,17 @@ Pseudo code:
 
 ### Function Name Extraction
 - Extract from `using {function_name} function` pattern
-- Common function names:
-  - `derive_cardinal_direction`
-  - `derive_geocoded_address`
-  - `derive_last_changed_at`
-  - `extract_bit_from_bitmask`
-  - Custom function names as specified
+- **IMPORTANT: Function names must be field-specific and unique**
+  - Function names should include the target field name or a clear identifier to avoid ambiguity
+  - Generic function names like `derive_last_changed_at` should be avoided
+  - Use specific names like `derive_top_status_last_changed_at`, `derive_location_last_changed_at`, etc.
+  - Function names should follow the pattern: `derive_{field_name}` or `derive_{category}_{field_name}`
+- Common function name patterns:
+  - `derive_{field_name}` - e.g., `derive_cardinal_direction`, `derive_geocoded_address`
+  - `derive_{category}_{field_name}` - e.g., `derive_top_status_family`, `derive_top_status_code`, `derive_top_status_last_changed_at`
+  - `extract_bit_from_bitmask` - Generic bitmask extraction (acceptable as it's a utility function)
+  - Custom function names as specified in Computation Approach
+- **Validation**: If a function name seems too generic (e.g., `derive_last_changed_at` without field context), check if it should be more specific based on the field name
 
 ### Dependencies Extraction
 - Extract from `derive from {dependencies}` pattern
@@ -391,4 +401,5 @@ Review these example files to understand:
 - **Transformed/I/O mapped fields**: These fields require additional configuration beyond Sources JSON - note this in output
 - **Field name format**: Use underscore format for Fleeti field names in dependencies (e.g., `location_heading`, not `location.heading`)
 - **Provider names**: Always lowercase in JSON output (navixy, oem-trackunit, teltonika)
+- **Function name specificity**: Function names must be field-specific and unique. Avoid generic function names like `derive_last_changed_at` - use specific names like `derive_top_status_last_changed_at` that include the target field context. Function names should follow the pattern `derive_{field_name}` or `derive_{category}_{field_name}` to ensure uniqueness and clarity.
 
