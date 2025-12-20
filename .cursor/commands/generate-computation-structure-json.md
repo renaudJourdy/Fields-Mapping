@@ -323,15 +323,23 @@ Pseudo code:
 
 ## Output
 
-1. **If CSV input**: Update the CSV file with generated Computation Structure JSON in the `Computation Structure JSON` column
-2. **If raw text input**: Output the JSON directly in chat
-3. **Show a summary** of:
+1. **Display generated Computation Structure JSON in chat**: For each field processed, display the generated JSON in a code block in the chat. This allows the user to review the generated content before it's saved to the CSV.
+2. **If CSV input**: Update the CSV file with generated Computation Structure JSON in the `Computation Structure JSON` column
+3. **If raw text input**: Output the JSON directly in chat (already displayed)
+4. **Show a summary** of:
    - Number of fields processed
    - Number of fields with existing JSON (preserved)
    - Number of fields updated (new or changed Computation Approach)
    - Number of fields newly generated
    - Fields that couldn't be processed (with reasons)
    - Transformed/I/O mapped fields (noted as requiring separate configuration)
+
+**Display Format**: For each field, show:
+```
+Field: {field_name}
+Computation Structure JSON:
+{generated_json}
+```
 
 ## Example Workflow
 

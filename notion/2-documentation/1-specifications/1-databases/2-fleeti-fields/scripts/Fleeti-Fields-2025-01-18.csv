@@ -1,29 +1,5 @@
 Name,Category,Computation Approach,Computation Structure,Data Type,Dependencies,Description,Field Path,Field Type,Example,Mapping Fields (db),Notes,Priority,REST API Endpoints,Status,Structure Type,Unit,Version Added,WebSocket Contracts,💽 Provider Field (db)
 last_updated_at,metadata,(msg_time),,date,,"Timestamp of when the telemetry record was originally created on the GPS tracker device, before transmission to the provider.",last_updated_at,direct,"""""""""2025-01-18T14:30:45Z""""""""",,,,,inactive,simple_value,,1.0.0,,
-asset,metadata,,,object,,,asset,direct,,,,,,inactive,nested_object,,1.0.0,,
-status,metadata,,,object,,,status,direct,,,,,,inactive,nested_object,,1.0.0,,
-location,metadata,,,object,,,location,direct,,,,,,inactive,nested_object,,1.0.0,,
-provider,metadata,,,object,,,provider,direct,,,,,,inactive,nested_object,,1.0.0,,
-asset,metadata,,,object,,,asset,direct,"""""""{""id"": ""uuid"", ""name"": ""string"", ""type"": 10, ""subtype"": 110, ""group"": {""id"": ""uuid"", ""name"": ""string""}, ""customer_ref"": ""2010-010"", ""accessories"": [{""id"": ""uuid"", ""type_id"": 1, ""type_code"": ""immobilizer"", ""connection"": ""wire"", ""label"": ""Main immobilizer relay""}, {""id"": ""uuid"", ""type_id"": 2, ""type_code"": ""temperature"", ""connection"": ""bluetooth"", ""label"": ""Cold room sensor"", ""sensors"": [{""type"": ""temperature"", ""position"": 1}, {""type"": ""humidity"", ""position"": 1}]}, {""id"": ""uuid"", ""type_id"": 3, ""type_code"": ""fuel_level"", ""connection"": ""wire"", ""label"": ""Fuel probe 1"", ""serial_number"": ""LLS-00933"", ""sensors"": [{""type"": ""fuel_level"", ""position"": 1}]}], ""installation"": {""ignition_input_number"": 1, ""immobilizer_output_number"": 2, ""initial_odometer"": {""value"": 154000, ""unit"": ""km""}, ""initial_engine_hours"": {""value"": 4200, ""unit"": ""h""}}, ""properties"": {""vehicle"": {""serial_number"": ""string"", ""brand"": ""string"", ""model"": ""string"", ""license_plate"": ""string"", ""vin"": ""string"", ""powertrain"": {""primary_energy"": ""diesel|gasoline|electric|hybrid|cng|lng|hydrogen|other"", ""fuel_tank_capacity"": {""value"": 600, ""unit"": ""l""}, ""battery_capacity"": {""value"": 120, ""unit"": ""kwh""}, ""theoretical_consumption"": {""value"": 32.5, ""unit"": ""l/100km""}, ""theoretical_consumption_kwh"": {""value"": 24.3, ""unit"": ""kwh/100km""}}}, ""equipment"": {""serial_number"": ""string"", ""brand"": ""string"", ""model"": ""string"", ""rated_power"": {""value"": 180, ""unit"": ""kw""}, ""energy_source"": ""diesel|electric|hybrid""}, ""phone"": {""platform"": ""ios|android|unknown"", ""platform_version"": ""17.2"", ""employee_id"": ""string"", ""employee_name"": ""string""}, ""site"": {""name"": ""Abidjan Coldroom West"", ""address"": {""line1"": ""Zone industrielle"", ""city"": ""Abidjan"", ""country"": ""CI""}, ""location"": {""latitude"": 5.3561, ""longitude"": -4.0083}, ""surface"": {""value"": 120, ""unit"": ""m2""}, ""capacity_units"": 450, ""temperature_range"": {""min"": {""value"": -25, ""unit"": ""°C""}, ""max"": {""value"": 5, ""unit"": ""°C""}}}}}""""""",,,,,inactive,nested_object,,1.0.0,,
-asset_id,metadata,,,string,,,asset.id,direct,"""""""""uuid""""""""",,,,,inactive,simple_value,,1.0.0,,
-asset_name,metadata,,,string,,,asset.name,direct,"""""""""string""""""""",,,,,inactive,simple_value,,1.0.0,,
-asset_type,metadata,,,number,,,asset.type,direct,"""""""10""""""",,,,,inactive,simple_value,,1.0.0,,
-asset_subtype,metadata,,,number,,,asset.subtype,direct,"""""""110""""""",,,,,inactive,simple_value,,1.0.0,,
-asset_group,metadata,,,object,,,asset.group,direct,"""""""{""id"": ""uuid"", ""name"": ""string""}""""""",,,,,inactive,nested_object,,1.0.0,,
-asset_group_id,metadata,,,string,,,asset.group.id,direct,"""""""""uuid""""""""",,,,,inactive,simple_value,,1.0.0,,
-asset_group_name,metadata,,,string,,,asset.group.name,direct,"""""""""string""""""""",,,,,inactive,simple_value,,1.0.0,,
-asset_customer_ref,metadata,,,string,,,asset.customer_ref,direct,"""""""""2010-010""""""""",,,,,inactive,simple_value,,1.0.0,,
-asset_accessories,metadata,,,array,,,asset.accessories[],direct,"""""""[{""id"": ""uuid"", ""type_id"": 1, ""type_code"": ""immobilizer"", ""connection"": ""wire"", ""label"": ""Main immobilizer relay""}, {""id"": ""uuid"", ""type_id"": 2, ""type_code"": ""temperature"", ""connection"": ""bluetooth"", ""label"": ""Cold room sensor"", ""sensors"": [{""type"": ""temperature"", ""position"": 1}, {""type"": ""humidity"", ""position"": 1}]}, {""id"": ""uuid"", ""type_id"": 3, ""type_code"": ""fuel_level"", ""connection"": ""wire"", ""label"": ""Fuel probe 1"", ""serial_number"": ""LLS-00933"", ""sensors"": [{""type"": ""fuel_level"", ""position"": 1}]}]""""""",,,,,inactive,array,,1.0.0,,
-asset_accessories_id,metadata,,,string,,,asset.accessories[].id,direct,"""""""""uuid""""""""",,,,,inactive,simple_value,,1.0.0,,
-asset_accessories_type_id,metadata,,,number,,,asset.accessories[].type_id,direct,"""""""1""""""",,,,,inactive,simple_value,,1.0.0,,
-asset_accessories_type_code,metadata,,,string,,,asset.accessories[].type_code,direct,"""""""""immobilizer""""""""",,,,,inactive,simple_value,,1.0.0,,
-asset_accessories_connection,metadata,,,string,,,asset.accessories[].connection,direct,"""""""""wire""""""""",,,,,inactive,simple_value,,1.0.0,,
-asset_accessories_label,metadata,,,string,,,asset.accessories[].label,direct,"""""""""Main immobilizer relay""""""""",,,,,inactive,simple_value,,1.0.0,,
-asset_installation,metadata,,,object,,,asset.installation,direct,"""""""{""ignition_input_number"": 1, ""immobilizer_output_number"": 2, ""initial_odometer"": {""value"": 154000, ""unit"": ""km""}, ""initial_engine_hours"": {""value"": 4200, ""unit"": ""h""}}""""""",,,,,inactive,nested_object,,1.0.0,,
-asset_installation_ignition_input_number,metadata,,,number,,,asset.installation.ignition_input_number,direct,"""""""1""""""",,,,,inactive,simple_value,,1.0.0,,
-asset_installation_immobilizer_output_number,metadata,,,number,,,asset.installation.immobilizer_output_number,direct,"""""""2""""""",,,,,inactive,simple_value,,1.0.0,,
-asset_installation_initial_odometer,metadata,,,object,,,asset.installation.initial_odometer,direct,"""""""{""value"": 154000, ""unit"": ""km""}""""""",,,,,inactive,value_unit_object,km,1.0.0,,
-asset_installation_initial_engine_hours,metadata,,,object,,,asset.installation.initial_engine_hours,direct,"""""""{""value"": 4200, ""unit"": ""h""}""""""",,,,,inactive,value_unit_object,h,1.0.0,,
 top_status_family,status,"Calculated: derive from statuses.connectivity.code, statuses.immobilization.code, statuses.engine.code, and statuses.transit.code using derive_top_status_family function. Evaluates status families in conditional priority order: (1) Connectivity if compatible and code = ""offline"", (2) Immobilization if compatible and code = ""immobilized"", (3) Engine if compatible and code = ""running"", (4) Transit if compatible, (5) Connectivity fallback (code = ""online""). Returns the family name (connectivity/immobilization/engine/transit) of the selected status family. Backend must check asset type/subtype compatibility for each status family before evaluation.
 
 Pseudo code:
@@ -248,21 +224,127 @@ if (current_statuses_immobilization_code !== previous_statuses_immobilization_co
 } else {
   statuses_immobilization_last_changed_at = previous_statuses_immobilization_last_changed_at  // keep unchanged
 }",,date,,,statuses.immobilization.last_changed_at,calculated,"""""""""2025-01-18T14:30:45Z""""""""",,,,,inactive,simple_value,,1.0.0,,
-statuses_engine_code,status,,,string,,,statuses.engine.code,calculated,"""""""""running""""""""",,,,,inactive,simple_value,,1.0.0,,
-statuses_engine_compatible,status,,,string,,,statuses.engine.compatible,calculated,"""""""""true""""""""",,,,,inactive,simple_value,,1.0.0,,
-statuses_engine_last_changed_at,status,,,date,,,statuses.engine.last_changed_at,calculated,"""""""""2025-01-18T14:30:45Z""""""""",,,,,inactive,simple_value,,1.0.0,,
-statuses_transit_code,status,,,string,,,statuses.transit.code,calculated,"""""""""in_transit""""""""",,,,,inactive,simple_value,,1.0.0,,
-statuses_transit_compatible,status,,,string,,,statuses.transit.compatible,calculated,"""""""""true""""""""",,,,,inactive,simple_value,,1.0.0,,
-statuses_transit_last_changed_at,status,,,date,,,statuses.transit.last_changed_at,calculated,"""""""""2025-01-18T14:30:45Z""""""""",,,,,inactive,simple_value,,1.0.0,,
+statuses_engine_code,status,"Calculated: derive from statuses_engine_compatible and ignition_value using derive_statuses_engine_code function. Prerequisites: Check statuses_engine_compatible (must be true). If false, return null (engine status not applicable). If true, check ignition state: If ignition_value = true (ON) ? ""running"". If ignition_value = false (OFF) ? ""standby"". If ignition_value is null or unavailable, return null. Engine status is based on ignition state for compatible assets. The ignition_value field already handles reading from the correct input based on installation metadata (ignition_input_number), with fallback to input 1 if metadata unavailable.
+
+Pseudo code:
+if (!statuses_engine_compatible) {
+  return null  // Engine status not applicable
+}
+if (ignition_value === true) {
+  return ""running""
+} else if (ignition_value === false) {
+  return ""standby""
+} else {
+  return null  // Ignition state unavailable
+}","[{""priority"": 1, ""type"": ""calculated"", ""calculation_type"": ""function_reference"", ""function"": ""derive_statuses_engine_code"", ""parameters"": {""fleeti"": [""statuses_engine_compatible"", ""ignition_value""]}, ""description"": ""Derived from statuses_engine_compatible and ignition_value, determines running/standby status""}]",string,,,statuses.engine.code,calculated,"""""""""running""""""""",,"Calculated: derive from statuses_engine_compatible and ignition_value using derive_statuses_engine_code function. Prerequisites: Check statuses_engine_compatible (must be true). If false, return null (engine status not applicable). If true, check ignition state: If ignition_value = true (ON) ? ""running"". If ignition_value = false (OFF) ? ""standby"". If ignition_value is null or unavailable, return null. Engine status is based on ignition state for compatible assets. The ignition_value field already handles reading from the correct input based on installation metadata (ignition_input_number), with fallback to input 1 if metadata unavailable.",,,inactive,simple_value,,1.0.0,,
+statuses_engine_compatible,status,"Calculated: derive from asset_type and asset_subtype using derive_statuses_engine_compatible function. Check asset type/subtype against compatibility matrix (Engine: Equipment.ElectricGenerator, Vehicle.Agricultural, Vehicle.Machine only). Equipment: Only Equipment.ElectricGenerator supports engine status. Vehicles: Only Vehicle.Agricultural and Vehicle.Machine support engine status. Sites: No (all subtypes). Phones: No (all subtypes). Return true if asset type/subtype is compatible, false otherwise.
+
+Pseudo code:
+if (asset_type === Equipment && asset_subtype === ElectricGenerator) {
+  return true
+} else if (asset_type === Vehicle && (asset_subtype === Agricultural || asset_subtype === Machine)) {
+  return true
+} else {
+  return false
+}","[{""priority"": 1, ""type"": ""calculated"", ""calculation_type"": ""function_reference"", ""function"": ""derive_statuses_engine_compatible"", ""parameters"": {""fleeti"": [""asset_type"", ""asset_subtype""]}, ""description"": ""Derived from asset_type and asset_subtype, checks compatibility matrix for engine status""}]",string,,,statuses.engine.compatible,calculated,"""""""""true""""""""",,"Calculated: derive from asset_type and asset_subtype using derive_statuses_engine_compatible function. Check asset type/subtype against compatibility matrix (Engine: Equipment.ElectricGenerator, Vehicle.Agricultural, Vehicle.Machine only). Equipment: Only Equipment.ElectricGenerator supports engine status. Vehicles: Only Vehicle.Agricultural and Vehicle.Machine support engine status. Sites: No (all subtypes). Phones: No (all subtypes). Return true if asset type/subtype is compatible, false otherwise.",,,inactive,simple_value,,1.0.0,,
+statuses_engine_last_changed_at,status,"Calculated: derive from statuses_engine_code using derive_statuses_engine_last_changed_at function. Updates when status family code changes (not on every packet). Backend compares current statuses_engine_code with previous value. If different, update timestamp to current ISO8601 UTC time. If same, keep previous timestamp unchanged. Used to calculate duration of current engine status (e.g., ""running for 2h"", ""standby since yesterday""). Enables engine duration tracking and timeline features.
+
+Pseudo code:
+if (current_statuses_engine_code !== previous_statuses_engine_code) {
+  statuses_engine_last_changed_at = now()  // ISO8601 UTC timestamp
+} else {
+  statuses_engine_last_changed_at = previous_statuses_engine_last_changed_at  // keep unchanged
+}","[{""priority"": 1, ""type"": ""calculated"", ""calculation_type"": ""function_reference"", ""function"": ""derive_statuses_engine_last_changed_at"", ""parameters"": {""fleeti"": [""statuses_engine_code""]}, ""description"": ""Derived from statuses_engine_code, updates when engine status changes""}]",date,,,statuses.engine.last_changed_at,calculated,"""""""""2025-01-18T14:30:45Z""""""""",,"Calculated: Backend compares current statuses_engine_code with previous value. If different, update timestamp to current ISO8601 UTC time. If same, keep previous timestamp unchanged. Used to calculate duration of current engine status (e.g., ""running for 2h"", ""standby since yesterday""). Updates only when engine status changes (not on every packet).",,,inactive,simple_value,,1.0.0,,
+statuses_transit_code,status,"Calculated: derive from statuses_transit_compatible, ignition_value, is_moving_value, and speed using derive_statuses_transit_code function. Prerequisites: Check statuses_transit_compatible (must be true). If false, return null (transit status not applicable). Uses state machine with ignition triggers and movement/speed conditions. Immediate transitions: Ignition OFF → ON: → ""in_transit"" (immediate). Ignition ON → OFF: → ""parked"" (immediate). Duration-based transitions: IN_TRANSIT → PARKED: (movement = false OR speed = 0) for 3 minutes → ""parked"". PARKED → IN_TRANSIT: (movement = true OR speed > 0.5 km/h) → ""in_transit"" (immediate). Initial state: If ignition = true OR (movement = true OR speed > 0.5 km/h) → ""in_transit"". If (movement = false AND speed = 0) for 3 minutes → ""parked"". Default → ""in_transit"" (conservative). Speed threshold: 0.5 km/h (filters GPS drift). Parked detection duration: 3 minutes (180 seconds). Ignition state only used when true (ignition ON); false or null = unavailable. Backend must track current Transit Status to apply transition rules. If movement_status and speed are unavailable, maintain current status (no transition).
+
+Pseudo code:
+if (!statuses_transit_compatible) {
+  return null  // Transit status not applicable
+}
+// Immediate ignition transitions
+if (previous_ignition_value === false && ignition_value === true) {
+  return ""in_transit""  // Ignition OFF → ON
+}
+if (previous_ignition_value === true && ignition_value === false) {
+  return ""parked""  // Ignition ON → OFF
+}
+// State machine logic (requires backend state tracking)
+current_state = getPreviousTransitStatus()  // Backend tracks state
+if (current_state === ""in_transit"") {
+  if ((is_moving_value === false || is_moving_value === 0) && (speed === null || speed === 0)) {
+    if (durationInState >= 3 minutes) {
+      return ""parked""
+    }
+  }
+} else if (current_state === ""parked"") {
+  if (is_moving_value === true || is_moving_value === 1 || (speed !== null && speed > 0.5)) {
+    return ""in_transit""
+  }
+} else {
+  // Initial state
+  if (ignition_value === true || is_moving_value === true || (speed !== null && speed > 0.5)) {
+    return ""in_transit""
+  } else if ((is_moving_value === false || is_moving_value === 0) && (speed === null || speed === 0)) {
+    if (durationInState >= 3 minutes) {
+      return ""parked""
+    }
+  }
+  return ""in_transit""  // Default conservative
+}","[{""priority"": 1, ""type"": ""calculated"", ""calculation_type"": ""function_reference"", ""function"": ""derive_statuses_transit_code"", ""parameters"": {""fleeti"": [""statuses_transit_compatible"", ""ignition_value"", ""is_moving_value"", ""speed""]}, ""description"": ""Derived from statuses_transit_compatible, ignition_value, is_moving_value, and speed using state machine logic""}]",string,,,statuses.transit.code,calculated,"""""""""in_transit""""""""",,"Calculated: derive from statuses_transit_compatible, ignition_value, is_moving_value, and speed using derive_statuses_transit_code function. Prerequisites: Check statuses_transit_compatible (must be true). If false, return null (transit status not applicable). Uses state machine with ignition triggers and movement/speed conditions. Immediate transitions: Ignition OFF → ON: → ""in_transit"" (immediate). Ignition ON → OFF: → ""parked"" (immediate). Duration-based transitions: IN_TRANSIT → PARKED: (movement = false OR speed = 0) for 3 minutes → ""parked"". PARKED → IN_TRANSIT: (movement = true OR speed > 0.5 km/h) → ""in_transit"" (immediate). Initial state: If ignition = true OR (movement = true OR speed > 0.5 km/h) → ""in_transit"". If (movement = false AND speed = 0) for 3 minutes → ""parked"". Default → ""in_transit"" (conservative). Speed threshold: 0.5 km/h (filters GPS drift). Parked detection duration: 3 minutes (180 seconds). Ignition state only used when true (ignition ON); false or null = unavailable. Backend must track current Transit Status to apply transition rules. If movement_status and speed are unavailable, maintain current status (no transition).",,,inactive,simple_value,,1.0.0,,
+statuses_transit_compatible,status,"Calculated: derive from asset_type and asset_subtype using derive_statuses_transit_compatible function. Check asset type/subtype against compatibility matrix (Transit: Phone all subtypes, Equipment.Undefined, All Vehicle subtypes except excluded). Supported: Phone (all subtypes), Equipment.Undefined, All Vehicle subtypes (except those explicitly excluded). NOT supported: Site.Undefined, Site.Coldroom, Equipment.FuelTank, Equipment.ElectricGenerator. Return true if asset type/subtype is compatible, false otherwise.
+
+Pseudo code:
+if (asset_type === Site) {
+  return false  // Sites not supported
+} else if (asset_type === Phone) {
+  return true  // All phone subtypes supported
+} else if (asset_type === Equipment) {
+  if (asset_subtype === Undefined) {
+    return true
+  } else {
+    return false  // Equipment.FuelTank and Equipment.ElectricGenerator not supported
+  }
+} else if (asset_type === Vehicle) {
+  return true  // All vehicle subtypes supported (except those explicitly excluded in matrix)
+} else {
+  return false
+}","[{""priority"": 1, ""type"": ""calculated"", ""calculation_type"": ""function_reference"", ""function"": ""derive_statuses_transit_compatible"", ""parameters"": {""fleeti"": [""asset_type"", ""asset_subtype""]}, ""description"": ""Derived from asset_type and asset_subtype, checks compatibility matrix for transit status""}]",string,,,statuses.transit.compatible,calculated,"""""""""true""""""""",,"Calculated: derive from asset_type and asset_subtype using derive_statuses_transit_compatible function. Check asset type/subtype against compatibility matrix (Transit: Phone all subtypes, Equipment.Undefined, All Vehicle subtypes except excluded). Supported: Phone (all subtypes), Equipment.Undefined, All Vehicle subtypes (except those explicitly excluded). NOT supported: Site.Undefined, Site.Coldroom, Equipment.FuelTank, Equipment.ElectricGenerator. Return true if asset type/subtype is compatible, false otherwise.",,,inactive,simple_value,,1.0.0,,
+statuses_transit_last_changed_at,status,"Calculated: derive from statuses_transit_code using derive_statuses_transit_last_changed_at function. Updates when status family code changes (not on every packet). Backend compares current statuses_transit_code with previous value. If different, update timestamp to current ISO8601 UTC time. If same, keep previous timestamp unchanged. Used to calculate duration of current transit status (e.g., ""parked for 2h"", ""in_transit since 10:30""). Enables transit duration tracking and timeline features.
+
+Pseudo code:
+if (current_statuses_transit_code !== previous_statuses_transit_code) {
+  statuses_transit_last_changed_at = now()  // ISO8601 UTC timestamp
+} else {
+  statuses_transit_last_changed_at = previous_statuses_transit_last_changed_at  // keep unchanged
+}","[{""priority"": 1, ""type"": ""calculated"", ""calculation_type"": ""function_reference"", ""function"": ""derive_statuses_transit_last_changed_at"", ""parameters"": {""fleeti"": [""statuses_transit_code""]}, ""description"": ""Derived from statuses_transit_code, updates when transit status changes""}]",date,,,statuses.transit.last_changed_at,calculated,"""""""""2025-01-18T14:30:45Z""""""""",,"Calculated: Backend compares current statuses_transit_code with previous value. If different, update timestamp to current ISO8601 UTC time. If same, keep previous timestamp unchanged. Used to calculate duration of current transit status (e.g., ""parked for 2h"", ""in_transit since 10:30""). Updates only when transit status changes (not on every packet).",,,inactive,simple_value,,1.0.0,,
 geofences,status,,,array,,,geofences[],,,,,,,inactive,array,,1.0.0,,
 geofences_geofence_id,status,,,string,,,geofences.geofence_id,,"""""""""15""""""""",,,,,inactive,simple_value,,1.0.0,,
 geofences_geofence_name,status,,,string,,,geofences.geofence_name,,"""""""""Service Area""""""""",,,,,inactive,simple_value,,1.0.0,,
-location,location,,,object,,,location,,"""""""{""latitude"": ""decimal degrees (-90 to 90)"", ""longitude"": ""decimal degrees (-180 to 180)"", ""altitude"": ""meters above sea level"", ""heading"": ""degrees (0-359, 0=North)"", ""cardinal_direction"": ""string (N, NE, E, SE, S, SW, W, NW)"", ""geocoded_address"": ""string"", ""last_changed_at"": ""ISO8601"", ""precision"": {""hdop"": ""decimal (-1 to 20, -1=unknown)"", ""pdop"": ""decimal"", ""fix_quality"": ""integer (0=no fix, 1=fix)"", ""satellites"": ""integer (0-32)""}}""""""",,,,,inactive,nested_object,,1.0.0,,
-connectivity,connectivity,,,object,,,connectivity,,"""""""{""signal_level"": ""integer (0-31, 99=unknown)"", ""operator"": ""string or integer code"", ""last_updated_at"": ""ISO"", ""data_mode"": ""integer (0-255)"", ""cell"": {""id"": ""integer (0-65535)"", ""lac"": ""integer (0-65535)""}, ""sim"": {""iccid"": [""string""]}}""""""",,,,,inactive,nested_object,,1.0.0,,
-motion,motion,,,object,,,motion,,"""""""{""last_updated_at"": ""ISO"", ""speed"": {""value"": ""number"", ""unit"": ""km/h""}, ""is_moving"": {""value"": ""boolean"", ""last_changed_at"": ""ISO8601""}, ""instant_movement"": ""boolean"", ""accelerometer"": {""x"": ""number (mG)"", ""y"": ""number (mG)"", ""z"": ""number (mG)""}}""""""",,,,,inactive,nested_object,,1.0.0,,
-last_updated_at,power,,,date,,,last_updated_at,,"""""""""2025-01-18T14:30:45Z""""""""",,,,,inactive,simple_value,,1.0.0,,
-ignition_value,power,,,boolean,,,ignition.value,,"""""""""boolean""""""""",,,,,inactive,simple_value,,1.0.0,,
-ignition_last_changed_at,power,,,string,,,ignition.last_changed_at,,"""""""""2025-01-18T14:30:45Z""""""""",,,,,inactive,simple_value,,1.0.0,,
+ignition_value,power,"Calculated: derive from asset_installation_ignition_input_number, inputs_individual_input_1, inputs_individual_input_2, inputs_individual_input_3, and inputs_individual_input_4 using derive_ignition_value function. Read ignition input number from asset.installation.ignition_input_number (default to 1 if not specified). Read digital input state from the corresponding individual input field: inputs_individual_input_1 (if ignition_input_number = 1), inputs_individual_input_2 (if ignition_input_number = 2), inputs_individual_input_3 (if ignition_input_number = 3), or inputs_individual_input_4 (if ignition_input_number = 4). If ignition_input_number is not available, fallback to inputs_individual_input_1. If anything else fails, return null. This is the primary ignition field used by the rest of the Fleeti system for status computation and business logic.
+
+Pseudo code:
+ignition_input_number = asset_installation_ignition_input_number || 1  // default to 1
+ignition_state = null
+if (ignition_input_number === 1) {
+  ignition_state = inputs_individual_input_1
+} else if (ignition_input_number === 2) {
+  ignition_state = inputs_individual_input_2
+} else if (ignition_input_number === 3) {
+  ignition_state = inputs_individual_input_3
+} else if (ignition_input_number === 4) {
+  ignition_state = inputs_individual_input_4
+} else {
+  ignition_state = null  // invalid input number
+}
+return ignition_state","[{""priority"": 1, ""type"": ""calculated"", ""calculation_type"": ""function_reference"", ""function"": ""derive_ignition_value"", ""parameters"": {""fleeti"": [""inputs_individual_input_1"", ""inputs_individual_input_2"", ""inputs_individual_input_3"", ""inputs_individual_input_4""]}, ""description"": ""Derived from asset installation metadata (ignition_input_number) and individual input fields to determine ignition state. Uses asset.installation.ignition_input_number to select the correct input field (1-4), defaults to input 1 if metadata unavailable.""}]",boolean,,,ignition.value,,"""""""""boolean""""""""",,"Read ignition input number from asset.installation.ignition_input_number (default to 1 if not specified). Read digital input state from the corresponding individual input field: inputs_individual_input_1 (if ignition_input_number = 1), inputs_individual_input_2 (if ignition_input_number = 2), inputs_individual_input_3 (if ignition_input_number = 3), or inputs_individual_input_4 (if ignition_input_number = 4). If ignition_input_number is not available, fallback to inputs_individual_input_1. If anything else fails, return null. This is the primary ignition field used by the rest of the Fleeti system for status computation and business logic.",inactive,simple_value,,1.0.0,,,,
+ignition_last_changed_at,power,"Calculated: derive from ignition_value using derive_ignition_last_changed_at function. Updates when ignition state changes (not on every packet). Backend compares current ignition_value with previous value. If different, update timestamp to current ISO8601 UTC time. If same, keep previous timestamp unchanged. Used to calculate duration of current ignition state (e.g., ""ignition on for 2h"", ""ignition off since yesterday""). Enables ignition duration tracking and timeline features.
+
+Pseudo code:
+if (current_ignition_value !== previous_ignition_value) {
+  ignition_last_changed_at = now()  // ISO8601 UTC timestamp
+} else {
+  ignition_last_changed_at = previous_ignition_last_changed_at  // keep unchanged
+}","[{""priority"": 1, ""type"": ""calculated"", ""calculation_type"": ""function_reference"", ""function"": ""derive_ignition_last_changed_at"", ""parameters"": {""fleeti"": [""ignition_value""]}, ""description"": ""Derived from ignition_value, updates when ignition state changes""}]",string,,,ignition.last_changed_at,,"""""""""2025-01-18T14:30:45Z""""""""",,,,,inactive,simple_value,,1.0.0,,
 inputs_individual_input_1,io,"Prioritized: extract bit 0 from inputs bitmask at root level using extract_bit_from_bitmask function (priority 1), then Navixy avl_io_1 (path: params.avl_io_1, priority 2) - Digital Input 1 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., ignition, door sensor) is defined in asset.installation.* metadata. Used to compute canonical fields like power.ignition.
 
 Pseudo code:
@@ -487,3 +569,21 @@ if (outputs bitmask is available) {
     ""description"": ""Digital Output 3 from Navixy (fallback)""
   }
 ]",boolean,,Digital Output 3,outputs.individual.output_3,,"""""""""boolean""""""""",,"We should use AVL inside the Params object, or in priority to use outputs at the root level of the packet. ",,,inactive,simple_value,,1.0.0,,
+movement_last_updated_at,motion,"Calculated: derive from provider fields (can_speed, obd_speed, avl_io_24, avl_io_37, avl_io_81, avl_io_240, moving) using derive_movement_last_updated_at function. Set to msg_time when any motion-related provider field is present in the telemetry packet. Provider fields that indicate motion data: can_speed (CAN Speed), obd_speed (OBD Speed), avl_io_24 (Speed), avl_io_37 (Vehicle Speed), avl_io_81 (Vehicle Speed), avl_io_240 (Movement), moving (Is Moving). Indicates when motion data (speed, is_moving, etc.) was last updated. Updates on every packet that contains any of these motion provider fields.
+
+Pseudo code:
+if (hasMotionProviderField(packet)) {
+  movement_last_updated_at = msg_time  // ISO8601 UTC timestamp
+} else {
+  movement_last_updated_at = null  // no motion data in packet
+}","[{""priority"": 1, ""type"": ""calculated"", ""calculation_type"": ""function_reference"", ""function"": ""derive_movement_last_updated_at"", ""parameters"": {}, ""description"": ""Derived from provider fields (can_speed, obd_speed, avl_io_24, avl_io_37, avl_io_81, avl_io_240, moving). Set to msg_time when any motion-related provider field is present in the telemetry packet.""}]",date,,Movement Last Updated At,motion.last_updated_at,calculated,"""""""""2025-01-18T14:30:45Z""""""""",,"Set to msg_time when any motion-related provider field is present in the telemetry packet. Provider fields that indicate motion data: can_speed (CAN Speed), obd_speed (OBD Speed), avl_io_24 (Speed), avl_io_37 (Vehicle Speed), avl_io_81 (Vehicle Speed), avl_io_240 (Movement), moving (Is Moving). Indicates when motion data (speed, is_moving, etc.) was last updated. Updates on every packet that contains any of these motion provider fields.",P1,,inactive,simple_value,,1.0.0,,
+speed,motion,"Prioritized: Navixy can_speed (path: params.can_speed, priority 1), then Navixy obd_speed (path: params.obd_speed, priority 2), then Navixy avl_io_24 (path: params.avl_io_24, priority 3), then Navixy avl_io_37 (path: params.avl_io_37, priority 4), then Navixy avl_io_81 (path: params.avl_io_81, priority 5), then Navixy speed (path: speed, priority 6) - Speed in km/h. GNSS Speed is the fallback. Use highest priority available source.","[{""priority"": 1, ""type"": ""direct"", ""source_type"": ""provider"", ""provider"": ""navixy"", ""field"": ""can_speed"", ""path"": ""params.can_speed"", ""description"": ""Speed from CAN Speed (priority 1)""}, {""priority"": 2, ""type"": ""direct"", ""source_type"": ""provider"", ""provider"": ""navixy"", ""field"": ""obd_speed"", ""path"": ""params.obd_speed"", ""description"": ""Speed from OBD Speed (priority 2)""}, {""priority"": 3, ""type"": ""direct"", ""source_type"": ""provider"", ""provider"": ""navixy"", ""field"": ""avl_io_24"", ""path"": ""params.avl_io_24"", ""description"": ""Speed from avl_io_24 (priority 3)""}, {""priority"": 4, ""type"": ""direct"", ""source_type"": ""provider"", ""provider"": ""navixy"", ""field"": ""avl_io_37"", ""path"": ""params.avl_io_37"", ""description"": ""Speed from Vehicle Speed avl_io_37 (priority 4)""}, {""priority"": 5, ""type"": ""direct"", ""source_type"": ""provider"", ""provider"": ""navixy"", ""field"": ""avl_io_81"", ""path"": ""params.avl_io_81"", ""description"": ""Speed from Vehicle Speed avl_io_81 (priority 5)""}, {""priority"": 6, ""type"": ""direct"", ""source_type"": ""provider"", ""provider"": ""navixy"", ""field"": ""speed"", ""path"": ""speed"", ""description"": ""Speed from GNSS Speed (priority 6, fallback)""}]",number,,Speed in km/h,motion.speed.value,prioritized,"""""""""65""""""""",,"Prioritized mapping from Navixy: can_speed (CAN Speed, priority 1), obd_speed (OBD Speed, priority 2), avl_io_24 (Speed, priority 3), avl_io_37 (Vehicle Speed, priority 4), avl_io_81 (Vehicle Speed, priority 5), speed (GNSS Speed, priority 6). GNSS Speed is the fallback. Use highest priority available source.",P0,,inactive,simple_value,km/h,1.0.0,,
+is_moving_value,motion,"Prioritized: Navixy avl_io_240 (path: params.avl_io_240, priority 1), then Navixy moving (path: params.moving, priority 2) - Movement status. Values: 0 = Movement Off, 1 = Movement On. Indicates whether the asset is currently moving.","[{""priority"": 1, ""type"": ""direct"", ""source_type"": ""provider"", ""provider"": ""navixy"", ""field"": ""avl_io_240"", ""path"": ""params.avl_io_240"", ""description"": ""Movement status from avl_io_240 (priority 1)""}, {""priority"": 2, ""type"": ""direct"", ""source_type"": ""provider"", ""provider"": ""navixy"", ""field"": ""moving"", ""path"": ""params.moving"", ""description"": ""Movement status from moving field (priority 2)""}]",number,,Movement Status: yes/no,motion.is_moving.value,prioritized,"""""""""1""""""""",,"Prioritized mapping from Navixy: avl_io_240 (Movement, priority 1), moving (Is Moving, priority 2). Values: 0 = Movement Off, 1 = Movement On. Indicates whether the asset is currently moving.",P1,,inactive,simple_value,,1.0.0,,
+is_moving_last_updated_at,motion,"Calculated: derive from is_moving_value using derive_is_moving_last_updated_at function. Updates when movement status changes (not on every packet). Backend compares current is_moving_value with previous value. If different, update timestamp to current ISO8601 UTC time. If same, keep previous timestamp unchanged. Used to show ""vehicle stopped since X"" and calculate dwell times. Enables movement duration tracking and timeline features.
+
+Pseudo code:
+if (current_is_moving_value !== previous_is_moving_value) {
+  is_moving_last_updated_at = now()  // ISO8601 UTC timestamp
+} else {
+  is_moving_last_updated_at = previous_is_moving_last_updated_at  // keep unchanged
+}","[{""priority"": 1, ""type"": ""calculated"", ""calculation_type"": ""function_reference"", ""function"": ""derive_is_moving_last_updated_at"", ""parameters"": {""fleeti"": [""is_moving_value""]}, ""description"": ""Derived from is_moving_value, updates when movement status changes""}]",date,is_moving_value,Last Time for when the asset has moved.,motion.is_moving.last_changed_at,calculated,"""""""""2025-01-18T14:30:45Z""""""""",,"Calculated: Backend compares current is_moving.value with previous value. If different, update timestamp to current ISO8601 UTC time. If same, keep previous timestamp unchanged. Used to show ""vehicle stopped since X"" and calculate dwell times. Updates only when movement status changes (not on every packet).",P1,,inactive,simple_value,,1.0.0,,

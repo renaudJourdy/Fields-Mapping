@@ -269,8 +269,9 @@ If the Notes contain a pattern that doesn't match any of the above patterns:
 
 ## Output
 
-1. **Update the CSV file** with generated Computation Approach text in the `Computation Approach` column
-2. **Show a summary** of:
+1. **Display generated Computation Approach text in chat**: For each field processed, display the generated Computation Approach text in a code block in the chat. This allows the user to review the generated content before it's saved to the CSV.
+2. **Update the CSV file** with generated Computation Approach text in the `Computation Approach` column
+3. **Show a summary** of:
    - Number of fields processed
    - Number of fields with existing Computation Approach (preserved)
    - Number of fields updated (new or improved)
@@ -278,6 +279,13 @@ If the Notes contain a pattern that doesn't match any of the above patterns:
    - Fields that couldn't be processed (with reasons)
    - Any new patterns identified (if applicable)
    - List of fields that were preserved from export folder
+
+**Display Format**: For each field, show:
+```
+Field: {field_name}
+Computation Approach:
+{generated_computation_approach_text}
+```
 
 ## Example Workflow
 
