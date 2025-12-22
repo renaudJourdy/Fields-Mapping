@@ -1,0 +1,344 @@
+# ============================================================================
+# YAML Configuration Specification - Optimized Structure
+# ============================================================================
+# This file demonstrates the optimized YAML structure for Fleeti telemetry
+# field mappings. All examples follow optimization rules to minimize redundancy
+# while maintaining clarity and backend compatibility.
+#
+# OPTIMIZATION RULES:
+# -------------------
+# 1. Top-level `type` field: ALWAYS KEEP (required for backend routing)
+#    - Values: direct, prioritized, calculated, transformed, io_mapped
+#
+# 2. Source-level `type` field: OMIT when default (direct provider source)
+#    - Omit `type: direct` for provider sources (default)
+#    - Keep `type: calculated` for calculated sources (not default)
+#
+# 3. Source-level `provider` field: OMIT when matches top-level provider
+#    - Omit when source provider = top-level `provider: "navixy"`
+#    - Include only when source uses different provider
+#
+# 4. Source-level `priority` field: OMIT for single-source mappings
+#    - Omit when only one source exists
+#    - Include when multiple sources (prioritized mapping)
+#
+# 5. Source-level `description` field: OMIT (use comments instead)
+#    - Descriptions belong in Notion documentation, not YAML
+#    - Use YAML comments (#) for field path references only
+#
+# 6. `dependencies` field: OMIT when redundant with `parameters.fleeti`
+#    - If `parameters.fleeti` lists all dependencies, omit `dependencies`
+#    - Backend can infer processing order from `parameters.fleeti`
+#
+# 7. `source_type` field: OMIT (can be inferred from context)
+#    - Direct provider source: inferred from `field` + `path` presence
+#    - Calculated source: inferred from `function` presence
+#
+# 8. `unit` field: INCLUDE at both levels
+#    - Provider field level: Include `unit` in each source to specify provider field unit
+#    - Fleeti field level: Include `unit` at top level to specify target Fleeti field unit
+#    - Backend uses both units for automatic conversion when units differ
+#    - Omit `unit` only when unit is "none" or unitless (e.g., boolean, count)
+#
+# MAPPING TYPES:
+# --------------
+# - direct: 1:1 provider field → Fleeti field mapping
+# - prioritized: Multiple sources with priority order (fallback chain)
+# - calculated: Derived from other fields using backend functions
+# - transformed: Combines telemetry with static asset metadata
+# - io_mapped: Maps raw I/O signals to semantic fields via installation metadata
+#
+# ============================================================================
+
+version: "1.0.0"
+provider: "navixy"  # Applied to all sources unless explicitly overridden
+
+mappings:
+  # ========================================================================
+  # EXAMPLE 1: Direct Mapping - Single Source
+  # ========================================================================
+  # Use Case: Simple 1:1 mapping from provider field to Fleeti field
+  # 
+  # Rules Applied:
+  # - `type: direct` at top level (required)
+  # - `sources` array with single source (no `priority` needed)
+  # - Omit `type: direct` in source (default for provider fields)
+  # - Omit `provider: navixy` in source (matches top-level)
+  # - Omit `source_type: provider` (inferred from field/path)
+  # - Omit `description` (use comments instead)
+  # - Include `unit` in source (provider field unit)
+  # - Include `unit` at top level (Fleeti field unit)
+  #
+  # Backend Processing:
+  # - Reads `field` and `path` from source
+  # - Compares source `unit` with top-level `unit`
+  # - Applies unit conversion if units differ (e.g., km/h → m/s)
+  # - Returns null if field missing (error_handling: return_null)
+  # ========================================================================
+  fleeti_field_name:
+    type: direct
+    sources:
+      - field: provider_field_name
+        path: provider_field_path
+        unit: degrees  # Provider field unit
+    unit: degrees  # Fleeti field unit (same as provider, no conversion needed)
+    data_type: number
+    error_handling: return_null
+    # Field Path: fleeti.field.name
+
+  # ========================================================================
+  # EXAMPLE 2: Prioritized Mapping - Multiple Direct Sources
+  # ========================================================================
+  # Use Case: Multiple provider fields map to one Fleeti field with priority
+  # Example: speed = can_speed (priority 1) > obd_speed (priority 2) > gps_speed (priority 3)
+  #
+  # Rules Applied:
+  # - `type: prioritized` at top level (required)
+  # - `priority` included for each source (multiple sources)
+  # - Omit `type: direct` in sources (default)
+  # - Omit `provider` in sources (all match top-level)
+  # - Include `unit` in each source (provider field units)
+  # - Include `unit` at top level (Fleeti field unit)
+  # - `error_handling: use_fallback` (default for prioritized)
+  #
+  # Backend Processing:
+  # - Tries sources in priority order (1, 2, 3...)
+  # - Uses first available source
+  # - Applies unit conversion if source unit differs from Fleeti unit
+  # - Falls back to next priority if current source unavailable
+  # ========================================================================
+  fleeti_field_name_2:
+    type: prioritized
+    sources:
+      - priority: 1
+        field: provider_field_name
+        path: provider.field.path
+        unit: km/h  # Provider field unit
+      - priority: 2
+        field: provider_field_name_2
+        path: provider.field.path_2
+        unit: m/s  # Provider field unit (different from priority 1)
+    unit: km/h  # Fleeti field unit (matches priority 1, conversion needed for priority 2)
+    data_type: number
+    error_handling: use_fallback
+    # Field Path: fleeti.field.name.2
+
+  # ========================================================================
+  # EXAMPLE 3: Calculated Mapping
+  # ========================================================================
+  # Use Case: Field derived from other Fleeti fields using backend function
+  # Example: location_cardinal_direction derived from location_heading
+  #
+  # Rules Applied:
+  # - `type: calculated` at top level (required)
+  # - `calculation_type: function_reference` (all calculated fields use functions)
+  # - `function` name follows pattern: derive_{field_name}
+  # - `parameters.fleeti` lists all Fleeti field dependencies
+  # - Omit `dependencies` (redundant with parameters.fleeti)
+  # - Backend infers processing order from parameters.fleeti
+  # - Include `unit` at top level (Fleeti field unit, function output unit)
+  # - No source-level `unit` needed (calculated fields don't have provider sources)
+  #
+  # Backend Processing:
+  # - Resolves function name from registry
+  # - Passes parameters.fleeti values to function
+  # - Function returns calculated value (already in Fleeti unit)
+  # - Returns null if function fails (error_handling: return_null)
+  # ========================================================================
+  fleeti_field_name_3:
+    type: calculated
+    calculation_type: function_reference
+    function: function_name
+    parameters:
+      fleeti:
+        - fleeti_field_name
+        - fleeti_field_name_2
+    unit: degrees  # Fleeti field unit (function output unit)
+    data_type: number
+    error_handling: return_null
+    # Field Path: fleeti.field.name.3
+
+  # ========================================================================
+  # EXAMPLE 4: Prioritized Mapping - Mixed Source Types (Direct + Calculated)
+  # ========================================================================
+  # Use Case: Priority chain with both direct provider fields and calculated sources
+  # Example: inputs_individual_input_1 = avl_io_1 (direct) > extract_bit(inputs, 0) (calculated)
+  #
+  # Rules Applied:
+  # - `type: prioritized` at top level (required)
+  # - Omit `type: direct` for direct sources (default)
+  # - Keep `type: calculated` for calculated sources (not default)
+  # - `priority` included for each source (multiple sources)
+  # - Omit `provider` in sources (all match top-level)
+  # - Include `unit` in direct source (provider field unit)
+  # - Omit `unit` in calculated source (function output unit matches Fleeti unit)
+  # - Include `unit` at top level (Fleeti field unit)
+  #
+  # Backend Processing:
+  # - Tries priority 1: direct provider field
+  # - Applies unit conversion if source unit differs from Fleeti unit
+  # - If unavailable, tries priority 2: calculated source (calls function)
+  # - Function receives parameters and returns calculated value (already in Fleeti unit)
+  # ========================================================================
+  fleeti_field_name_4:
+    type: prioritized
+    sources:
+      - priority: 1
+        field: provider_field_name
+        path: provider.field.path
+        unit: degrees  # Provider field unit
+      - priority: 2
+        type: calculated
+        calculation_type: function_reference
+        function: function_name
+        parameters:
+          fleeti:
+            - fleeti_field_name
+            - fleeti_field_name_2
+        # No unit needed: function output already in Fleeti unit
+    unit: degrees  # Fleeti field unit
+    data_type: number
+    error_handling: return_null
+    # Field Path: fleeti.field.name.4
+
+  # ========================================================================
+  # EXAMPLE 5: Prioritized Mapping - Different Provider
+  # ========================================================================
+  # Use Case: Priority chain with sources from different providers
+  # Example: navixy field (priority 1) > teltonika field (priority 2)
+  #
+  # Rules Applied:
+  # - `type: prioritized` at top level (required)
+  # - Omit `provider` for priority 1 (matches top-level "navixy")
+  # - Include `provider` for priority 2 (different from top-level)
+  # - Omit `type: direct` in sources (default)
+  # - Include `unit` in each source (provider field units, may differ by provider)
+  # - Include `unit` at top level (Fleeti field unit)
+  #
+  # Backend Processing:
+  # - Tries priority 1: navixy provider field
+  # - Applies unit conversion if navixy unit differs from Fleeti unit
+  # - If unavailable, tries priority 2: different_provider field
+  # - Applies unit conversion if different_provider unit differs from Fleeti unit
+  # - Backend handles provider-specific field resolution and unit conversion
+  # ========================================================================
+  fleeti_field_name_5:
+    type: prioritized
+    sources:
+      - priority: 1
+        field: top_provider_field_name
+        path: top_provider.field.path
+        unit: km/h  # Navixy provider field unit
+      - priority: 2
+        provider: different_provider
+        field: different_provider_field_name
+        path: different_provider.field.path
+        unit: mph  # Different provider field unit (may use different unit system)
+    unit: km/h  # Fleeti field unit (conversion needed for priority 2)
+    data_type: number
+    error_handling: return_null
+    # Field Path: fleeti.field.name.5
+
+  # ========================================================================
+  # EXAMPLE 6: Transformed Mapping
+  # ========================================================================
+  # Use Case: Combines telemetry data with static asset metadata
+  # Example: fuel_level_liters = (fuel_level_percent / 100) * tank_capacity
+  #
+  # Rules Applied:
+  # - `type: transformed` at top level (required)
+  # - `transformation` contains formula/expression
+  # - `service_fields` lists asset service field paths
+  # - No `sources` array (transformed uses different structure)
+  # - Include `unit` at top level (Fleeti field unit, transformation output unit)
+  # - Transformation formula handles unit conversion internally if needed
+  #
+  # Backend Processing:
+  # - Reads telemetry field from current packet (with its unit)
+  # - Fetches static fields from Asset Service (with their units)
+  # - Applies transformation formula (may include unit conversion)
+  # - Returns calculated value in Fleeti unit
+  # ========================================================================
+  fleeti_field_name_6:
+    type: transformed
+    transformation: "(telemetry_field / 100) * static.tank_capacity"
+    service_fields:
+      - asset.properties.vehicle.fuel_tank_capacity.value
+    unit: liters  # Fleeti field unit (transformation output unit)
+    data_type: number
+    error_handling: return_null
+    # Field Path: fleeti.field.name.6
+
+  # ========================================================================
+  # EXAMPLE 7: I/O Mapped
+  # ========================================================================
+  # Use Case: Maps raw I/O signals to semantic fields using installation metadata
+  # Example: ignition_value = inputs.individual.input_N (where N = installation.ignition_input_number)
+  #
+  # Rules Applied:
+  # - `type: io_mapped` at top level (required)
+  # - `default_source` specifies fallback I/O field
+  # - `installation_metadata` specifies asset installation field path
+  # - No `sources` array (io_mapped uses different structure)
+  # - Include `unit` at top level (Fleeti field unit)
+  # - I/O fields typically unitless (boolean) or inherit unit from I/O signal
+  #
+  # Backend Processing:
+  # - Reads installation metadata to determine which I/O field to use
+  # - If metadata unavailable, uses default_source
+  # - Returns I/O field value (boolean for digital, number for analog)
+  # - Unit conversion applied if I/O signal unit differs from Fleeti unit
+  # ========================================================================
+  fleeti_field_name_7:
+    type: io_mapped
+    default_source: inputs.individual.input_1
+    installation_metadata: asset.installation.ignition_input_number
+    unit: none  # Fleeti field unit (boolean, unitless)
+    data_type: boolean
+    error_handling: use_fallback
+    # Field Path: fleeti.field.name.7
+
+  # ========================================================================
+  # EXAMPLE 8: Prioritized Mapping - All Calculated Sources
+  # ========================================================================
+  # Use Case: Priority chain where all sources are calculated (functions)
+  # Example: inputs_individual_input_1 = extract_bit(inputs, 0) > extract_bit(din, 0)
+  #
+  # Rules Applied:
+  # - `type: prioritized` at top level (required)
+  # - `type: calculated` included for all sources (not default)
+  # - `priority` included for each source (multiple sources)
+  # - `parameters` can use `provider:` or `fleeti:` keys
+  # - Omit `provider` in sources (functions handle provider context)
+  # - Omit `unit` in calculated sources (function output already in Fleeti unit)
+  # - Include `unit` at top level (Fleeti field unit)
+  #
+  # Backend Processing:
+  # - Tries priority 1: calls function with provider parameters
+  # - Function returns value in Fleeti unit (no conversion needed)
+  # - If function fails, tries priority 2: calls alternative function
+  # - Functions receive parameters and return calculated values (already in Fleeti unit)
+  # ========================================================================
+  fleeti_field_name_8:
+    type: prioritized
+    sources:
+      - priority: 1
+        type: calculated
+        calculation_type: function_reference
+        function: extract_bit_from_bitmask
+        parameters:
+          provider:
+            navixy: inputs
+        # No unit needed: function output already in Fleeti unit
+      - priority: 2
+        type: calculated
+        calculation_type: function_reference
+        function: alternative_function
+        parameters:
+          fleeti:
+            - fleeti_field_name
+        # No unit needed: function output already in Fleeti unit
+    unit: none  # Fleeti field unit (boolean, unitless)
+    data_type: boolean
+    error_handling: use_fallback
+    # Field Path: fleeti.field.name.8
