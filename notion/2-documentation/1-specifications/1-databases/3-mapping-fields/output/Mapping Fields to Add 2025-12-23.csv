@@ -1,0 +1,3 @@
+"Name","Computation Approach","Computation Structure JSON","Configuration Level","Fleeti Field","Fleeti Field Data Type","Fleeti Field Path","Fleeti Field Unit","Mapping Type","Notes","Provider","Provider Field (db)","Provider Field Unit","Provider Fields","Status","Version Added","💽 YAML Configurations (db)"
+"metadata.geofences from Navixy","","","default","","","","","calculated","","navixy","","","","planned","",""
+"sensors.sensors.environment from Navixy","","","default","","","","","calculated","","navixy","","","","planned","",""

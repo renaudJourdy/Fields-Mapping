@@ -1,0 +1,932 @@
+﻿Name,Category,Computation Approach,Computation Structure JSON,Data Type,Dependencies,Description,Field Path,Field Type,Mapping Fields (db),Notes,Provider Field (db),Provider Field Path,Provider Field Unit,REST API Endpoints,Status,Unit,Version Added,WebSocket Contracts
+location_latitude,location,Direct mapping from Navixy: lat (path: lat) - Latitude in decimal degrees from Navixy,"{
+""type"": ""direct"",
+""sources"": [
+{
+""field"": ""lat"",
+""path"": ""lat""
+}
+]
+}",number,"location_geocoded_address (https://www.notion.so/location_geocoded_address-2ca3e766c901811f8982c8d979b795b3?pvs=21), location_last_changed_at (https://www.notion.so/location_last_changed_at-2ca3e766c901819f990ee8b9e2447410?pvs=21), geofences (https://www.notion.so/geofences-2d23e766c901810a9997da6637f32ad4?pvs=21)",Latitude in decimal degrees,location.latitude,direct,location.latitude from Navixy (https://www.notion.so/location-latitude-from-Navixy-2cc3e766c90181aab715e7dd7d47e94d?pvs=21),,lat (https://www.notion.so/lat-2c73e766c901812bb29fdd17260022c1?pvs=21),lat,degrees,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,degrees,1.0.0,"live.asset.details, live.map.markers"
+location_longitude,location,Direct mapping from Navixy: lng (path: lng) - Longitude in decimal degrees from Navixy,"{
+""type"": ""direct"",
+""sources"": [
+{
+""field"": ""lng"",
+""path"": ""lng""
+}
+]
+}",number,"location_geocoded_address (https://www.notion.so/location_geocoded_address-2ca3e766c901811f8982c8d979b795b3?pvs=21), location_last_changed_at (https://www.notion.so/location_last_changed_at-2ca3e766c901819f990ee8b9e2447410?pvs=21), geofences (https://www.notion.so/geofences-2d23e766c901810a9997da6637f32ad4?pvs=21)",Longitude in decimal degrees,location.longitude,direct,location.longitude from Navixy (https://www.notion.so/location-longitude-from-Navixy-2cc3e766c90181c7b4aff8e76fed0376?pvs=21),,lng (https://www.notion.so/lng-2c73e766c90181908795d204fb2d7e0e?pvs=21),lng,degrees,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,degrees,1.0.0,"live.asset.details, live.map.markers"
+location_altitude,location,Direct mapping from Navixy: alt (path: alt) - Altitude in meters from Navixy,"{
+""type"": ""direct"",
+""sources"": [
+{
+""field"": ""alt"",
+""path"": ""alt""
+}
+]
+}",number,,Altitude in meters,location.altitude,direct,location.altitude from Navixy (https://www.notion.so/location-altitude-from-Navixy-2cc3e766c9018182a9a6d381bd055920?pvs=21),,alt (https://www.notion.so/alt-2c73e766c90181d3ab40d01bbd630c14?pvs=21),alt,meters,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,meters,1.0.0,live.asset.details
+location_heading,location,Direct mapping from Navixy: heading (path: heading) - Heading in degrees (0-359) from Navixy,"{
+""type"": ""direct"",
+""sources"": [
+{
+""field"": ""heading"",
+""path"": ""heading""
+}
+]
+}",number,location_cardinal_direction (https://www.notion.so/location_cardinal_direction-2ca3e766c9018173a9efe4bfbd957016?pvs=21),Heading in degrees (0-359),location.heading,direct,location.heading from Navixy (https://www.notion.so/location-heading-from-Navixy-2cc3e766c901819f9581e5658144da0e?pvs=21),,heading (https://www.notion.so/heading-2c73e766c901812c80d1fec777d9e06e?pvs=21),heading,degrees,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,degrees,1.0.0,"live.asset.details, live.map.markers"
+location_cardinal_direction,location,"Calculated: derive from location_heading using derive_cardinal_direction function. Converts heading (0-359 degrees) to cardinal direction (N, NE, E, SE, S, SW, W, NW).
+
+Pseudo code:
+dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
+index = Math.floor((location_heading + 22.5) % 360 / 45)
+cardinal_direction = dirs[index]","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_cardinal_direction"",
+""parameters"": {
+""fleeti"": [
+""location_heading""
+]
+}
+}",string,location_heading (https://www.notion.so/location_heading-2ca3e766c901813a9f0ce33be59ecb26?pvs=21),"Cardinal direction (N, NE, E, SE, S, SW, W, NW)",location.cardinal_direction,calculated,location.cardinal_direction from Navixy (https://www.notion.so/location-cardinal_direction-from-Navixy-2cc3e766c9018188a435e737e5513e4b?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,live.asset.details
+location_geocoded_address,location,"Calculated: derive from location_latitude and location_longitude using derive_geocoded_address function. Uses external API (Google) to convert latitude and longitude coordinates into a geocoded address string.
+
+Pseudo code:
+coordinates = { lat: location_latitude, lng: location_longitude }
+geocoded_address = callGoogleGeocodingAPI(coordinates)
+return geocoded_address","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_geocoded_address"",
+""parameters"": {
+""fleeti"": [
+""location_latitude"",
+""location_longitude""
+]
+}
+}",string,"location_latitude (https://www.notion.so/location_latitude-2ca3e766c9018183a4bee9dc39aca7e4?pvs=21), location_longitude (https://www.notion.so/location_longitude-2ca3e766c9018187a2d5f688c85c2e55?pvs=21)",Single string representation of the location,location.geocoded_address,calculated,location.geocoded_address from Navixy (https://www.notion.so/location-geocoded_address-from-Navixy-2cc3e766c9018110ab8ee1bb1e461427?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,live.asset.details
+location_last_changed_at,location,"Calculated: derive from location_latitude and location_longitude using derive_location_last_changed_at function. Backend compares current position with previous position. If latitude or longitude changed, sets timestamp to last_updated_at.
+
+Pseudo code:
+if (current.lat !== previous.lat || current.lng !== previous.lng) {
+distance = calculateDistance(current, previous)
+if (distance > threshold) {
+location_last_changed_at = last_updated_at;
+}
+}","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_location_last_changed_at"",
+""parameters"": {
+""fleeti"": [
+""location_latitude"",
+""location_longitude"",
+""last_updated_at""
+]
+}
+}",datetime,"location_latitude (https://www.notion.so/location_latitude-2ca3e766c9018183a4bee9dc39aca7e4?pvs=21), location_longitude (https://www.notion.so/location_longitude-2ca3e766c9018187a2d5f688c85c2e55?pvs=21)","Unix Epoch timestamp (milliseconds, number) when location/heading last changed significantly (threshold applied to filter GPS noise). Used for dwell-time calculations and ""parked since X"" features.",location.last_changed_at,calculated,location.last_changed_at from Navixy (https://www.notion.so/location-last_changed_at-from-Navixy-2cc3e766c9018157b2afdcabb264880f?pvs=21),,msg_time (https://www.notion.so/msg_time-2c73e766c9018199a26dd2f1b00cd31e?pvs=21),msg_time,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,live.asset.details
+location_precision_fix_quality,location,"Direct mapping from Navixy: avl_io_69 (path: params.avl_io_69) - GNSS Status: 0 - GNSS OFF, 1 – GNSS ON with fix, 2 - GNSS ON without fix, 3 - GNSS sleep, 4 - GNSS ON with fix, invalid data","{
+""type"": ""direct"",
+""sources"": [
+{
+""field"": ""avl_io_69"",
+""path"": ""params.avl_io_69""
+}
+]
+}",number,,"0 - GNSS OFF 1 – GNSS ON with fix 2 - GNSS ON without fix 3 - GNSS sleep 4 - GNSS ON with fix, invalid data",location.precision.fix_quality,direct,location.precision.fix_quality from Navixy (https://www.notion.so/location-precision-fix_quality-from-Navixy-2cc3e766c90181219d44dd9ecd3bc09e?pvs=21),,avl_io_69 (https://www.notion.so/avl_io_69-2c73e766c901815089c2e5d586571ddc?pvs=21),params.avl_io_69,,/telemetry (FLEETI),inactive,none,1.0.0,
+location_precision_hdop,location,"Prioritized: Navixy hdop (path: hdop, priority 1), then Navixy avl_io_182 (path: params.avl_io_182, priority 2) - Horizontal Dilution of Precision","{
+""type"": ""prioritized"",
+""sources"": [
+{
+""priority"": 1,
+""field"": ""hdop"",
+""path"": ""hdop""
+},
+{
+""priority"": 2,
+""field"": ""avl_io_182"",
+""path"": ""params.avl_io_182""
+}
+]
+}",number,,Horizontal Dilution of Precision,location.precision.hdop,prioritized,location.precision.hdop from Navixy (https://www.notion.so/location-precision-hdop-from-Navixy-2cc3e766c90181128608da5ce24be86c?pvs=21),,"hdop (https://www.notion.so/hdop-2c73e766c90181b2bbb5d3b9897da50b?pvs=21), avl_io_182 (https://www.notion.so/avl_io_182-2c73e766c9018174bfa4ede8516cb088?pvs=21)","hdop,params.avl_io_182",-,/telemetry (FLEETI),inactive,none,1.0.0,
+location_precision_pdop,location,"Prioritized: Navixy pdop (path: pdop, priority 1), then Navixy avl_io_181 (path: params.avl_io_181, priority 2) - Position Dilution of Precision","{
+""type"": ""prioritized"",
+""sources"": [
+{
+""priority"": 1,
+""field"": ""pdop"",
+""path"": ""pdop""
+},
+{
+""priority"": 2,
+""field"": ""avl_io_181"",
+""path"": ""params.avl_io_181""
+}
+]
+}",number,,Position Dilution of Precision,location.precision.pdop,prioritized,location.precision.pdop from Navixy (https://www.notion.so/location-precision-pdop-from-Navixy-2cc3e766c90181859797c2b8c56c4f4f?pvs=21),,"pdop (https://www.notion.so/pdop-2c73e766c9018142a3c2d1eacaf15871?pvs=21), avl_io_181 (https://www.notion.so/avl_io_181-2c73e766c901812fa834e5dee8092548?pvs=21)","pdop,params.avl_io_181",,/telemetry (FLEETI),inactive,none,1.0.0,
+location_precision_satellites,location,Direct mapping from Navixy: satellites (path: satellites) - Number of satellites in fix from Navixy,"{
+""type"": ""direct"",
+""sources"": [
+{
+""field"": ""satellites"",
+""path"": ""satellites""
+}
+]
+}",number,,Number of satellites in fix,location.precision.satellites,direct,location.precision.satellites from Navixy (https://www.notion.so/location-precision-satellites-from-Navixy-2cc3e766c90181e885eff8e454b6c797?pvs=21),,satellites (https://www.notion.so/satellites-2c73e766c901817bb6c8f212f06b6869?pvs=21),satellites,-,/telemetry (FLEETI),inactive,none,1.0.0,
+last_updated_at,metadata,"Direct mapping from Navixy: msg_time (path: msg_time) - Timestamp of when the telemetry record was originally created on the GPS tracker device, before transmission to the provider.","{
+""type"": ""direct"",
+""sources"": [
+{
+""field"": ""msg_time"",
+""path"": ""msg_time""
+}
+]
+}",datetime,"is_moving_last_updated_at (https://www.notion.so/is_moving_last_updated_at-2d03e766c9018119b691e68c4f1ec728?pvs=21), movement_last_updated_at (https://www.notion.so/movement_last_updated_at-2d03e766c90181708a1bc787847e6c67?pvs=21), ignition_last_changed_at (https://www.notion.so/ignition_last_changed_at-2d03e766c90181a49a77dd7fc5395679?pvs=21), statuses_transit_last_changed_at (https://www.notion.so/statuses_transit_last_changed_at-2d03e766c9018160aedafc7a2e1b8528?pvs=21), statuses_engine_last_changed_at (https://www.notion.so/statuses_engine_last_changed_at-2d03e766c9018101bcd9efe26fa1381b?pvs=21), statuses_immobilization_last_changed_at (https://www.notion.so/statuses_immobilization_last_changed_at-2d03e766c901810ab405e99b459708eb?pvs=21), statuses_connectivity_last_changed_at (https://www.notion.so/statuses_connectivity_last_changed_at-2d03e766c90181dd9dcace15d98b87c5?pvs=21), statuses_connectivity_code (https://www.notion.so/statuses_connectivity_code-2d03e766c9018122881bd8b3876ab02a?pvs=21), top_status_last_changed_at (https://www.notion.so/top_status_last_changed_at-2d03e766c90181f781dcc65cf4c3bb58?pvs=21)",The last time the GPS tracker sent data to the system. Shows when the device was last in contact.,last_updated_at,direct,metadata.last_updated_at from Navixy (https://www.notion.so/metadata-last_updated_at-from-Navixy-2d13e766c901815ba6f6d0a0ed3a1a3b?pvs=21),,msg_time (https://www.notion.so/msg_time-2c73e766c9018199a26dd2f1b00cd31e?pvs=21),msg_time,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,"live.asset.details, live.assets.list, live.map.markers"
+top_status_family,status,"Calculated: derive from statuses_connectivity_code, statuses_immobilization_code, statuses_engine_code, and statuses_transit_code using derive_top_status_family function. Function calls Asset Service internally to check compatibility for each status family (statuses_connectivity_compatible, statuses_immobilization_compatible, statuses_engine_compatible, statuses_transit_compatible). Evaluates status families in conditional priority order: (1) Connectivity if compatible and code = ""offline"", (2) Immobilization if compatible and code = ""immobilized"", (3) Engine if compatible and code = ""running"", (4) Transit if compatible, (5) Connectivity fallback (code = ""online""). Returns the family name (connectivity/immobilization/engine/transit) of the selected status family.
+
+Pseudo code:
+connectivity_compatible = checkConnectivityCompatible()  // Calls Asset Service internally
+immobilization_compatible = checkImmobilizationCompatible()  // Calls Asset Service internally
+engine_compatible = checkEngineCompatible()  // Calls Asset Service internally
+transit_compatible = checkTransitCompatible()  // Calls Asset Service internally
+if (connectivity_compatible && statuses_connectivity_code === ""offline"") {
+return ""connectivity""
+} else if (immobilization_compatible && statuses_immobilization_code === ""immobilized"") {
+return ""immobilization""
+} else if (engine_compatible && statuses_engine_code === ""running"") {
+return ""engine""
+} else if (transit_compatible) {
+return ""transit""
+} else {
+return ""connectivity""  // fallback (online)
+}","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_top_status_family"",
+""parameters"": {
+""fleeti"": [
+""statuses_connectivity_code"",
+""statuses_immobilization_code"",
+""statuses_engine_code"",
+""statuses_transit_code""
+]
+}
+}",string,"statuses_immobilization_code (https://www.notion.so/statuses_immobilization_code-2d03e766c9018134919dd42cdb9c9148?pvs=21), statuses_connectivity_code (https://www.notion.so/statuses_connectivity_code-2d03e766c9018122881bd8b3876ab02a?pvs=21), statuses_engine_code (https://www.notion.so/statuses_engine_code-2d03e766c901819dbed7deab2cca5926?pvs=21), statuses_transit_code (https://www.notion.so/statuses_transit_code-2d03e766c90181fe92d0e5e6f5f074d1?pvs=21)","The main status category currently shown for this asset. The system picks the most important status (like 'offline', 'immobilized', 'running', or 'moving') to display on the map.",status.top_status.family,calculated,status.top_status_family from Navixy (https://www.notion.so/status-top_status_family-from-Navixy-2d13e766c901813d80bcef1406d569c0?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,"live.asset.details, live.assets.list, live.map.markers"
+top_status_code,status,"Calculated: derive from statuses_connectivity_code, statuses_immobilization_code, statuses_engine_code, and statuses_transit_code using derive_top_status_code function. Function calls Asset Service internally to check compatibility for each status family (statuses_connectivity_compatible, statuses_immobilization_compatible, statuses_engine_compatible, statuses_transit_compatible). Evaluates status families in conditional priority order: (1) Connectivity if compatible and code = ""offline"", (2) Immobilization if compatible and code = ""immobilized"", (3) Engine if compatible and code = ""running"", (4) Transit if compatible, (5) Connectivity fallback (code = ""online""). Returns the code value from the selected status family (e.g., ""offline"", ""immobilized"", ""running"", ""in_transit"", ""parked"", ""online"").
+
+Pseudo code:
+connectivity_compatible = checkConnectivityCompatible()  // Calls Asset Service internally
+immobilization_compatible = checkImmobilizationCompatible()  // Calls Asset Service internally
+engine_compatible = checkEngineCompatible()  // Calls Asset Service internally
+transit_compatible = checkTransitCompatible()  // Calls Asset Service internally
+if (connectivity_compatible && statuses_connectivity_code === ""offline"") {
+return statuses_connectivity_code
+} else if (immobilization_compatible && statuses_immobilization_code === ""immobilized"") {
+return statuses_immobilization_code
+} else if (engine_compatible && statuses_engine_code === ""running"") {
+return statuses_engine_code
+} else if (transit_compatible) {
+return statuses_transit_code
+} else {
+return statuses_connectivity_code  // fallback (""online"")
+}","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_top_status_code"",
+""parameters"": {
+""fleeti"": [
+""statuses_connectivity_code"",
+""statuses_immobilization_code"",
+""statuses_engine_code"",
+""statuses_transit_code""
+]
+}
+}",string,"top_status_last_changed_at (https://www.notion.so/top_status_last_changed_at-2d03e766c90181f781dcc65cf4c3bb58?pvs=21), statuses_engine_code (https://www.notion.so/statuses_engine_code-2d03e766c901819dbed7deab2cca5926?pvs=21), statuses_connectivity_code (https://www.notion.so/statuses_connectivity_code-2d03e766c9018122881bd8b3876ab02a?pvs=21), statuses_immobilization_code (https://www.notion.so/statuses_immobilization_code-2d03e766c9018134919dd42cdb9c9148?pvs=21), statuses_transit_code (https://www.notion.so/statuses_transit_code-2d03e766c90181fe92d0e5e6f5f074d1?pvs=21)","The current status shown for this asset, such as 'offline', 'immobilized', 'running', 'in_transit', 'parked', or 'online'. This is the most important status that appears on the map.",status.top_status.code,calculated,status.top_status_code from Navixy (https://www.notion.so/status-top_status_code-from-Navixy-2d13e766c90181eda65bda078426ecc6?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,"live.asset.details, live.assets.list, live.map.markers"
+top_status_last_changed_at,status,"Calculated: derive from top_status_code and last_updated_at using derive_top_status_last_changed_at function. Updates when top_status.code changes (not on every packet). Backend compares current top_status.code with previous value. If different, update timestamp to last_updated_at (from telemetry packet). If same, keep previous timestamp unchanged. Used to calculate duration of current top status state (e.g., ""immobilized for 2 hours"", ""engine running since 10:30""). Enables timeline features and status duration calculations.
+
+Pseudo code:
+if (current_top_status_code !== previous_top_status_code) {
+top_status_last_changed_at = last_updated_at  // Use timestamp from telemetry packet
+} else {
+top_status_last_changed_at = previous_top_status_last_changed_at  // keep unchanged
+}","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_top_status_last_changed_at"",
+""parameters"": {
+""fleeti"": [
+""top_status_code"",
+""last_updated_at""
+]
+}
+}",datetime,"last_updated_at (https://www.notion.so/last_updated_at-2d03e766c90181f0a2c1d615f9506341?pvs=21), top_status_code (https://www.notion.so/top_status_code-2d03e766c9018143a851d71781813b82?pvs=21)","When the main status last changed. Used to show how long the asset has been in its current state (e.g., 'immobilized for 2 hours', 'running since 10:30').",status.top_status.last_changed_at,calculated,status.top_status_last_changed_at from Navixy (https://www.notion.so/status-top_status_last_changed_at-from-Navixy-2d13e766c901816c8cd3d095c44da8c6?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,"live.asset.details, live.assets.list, live.map.markers"
+statuses_connectivity_code,status,"Calculated: derive from last_updated_at using derive_statuses_connectivity_code function. Function calls Asset Service to retrieve asset_type and asset_subtype. Determines online/offline status based on time threshold: Vehicles, Equipment, and Phones use 24h threshold; Coldroom Sites use 1h threshold. Check asset type and subtype: if asset_type === Site (30) AND asset_subtype === Coldroom (10), use 1h threshold; otherwise use 24h threshold. Compare root-level last_updated_at (derived from msg_time) with current time. If difference < threshold ? ""online"", else ? ""offline"". Connectivity is based on the root-level last_updated_at timestamp (derived from msg_time), not GPS location updates.
+
+Pseudo code:
+asset_type = asset_service.get_asset_type(asset_id)
+asset_subtype = asset_service.get_asset_subtype(asset_id)
+threshold = (asset_type === Site && asset_subtype === Coldroom) ? 1 : 24  // hours
+time_diff = current_time - last_updated_at
+if (time_diff < threshold) {
+return ""online""
+} else {
+return ""offline""
+}","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_statuses_connectivity_code"",
+""parameters"": {
+""fleeti"": [
+""last_updated_at""
+]
+}
+}",string,"statuses_connectivity_last_changed_at (https://www.notion.so/statuses_connectivity_last_changed_at-2d03e766c90181dd9dcace15d98b87c5?pvs=21), last_updated_at (https://www.notion.so/last_updated_at-2d03e766c90181f0a2c1d615f9506341?pvs=21), top_status_code (https://www.notion.so/top_status_code-2d03e766c9018143a851d71781813b82?pvs=21), top_status_family (https://www.notion.so/top_status_family-2d03e766c901818ba2a2df0c5e1c6ee3?pvs=21)",Whether the device is online (recently sent data) or offline (hasn't sent data recently). Most assets are offline if no data for 24 hours; coldroom sites are offline after 1 hour.,status.statuses.connectivity.code,calculated,status.statuses_connectivity_code from Navixy (https://www.notion.so/status-statuses_connectivity_code-from-Navixy-2d13e766c90181bc92edf8d3a70c3324?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,"live.asset.details, live.assets.list, live.map.markers"
+statuses_connectivity_compatible,status,"Calculated: derive using derive_statuses_connectivity_compatible function. Function calls Asset Service to retrieve asset_type and asset_subtype. Check asset type/subtype against compatibility matrix (Connectivity: all types). Connectivity status is compatible with all asset types and subtypes. Return true for all assets. Connectivity applies to all asset types (Vehicles, Equipment, Sites, Phones) regardless of subtype.
+
+Pseudo code:
+asset_type = asset_service.get_asset_type(asset_id)
+asset_subtype = asset_service.get_asset_subtype(asset_id)
+// Connectivity is compatible with all asset types
+return true","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_statuses_connectivity_compatible"",
+""parameters"": {
+""fleeti"": []
+}
+}",boolean,,"Whether this asset can have connectivity status. All assets have connectivity status, so this is always true.",status.statuses.connectivity.compatible,calculated,status.statuses_connectivity_compatible from Navixy (https://www.notion.so/status-statuses_connectivity_compatible-from-Navixy-2d13e766c90181b3b250f39587520fdc?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,"live.asset.details, live.assets.list"
+statuses_connectivity_last_changed_at,status,"Calculated: derive from statuses_connectivity_code and last_updated_at using derive_statuses_connectivity_last_changed_at function. Updates when status family code changes (not on every packet). Backend compares current statuses_connectivity_code with previous value. If different, update timestamp to last_updated_at (from telemetry packet). If same, keep previous timestamp unchanged. Used to calculate duration of current connectivity status (e.g., ""offline for 2h"", ""online since yesterday""). Enables connectivity duration tracking and timeline features.
+
+Pseudo code:
+if (current_statuses_connectivity_code !== previous_statuses_connectivity_code) {
+statuses_connectivity_last_changed_at = last_updated_at  // Use timestamp from telemetry packet
+} else {
+statuses_connectivity_last_changed_at = previous_statuses_connectivity_last_changed_at  // keep unchanged
+}","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_statuses_connectivity_last_changed_at"",
+""parameters"": {
+""fleeti"": [
+""statuses_connectivity_code"",
+""last_updated_at""
+]
+}
+}",datetime,"statuses_connectivity_code (https://www.notion.so/statuses_connectivity_code-2d03e766c9018122881bd8b3876ab02a?pvs=21), last_updated_at (https://www.notion.so/last_updated_at-2d03e766c90181f0a2c1d615f9506341?pvs=21)",When the connectivity status last changed (from online to offline or vice versa). Used to show how long the asset has been online or offline.,status.statuses.connectivity.last_changed_at,calculated,status.statuses_connectivity_last_changed_at from Navixy (https://www.notion.so/status-statuses_connectivity_last_changed_at-from-Navixy-2d13e766c90181e88771cac3047d3422?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,"live.asset.details, live.assets.list"
+statuses_immobilization_code,status,"Calculated: derive from statuses_immobilization_compatible, outputs_individual_output_1, outputs_individual_output_2, and outputs_individual_output_3 using derive_statuses_immobilization_code function. Function calls Asset Service to retrieve asset.installation.immobilizer_output_number. Prerequisites: Check statuses_immobilization_compatible (must be true). If false, return null (immobilization not applicable). Read immobilizer output number from asset.installation.immobilizer_output_number (default to 1 if not specified). Read digital output state from the corresponding individual output field: outputs_individual_output_1 (if output_number = 1), outputs_individual_output_2 (if output_number = 2), or outputs_individual_output_3 (if output_number = 3). Status determination: If output state = 1 ? ""immobilized"". If output state = 0 ? ""free"". If immobilization command sent via REST API ? ""immobilizing"" (persists until output changes to 1 or timeout, managed by backend command tracking). If release command sent ? ""releasing"" (persists until output changes to 0 or timeout, managed by backend command tracking).
+
+Pseudo code:
+if (!statuses_immobilization_compatible) {
+     return null  // Immobilization not applicable
+}
+output_number = asset_service.get_installation_metadata('immobilizer_output_number') || 1  // default to 1
+output_state = null
+if (output_number === 1) {
+output_state = outputs_individual_output_1
+} else if (output_number === 2) {
+output_state = outputs_individual_output_2
+} else if (output_number === 3) {
+output_state = outputs_individual_output_3
+}
+if (isImmobilizingCommandActive()) {
+return ""immobilizing""
+} else if (isReleasingCommandActive()) {
+return ""releasing""
+} else if (output_state === 1) {
+return ""immobilized""
+} else if (output_state === 0) {
+return ""free""
+} else {
+return null  // output state unavailable
+}","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_statuses_immobilization_code"",
+""parameters"": {
+""fleeti"": [
+""statuses_immobilization_compatible"",
+""outputs_individual_output_1"",
+""outputs_individual_output_2"",
+""outputs_individual_output_3""
+]
+}
+}",string,"statuses_immobilization_last_changed_at (https://www.notion.so/statuses_immobilization_last_changed_at-2d03e766c901810ab405e99b459708eb?pvs=21), outputs_individual_output_1 (https://www.notion.so/outputs_individual_output_1-2d03e766c90181a4b67df7592999fa05?pvs=21), outputs_individual_output_2 (https://www.notion.so/outputs_individual_output_2-2d03e766c901818891b4d611722059ea?pvs=21), outputs_individual_output_3 (https://www.notion.so/outputs_individual_output_3-2d03e766c90181e7bbeaed8b10e0630d?pvs=21), statuses_immobilization_compatible (https://www.notion.so/statuses_immobilization_compatible-2d03e766c90181409758e5a6865cad1c?pvs=21), top_status_code (https://www.notion.so/top_status_code-2d03e766c9018143a851d71781813b82?pvs=21), top_status_family (https://www.notion.so/top_status_family-2d03e766c901818ba2a2df0c5e1c6ee3?pvs=21)","Whether the vehicle/equipment is currently locked (immobilized), unlocked (free), or in the process of locking/unlocking. Only applies to vehicles and equipment with an immobilizer installed.",status.statuses.immobilization.code,calculated,status.statuses_immobilization_code from Navixy (https://www.notion.so/status-statuses_immobilization_code-from-Navixy-2d13e766c9018173a672e0898bd17e63?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,"live.asset.details, live.assets.list, live.map.markers"
+statuses_immobilization_compatible,status,"Calculated: derive using derive_statuses_immobilization_compatible function. Function calls Asset Service to retrieve asset_type and asset_accessories. Check asset type/subtype against compatibility matrix (Immobilization: Vehicles and Equipment only). Asset must have asset_type = Vehicle (10) OR Equipment (20). Asset must have immobilizer accessory installed (asset.accessories contains type_code=""immobilizer""). Return true if both conditions are met, false otherwise.
+
+Pseudo code:
+asset_type = asset_service.get_asset_type(asset_id)
+asset_accessories = asset_service.get_asset_accessories(asset_id)
+if (asset_type === Vehicle || asset_type === Equipment) {
+if (hasImmobilizerAccessory(asset_accessories)) {
+return true
+}
+}
+return false","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_statuses_immobilization_compatible"",
+""parameters"": {
+""fleeti"": []
+}
+}",boolean,statuses_immobilization_code (https://www.notion.so/statuses_immobilization_code-2d03e766c9018134919dd42cdb9c9148?pvs=21),Whether this asset supports immobilization status. Only vehicles and equipment with an immobilizer accessory installed can have immobilization status.,status.statuses.immobilization.compatible,calculated,status.statuses_immobilization_compatible from Navixy (https://www.notion.so/status-statuses_immobilization_compatible-from-Navixy-2d13e766c901818da015e397e71e9678?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,"live.asset.details, live.assets.list"
+statuses_immobilization_last_changed_at,status,"Calculated: derive from statuses_immobilization_code and last_updated_at using derive_statuses_immobilization_last_changed_at function. Updates when status family code changes (not on every packet). Backend compares current statuses_immobilization_code with previous value. If different, update timestamp to last_updated_at (from telemetry packet). If same, keep previous timestamp unchanged. Used to calculate duration of current immobilization status (e.g., ""immobilized for 2h"", ""free since yesterday""). Enables immobilization duration tracking and timeline features.
+
+Pseudo code:
+if (current_statuses_immobilization_code !== previous_statuses_immobilization_code) {
+statuses_immobilization_last_changed_at = last_updated_at  // Use timestamp from telemetry packet
+} else {
+statuses_immobilization_last_changed_at = previous_statuses_immobilization_last_changed_at  // keep unchanged
+}","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_statuses_immobilization_last_changed_at"",
+""parameters"": {
+""fleeti"": [
+""statuses_immobilization_code"",
+""last_updated_at""
+]
+}
+}",datetime,"statuses_immobilization_code (https://www.notion.so/statuses_immobilization_code-2d03e766c9018134919dd42cdb9c9148?pvs=21), last_updated_at (https://www.notion.so/last_updated_at-2d03e766c90181f0a2c1d615f9506341?pvs=21)",The timestamp when the immobilization status last changed. Used to track how long the asset has been in its current immobilization state.,status.statuses.immobilization.last_changed_at,calculated,status.statuses_immobilization_last_changed_at from Navixy (https://www.notion.so/status-statuses_immobilization_last_changed_at-from-Navixy-2d13e766c90181d485e6f3f97378e8f6?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,"live.asset.details, live.assets.list"
+statuses_engine_code,status,"Calculated: derive from statuses_engine_compatible and ignition_value using derive_statuses_engine_code function. Prerequisites: Check statuses_engine_compatible (must be true). If false, return null (engine status not applicable). If true, check ignition state: If ignition_value = true (ON) ? ""running"". If ignition_value = false (OFF) ? ""standby"". If ignition_value is null or unavailable, return null. Engine status is based on ignition state for compatible assets. The ignition_value field already handles reading from the correct input based on installation metadata (ignition_input_number), with fallback to input 1 if metadata unavailable.
+
+Pseudo code:
+if (!statuses_engine_compatible) {
+return null  // Engine status not applicable
+}
+if (ignition_value === true) {
+return ""running""
+} else if (ignition_value === false) {
+return ""standby""
+} else {
+return null  // Ignition state unavailable
+}","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_statuses_engine_code"",
+""parameters"": {
+""fleeti"": [
+""statuses_engine_compatible"",
+""ignition_value""
+]
+}
+}",string,"statuses_engine_last_changed_at (https://www.notion.so/statuses_engine_last_changed_at-2d03e766c9018101bcd9efe26fa1381b?pvs=21), statuses_engine_compatible (https://www.notion.so/statuses_engine_compatible-2d03e766c901812ea7ddcd14941e2836?pvs=21), ignition_value (https://www.notion.so/ignition_value-2d03e766c9018133b8f7c56f5b8a2191?pvs=21), top_status_code (https://www.notion.so/top_status_code-2d03e766c9018143a851d71781813b82?pvs=21), top_status_family (https://www.notion.so/top_status_family-2d03e766c901818ba2a2df0c5e1c6ee3?pvs=21)",Shows if the engine is currently running or in standby. This is based on the ignition state for compatible assets.,status.statuses.engine.code,calculated,status.statuses_engine_code from Navixy (https://www.notion.so/status-statuses_engine_code-from-Navixy-2d13e766c901819a9bd1e6cf3c35b1fd?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,"live.asset.details, live.assets.list, live.map.markers"
+statuses_engine_compatible,status,"Calculated: derive using derive_statuses_engine_compatible function. Function calls Asset Service to retrieve asset_type and asset_subtype. Check asset type/subtype against compatibility matrix (Engine: Equipment.ElectricGenerator, Vehicle.Agricultural, Vehicle.Machine only). Equipment: Only Equipment.ElectricGenerator supports engine status. Vehicles: Only Vehicle.Agricultural and Vehicle.Machine support engine status. Sites: No (all subtypes). Phones: No (all subtypes). Return true if asset type/subtype is compatible, false otherwise.
+
+Pseudo code:
+asset_type = asset_service.get_asset_type(asset_id)
+asset_subtype = asset_service.get_asset_subtype(asset_id)
+if (asset_type === Equipment && asset_subtype === ElectricGenerator) {
+return true
+} else if (asset_type === Vehicle && (asset_subtype === Agricultural || asset_subtype === Machine)) {
+return true
+} else {
+return false
+}","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_statuses_engine_compatible"",
+""parameters"": {
+""fleeti"": []
+}
+}",boolean,statuses_engine_code (https://www.notion.so/statuses_engine_code-2d03e766c901819dbed7deab2cca5926?pvs=21),"Indicates if this asset type (e.g., Electric Generator, Agricultural Vehicle) is designed to report engine status.",status.statuses.engine.compatible,calculated,status.statuses_engine_compatible from Navixy (https://www.notion.so/status-statuses_engine_compatible-from-Navixy-2d13e766c9018131b4d2f2506bfabc79?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,"live.asset.details, live.assets.list"
+statuses_engine_last_changed_at,status,"Calculated: derive from statuses_engine_code and last_updated_at using derive_statuses_engine_last_changed_at function. Updates when status family code changes (not on every packet). Backend compares current statuses_engine_code with previous value. If different, update timestamp to last_updated_at (from telemetry packet). If same, keep previous timestamp unchanged. Used to calculate duration of current engine status (e.g., ""running for 2h"", ""standby since yesterday""). Enables engine duration tracking and timeline features.
+
+Pseudo code:
+if (current_statuses_engine_code !== previous_statuses_engine_code) {
+statuses_engine_last_changed_at = last_updated_at  // Use timestamp from telemetry packet
+} else {
+statuses_engine_last_changed_at = previous_statuses_engine_last_changed_at  // keep unchanged
+}","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_statuses_engine_last_changed_at"",
+""parameters"": {
+""fleeti"": [
+""statuses_engine_code"",
+""last_updated_at""
+]
+}
+}",datetime,"statuses_engine_code (https://www.notion.so/statuses_engine_code-2d03e766c901819dbed7deab2cca5926?pvs=21), last_updated_at (https://www.notion.so/last_updated_at-2d03e766c90181f0a2c1d615f9506341?pvs=21)","The timestamp when the engine status last changed (e.g., from running to standby). Used to track engine activity duration.",status.statuses.engine.last_changed_at,calculated,status.statuses_engine_last_changed_at from Navixy (https://www.notion.so/status-statuses_engine_last_changed_at-from-Navixy-2d13e766c90181b09d9cf991e8af13ed?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,"live.asset.details, live.assets.list"
+statuses_transit_code,status,"Calculated: derive from statuses_transit_compatible, ignition_value, is_moving_value, and speed using derive_statuses_transit_code function. Prerequisites: Check statuses_transit_compatible (must be true). If false, return null (transit status not applicable). Uses state machine with ignition triggers and movement/speed conditions. Immediate transitions: Ignition OFF → ON: → ""in_transit"" (immediate). Ignition ON → OFF: → ""parked"" (immediate). Duration-based transitions: IN_TRANSIT → PARKED: (movement = false OR speed = 0) for 3 minutes → ""parked"". PARKED → IN_TRANSIT: (movement = true OR speed > 0.5 km/h) → ""in_transit"" (immediate). Initial state: If ignition = true OR (movement = true OR speed > 0.5 km/h) → ""in_transit"". If (movement = false AND speed = 0) for 3 minutes → ""parked"". Default → ""in_transit"" (conservative). Speed threshold: 0.5 km/h (filters GPS drift). Parked detection duration: 3 minutes (180 seconds). Ignition state only used when true (ignition ON); false or null = unavailable. Backend must track current Transit Status to apply transition rules. If movement_status and speed are unavailable, maintain current status (no transition).
+
+Pseudo code:
+if (!statuses_transit_compatible) {
+return null  // Transit status not applicable
+}
+// Immediate ignition transitions
+if (previous_ignition_value === false && ignition_value === true) {
+return ""in_transit""  // Ignition OFF → ON
+}
+if (previous_ignition_value === true && ignition_value === false) {
+return ""parked""  // Ignition ON → OFF
+}
+// State machine logic (requires backend state tracking)
+current_state = getPreviousTransitStatus()  // Backend tracks state
+if (current_state === ""in_transit"") {
+if ((is_moving_value === false || is_moving_value === 0) && (speed === null || speed === 0)) {
+if (durationInState >= 3 minutes) {
+return ""parked""
+}
+}
+} else if (current_state === ""parked"") {
+if (is_moving_value === true || is_moving_value === 1 || (speed !== null && speed > 0.5)) {
+return ""in_transit""
+}
+} else {
+// Initial state
+if (ignition_value === true || is_moving_value === true || (speed !== null && speed > 0.5)) {
+return ""in_transit""
+} else if ((is_moving_value === false || is_moving_value === 0) && (speed === null || speed === 0)) {
+if (durationInState >= 3 minutes) {
+return ""parked""
+}
+}
+return ""in_transit""  // Default conservative
+}","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_statuses_transit_code"",
+""parameters"": {
+""fleeti"": [
+""statuses_transit_compatible"",
+""ignition_value"",
+""is_moving_value"",
+""speed""
+]
+}
+}",string,"statuses_transit_last_changed_at (https://www.notion.so/statuses_transit_last_changed_at-2d03e766c9018160aedafc7a2e1b8528?pvs=21), statuses_transit_compatible (https://www.notion.so/statuses_transit_compatible-2d03e766c90181d6adeee4b875a82dc3?pvs=21), ignition_value (https://www.notion.so/ignition_value-2d03e766c9018133b8f7c56f5b8a2191?pvs=21), is_moving_value (https://www.notion.so/is_moving_value-2d03e766c90181ad9c30c74cd862e17c?pvs=21), speed (https://www.notion.so/speed-2d03e766c901815da497ea0c01239cc8?pvs=21), top_status_family (https://www.notion.so/top_status_family-2d03e766c901818ba2a2df0c5e1c6ee3?pvs=21), top_status_code (https://www.notion.so/top_status_code-2d03e766c9018143a851d71781813b82?pvs=21)","Indicates if the asset is currently moving ('in_transit') or stopped ('parked'), based on ignition, speed, and movement data.",status.statuses.transit.code,calculated,status.statuses_transit_code from Navixy (https://www.notion.so/status-statuses_transit_code-from-Navixy-2d13e766c90181e4a4c9c2423a7b7b7c?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,"live.asset.details, live.assets.list, live.map.markers"
+statuses_transit_compatible,status,"Calculated: derive using derive_statuses_transit_compatible function. Function calls Asset Service to retrieve asset_type and asset_subtype. Check asset type/subtype against compatibility matrix (Transit: Phone all subtypes, Equipment.Undefined, All Vehicle subtypes except excluded). Supported: Phone (all subtypes), Equipment.Undefined, All Vehicle subtypes (except those explicitly excluded). NOT supported: Site.Undefined, Site.Coldroom, Equipment.FuelTank, Equipment.ElectricGenerator. Return true if asset type/subtype is compatible, false otherwise.
+
+Pseudo code:
+asset_type = asset_service.get_asset_type(asset_id)
+asset_subtype = asset_service.get_asset_subtype(asset_id)
+if (asset_type === Site) {
+return false  // Sites not supported
+} else if (asset_type === Phone) {
+return true  // All phone subtypes supported
+} else if (asset_type === Equipment) {
+if (asset_subtype === Undefined) {
+return true
+} else {
+return false  // Equipment.FuelTank and Equipment.ElectricGenerator not supported
+}
+} else if (asset_type === Vehicle) {
+return true  // All vehicle subtypes supported (except those explicitly excluded in matrix)
+} else {
+return false
+}","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_statuses_transit_compatible"",
+""parameters"": {
+""fleeti"": []
+}
+}",boolean,statuses_transit_code (https://www.notion.so/statuses_transit_code-2d03e766c90181fe92d0e5e6f5f074d1?pvs=21),"Indicates if this asset type (e.g., Phone, Vehicle) is designed to report transit status (moving/parked).",status.statuses.transit.compatible,calculated,status.statuses_transit_compatible from Navixy (https://www.notion.so/status-statuses_transit_compatible-from-Navixy-2d13e766c901813f9693c5f1c493bb3b?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,"live.asset.details, live.assets.list"
+statuses_transit_last_changed_at,status,"Calculated: derive from statuses_transit_code and last_updated_at using derive_statuses_transit_last_changed_at function. Updates when status family code changes (not on every packet). Backend compares current statuses_transit_code with previous value. If different, update timestamp to last_updated_at (from telemetry packet). If same, keep previous timestamp unchanged. Used to calculate duration of current transit status (e.g., ""parked for 2h"", ""in_transit since 10:30""). Enables transit duration tracking and timeline features.
+
+Pseudo code:
+if (current_statuses_transit_code !== previous_statuses_transit_code) {
+statuses_transit_last_changed_at = last_updated_at  // Use timestamp from telemetry packet
+} else {
+statuses_transit_last_changed_at = previous_statuses_transit_last_changed_at  // keep unchanged
+}","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_statuses_transit_last_changed_at"",
+""parameters"": {
+""fleeti"": [
+""statuses_transit_code"",
+""last_updated_at""
+]
+}
+}",datetime,"statuses_transit_code (https://www.notion.so/statuses_transit_code-2d03e766c90181fe92d0e5e6f5f074d1?pvs=21), last_updated_at (https://www.notion.so/last_updated_at-2d03e766c90181f0a2c1d615f9506341?pvs=21)","The timestamp when the transit status last changed (e.g., from parked to in_transit). Used to track how long the asset has been moving or stopped.",status.statuses.transit.last_changed_at,calculated,status.statuses_transit_last_changed_at from Navixy (https://www.notion.so/status-statuses_transit_last_changed_at-from-Navixy-2d13e766c90181d18721c0c6709594bd?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,"live.asset.details, live.assets.list"
+ignition_value,power,"Calculated: derive from asset_installation_ignition_input_number, inputs_individual_input_1, inputs_individual_input_2, inputs_individual_input_3, and inputs_individual_input_4 using derive_ignition_value function. Read ignition input number from asset.installation.ignition_input_number (default to 1 if not specified). Read digital input state from the corresponding individual input field: inputs_individual_input_1 (if ignition_input_number = 1), inputs_individual_input_2 (if ignition_input_number = 2), inputs_individual_input_3 (if ignition_input_number = 3), or inputs_individual_input_4 (if ignition_input_number = 4). If ignition_input_number is not available, fallback to inputs_individual_input_1. If anything else fails, return null. This is the primary ignition field used by the rest of the Fleeti system for status computation and business logic.
+
+Pseudo code:
+ignition_input_number = asset_installation_ignition_input_number || 1  // default to 1
+ignition_state = null
+if (ignition_input_number === 1) {
+ignition_state = inputs_individual_input_1
+} else if (ignition_input_number === 2) {
+ignition_state = inputs_individual_input_2
+} else if (ignition_input_number === 3) {
+ignition_state = inputs_individual_input_3
+} else if (ignition_input_number === 4) {
+ignition_state = inputs_individual_input_4
+} else {
+ignition_state = inputs_individual_input_1  // invalid input number, fallback
+}
+return ignition_state","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_ignition_value"",
+""parameters"": {
+""fleeti"": [
+""inputs_individual_input_1"",
+""inputs_individual_input_2"",
+""inputs_individual_input_3"",
+""inputs_individual_input_4""
+]
+}
+}",boolean,"inputs_individual_input_1 (https://www.notion.so/inputs_individual_input_1-2d03e766c90181a09897d0d06a86957c?pvs=21), inputs_individual_input_2 (https://www.notion.so/inputs_individual_input_2-2d03e766c90181dd9789d27137cdc03e?pvs=21), inputs_individual_input_3 (https://www.notion.so/inputs_individual_input_3-2d03e766c901813bbee0c3fa3064ee2e?pvs=21), inputs_individual_input_4 (https://www.notion.so/inputs_individual_input_4-2d03e766c9018143b9d6ebca8bb7987a?pvs=21), ignition_last_changed_at (https://www.notion.so/ignition_last_changed_at-2d03e766c90181a49a77dd7fc5395679?pvs=21), statuses_transit_code (https://www.notion.so/statuses_transit_code-2d03e766c90181fe92d0e5e6f5f074d1?pvs=21), statuses_engine_code (https://www.notion.so/statuses_engine_code-2d03e766c901819dbed7deab2cca5926?pvs=21)",Whether the ignition is on or off. This is the main ignition status used throughout the system for determining engine status and other features.,power.ignition.value,calculated,power.ignition_value from Navixy (https://www.notion.so/power-ignition_value-from-Navixy-2d13e766c90181cd8ff9cd9d7f35948b?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,live.asset.details
+ignition_last_changed_at,power,"Calculated: derive from ignition_value and last_updated_at using derive_ignition_last_changed_at function. Updates when ignition state changes (not on every packet). Backend compares current ignition_value with previous value. If different, update timestamp to last_updated_at (from telemetry packet). If same, keep previous timestamp unchanged. Used to calculate duration of current ignition state (e.g., ""ignition on for 2h"", ""ignition off since yesterday""). Enables ignition duration tracking and timeline features.
+
+Pseudo code:
+if (current_ignition_value !== previous_ignition_value) {
+ignition_last_changed_at = last_updated_at  // Use timestamp from telemetry packet
+} else {
+ignition_last_changed_at = previous_ignition_last_changed_at  // keep unchanged
+}","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_ignition_last_changed_at"",
+""parameters"": {
+""fleeti"": [
+""ignition_value"",
+""last_updated_at""
+]
+}
+}",datetime,"last_updated_at (https://www.notion.so/last_updated_at-2d03e766c90181f0a2c1d615f9506341?pvs=21), ignition_value (https://www.notion.so/ignition_value-2d03e766c9018133b8f7c56f5b8a2191?pvs=21)",The timestamp when the ignition state last changed. Used to track how long the ignition has been on or off.,power.ignition.last_changed_at,calculated,power.ignition_last_changed_at from Navixy (https://www.notion.so/power-ignition_last_changed_at-from-Navixy-2d13e766c901815bb010d541967df9c3?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,live.asset.details
+inputs_individual_input_1,io,"Prioritized: calculated using extract_bit_from_bitmask function from inputs (priority 1), then Navixy avl_io_1 (path: params.avl_io_1, priority 2) - Digital Input 1 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., ignition, door sensor) is defined in asset.installation.* metadata. Used to compute canonical fields like power.ignition.
+
+Pseudo code:
+if (inputs bitmask is available) {
+io_input_1 = extractBit(inputs, 0)  // extract bit 0 from Digital Inputs Bitmask at root level
+} else if (avl_io_1 is available) {
+io_input_1 = avl_io_1  // fallback: direct mapping from params.avl_io_1
+} else {
+io_input_1 = null
+}","{
+""type"": ""prioritized"",
+""sources"": [
+{
+""priority"": 1,
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""extract_bit_from_bitmask"",
+""parameters"": {
+""provider"": {
+""navixy"": ""inputs""
+}
+}
+},
+{
+""priority"": 2,
+""field"": ""avl_io_1"",
+""path"": ""params.avl_io_1""
+}
+]
+}",boolean,ignition_value (https://www.notion.so/ignition_value-2d03e766c9018133b8f7c56f5b8a2191?pvs=21),"The state of digital input 1 on the device. Can be used for various sensors like ignition, door sensors, or alarms, depending on how it's wired.",io.inputs.individual.input_1,mix,io.inputs_individual_input_1 from Navixy (https://www.notion.so/io-inputs_individual_input_1-from-Navixy-2d13e766c90181588029d077d2cec1d4?pvs=21),,"avl_io_1 (https://www.notion.so/avl_io_1-2c73e766c901814f9dcbf5c2ac494145?pvs=21), inputs (https://www.notion.so/inputs-2ce3e766c9018097a7d5fd4e7aa35f3e?pvs=21)","params.avl_io_1,inputs",-,/telemetry (FLEETI),inactive,none,1.0.0,
+inputs_individual_input_2,io,"Prioritized: calculated using extract_bit_from_bitmask function from inputs (priority 1), then Navixy avl_io_2 (path: params.avl_io_2, priority 2) - Digital Input 2 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., door sensor, alarm) is defined in asset.installation.* metadata. Used to compute canonical fields.
+
+Pseudo code:
+if (inputs bitmask is available) {
+io_input_2 = extractBit(inputs, 1)  // extract bit 1 from Digital Inputs Bitmask at root level
+} else if (avl_io_2 is available) {
+io_input_2 = avl_io_2  // fallback: direct mapping from params.avl_io_2
+} else {
+io_input_2 = null
+}","{
+""type"": ""prioritized"",
+""sources"": [
+{
+""priority"": 1,
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""extract_bit_from_bitmask"",
+""parameters"": {
+""provider"": {
+""navixy"": ""inputs""
+}
+}
+},
+{
+""priority"": 2,
+""field"": ""avl_io_2"",
+""path"": ""params.avl_io_2""
+}
+]
+}",boolean,ignition_value (https://www.notion.so/ignition_value-2d03e766c9018133b8f7c56f5b8a2191?pvs=21),The state of digital input 2 on the device. Can be used for various sensors depending on installation.,io.inputs.individual.input_2,mix,io.inputs_individual_input_2 from Navixy (https://www.notion.so/io-inputs_individual_input_2-from-Navixy-2d13e766c90181a8a872cd49999e8caa?pvs=21),,"inputs (https://www.notion.so/inputs-2ce3e766c9018097a7d5fd4e7aa35f3e?pvs=21), avl_io_2 (https://www.notion.so/avl_io_2-2c73e766c90181e8ae95f95023307220?pvs=21)","inputs,params.avl_io_2",-,/telemetry (FLEETI),inactive,none,1.0.0,
+inputs_individual_input_3,io,"Prioritized: calculated using extract_bit_from_bitmask function from inputs (priority 1), then Navixy avl_io_3 (path: params.avl_io_3, priority 2) - Digital Input 3 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., door sensor, alarm) is defined in asset.installation.* metadata. Used to compute canonical fields.
+
+Pseudo code:
+if (inputs bitmask is available) {
+io_input_3 = extractBit(inputs, 2)  // extract bit 2 from Digital Inputs Bitmask at root level
+} else if (avl_io_3 is available) {
+io_input_3 = avl_io_3  // fallback: direct mapping from params.avl_io_3
+} else {
+io_input_3 = null
+}","{
+""type"": ""prioritized"",
+""sources"": [
+{
+""priority"": 1,
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""extract_bit_from_bitmask"",
+""parameters"": {
+""provider"": {
+""navixy"": ""inputs""
+}
+}
+},
+{
+""priority"": 2,
+""field"": ""avl_io_3"",
+""path"": ""params.avl_io_3""
+}
+]
+}",boolean,ignition_value (https://www.notion.so/ignition_value-2d03e766c9018133b8f7c56f5b8a2191?pvs=21),The state of digital input 3 on the device. Can be used for various sensors depending on installation.,io.inputs.individual.input_3,mix,io.inputs_individual_input_3 from Navixy (https://www.notion.so/io-inputs_individual_input_3-from-Navixy-2d13e766c9018181946de148a0060234?pvs=21),,"avl_io_3 (https://www.notion.so/avl_io_3-2c73e766c90181629a04dc0e128e13b7?pvs=21), inputs (https://www.notion.so/inputs-2ce3e766c9018097a7d5fd4e7aa35f3e?pvs=21)","params.avl_io_3,inputs",-,/telemetry (FLEETI),inactive,none,1.0.0,
+inputs_individual_input_4,io,"Prioritized: calculated using extract_bit_from_bitmask function from inputs (priority 1), then Navixy avl_io_4 (path: params.avl_io_4, priority 2) - Digital Input 4 state (also functions as pulse counter). Values: 0 = low/inactive, 1 = high/active. Pulse count resets when records are saved. Semantic meaning (e.g., door sensor, alarm) is defined in asset.installation.* metadata. Used to compute canonical fields.
+
+Pseudo code:
+if (inputs bitmask is available) {
+io_input_4 = extractBit(inputs, 3)  // extract bit 3 from Digital Inputs Bitmask at root level
+} else if (avl_io_4 is available) {
+io_input_4 = avl_io_4  // fallback: direct mapping from params.avl_io_4
+} else {
+io_input_4 = null
+}","{
+""type"": ""prioritized"",
+""sources"": [
+{
+""priority"": 1,
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""extract_bit_from_bitmask"",
+""parameters"": {
+""provider"": {
+""navixy"": ""inputs""
+}
+}
+},
+{
+""priority"": 2,
+""field"": ""avl_io_4"",
+""path"": ""params.avl_io_4""
+}
+]
+}",boolean,ignition_value (https://www.notion.so/ignition_value-2d03e766c9018133b8f7c56f5b8a2191?pvs=21),"The state of digital input 4 on the device. Can be used for various sensors or as a pulse counter, depending on installation.",io.inputs.individual.input_4,mix,io.inputs_individual_input_4 from Navixy (https://www.notion.so/io-inputs_individual_input_4-from-Navixy-2d13e766c901816e90e2e8e68dad7f6a?pvs=21),Flespi doc mention AVL 4 can also refere to COUNTER IMPULSES COUNTER,"inputs (https://www.notion.so/inputs-2ce3e766c9018097a7d5fd4e7aa35f3e?pvs=21), avl_io_4 (https://www.notion.so/avl_io_4-2c73e766c901813eb2cced0ac1468329?pvs=21)","inputs,params.avl_io_4",-,/telemetry (FLEETI),inactive,none,1.0.0,
+outputs_individual_output_1,io,"Prioritized: calculated using extract_bit_from_bitmask function from outputs (priority 1), then Navixy avl_io_179 (path: params.avl_io_179, priority 2) - Digital Output 1 state. Values: 0 = inactive, 1 = active. Semantic meaning (e.g., immobilizer relay) is defined in asset.installation.* metadata. Used for immobilization control and status computation.
+
+Pseudo code:
+if (outputs bitmask is available) {
+io_output_1 = extractBit(outputs, 0)  // extract bit 0 from Output Status Bitmask at root level
+} else if (avl_io_179 is available) {
+io_output_1 = avl_io_179  // fallback: direct mapping from params.avl_io_179
+} else {
+io_output_1 = null
+}","{
+""type"": ""prioritized"",
+""sources"": [
+{
+""priority"": 1,
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""extract_bit_from_bitmask"",
+""parameters"": {
+""provider"": {
+""navixy"": ""outputs""
+}
+}
+},
+{
+""priority"": 2,
+""field"": ""avl_io_179"",
+""path"": ""params.avl_io_179""
+}
+]
+}",boolean,statuses_immobilization_code (https://www.notion.so/statuses_immobilization_code-2d03e766c9018134919dd42cdb9c9148?pvs=21),"The state of digital output 1 on the device. Often used for immobilizer control or other relay functions, depending on installation.",io.outputs.individual.output_1,mix,io.outputs_individual_output_1 from Navixy (https://www.notion.so/io-outputs_individual_output_1-from-Navixy-2d13e766c90181118a5fc7c9d13fc84e?pvs=21),,"outputs (https://www.notion.so/outputs-2c73e766c901818d8a65d6eddebb8fb1?pvs=21), avl_io_179 (https://www.notion.so/avl_io_179-2c73e766c9018171993fe7d4b3e76377?pvs=21)","outputs,params.avl_io_179",-,/telemetry (FLEETI),inactive,none,1.0.0,
+outputs_individual_output_2,io,"Prioritized: calculated using extract_bit_from_bitmask function from outputs (priority 1), then Navixy avl_io_180 (path: params.avl_io_180, priority 2) - Digital Output 2 state. Values: 0 = inactive, 1 = active. Semantic meaning (e.g., immobilizer relay) is defined in asset.installation.* metadata. Used for immobilization control and status computation.
+
+Pseudo code:
+if (outputs bitmask is available) {
+io_output_2 = extractBit(outputs, 1)  // extract bit 1 from Output Status Bitmask at root level
+} else if (avl_io_180 is available) {
+io_output_2 = avl_io_180  // fallback: direct mapping from params.avl_io_180
+} else {
+io_output_2 = null
+}","{
+""type"": ""prioritized"",
+""sources"": [
+{
+""priority"": 1,
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""extract_bit_from_bitmask"",
+""parameters"": {
+""provider"": {
+""navixy"": ""outputs""
+}
+}
+},
+{
+""priority"": 2,
+""field"": ""avl_io_180"",
+""path"": ""params.avl_io_180""
+}
+]
+}",boolean,statuses_immobilization_code (https://www.notion.so/statuses_immobilization_code-2d03e766c9018134919dd42cdb9c9148?pvs=21),"The state of digital output 2 on the device. Often used for immobilizer control or other relay functions, depending on installation.",io.outputs.individual.output_2,mix,io.outputs_individual_output_2 from Navixy (https://www.notion.so/io-outputs_individual_output_2-from-Navixy-2d13e766c901816785c6e8bf4abd230a?pvs=21),,"outputs (https://www.notion.so/outputs-2c73e766c901818d8a65d6eddebb8fb1?pvs=21), avl_io_180 (https://www.notion.so/avl_io_180-2c73e766c9018194b3b1d08c7f2d4b1b?pvs=21)","outputs,params.avl_io_180",-,/telemetry (FLEETI),inactive,none,1.0.0,
+outputs_individual_output_3,io,"Prioritized: calculated using extract_bit_from_bitmask function from outputs (priority 1), then Navixy avl_io_380 (path: params.avl_io_380, priority 2) - Digital Output 3 state. Values: 0 = inactive, 1 = active. Semantic meaning (e.g., immobilizer relay) is defined in asset.installation.* metadata. Used for immobilization control and status computation.
+
+Pseudo code:
+if (outputs bitmask is available) {
+io_output_3 = extractBit(outputs, 2)  // extract bit 2 from Output Status Bitmask at root level
+} else if (avl_io_380 is available) {
+io_output_3 = avl_io_380  // fallback: direct mapping from params.avl_io_380
+} else {
+io_output_3 = null
+}","{
+""type"": ""prioritized"",
+""sources"": [
+{
+""priority"": 1,
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""extract_bit_from_bitmask"",
+""parameters"": {
+""provider"": {
+""navixy"": ""outputs""
+}
+}
+},
+{
+""priority"": 2,
+""field"": ""avl_io_380"",
+""path"": ""params.avl_io_380""
+}
+]
+}",boolean,statuses_immobilization_code (https://www.notion.so/statuses_immobilization_code-2d03e766c9018134919dd42cdb9c9148?pvs=21),"The state of digital output 3 on the device. Often used for immobilizer control or other relay functions, depending on installation.",io.outputs.individual.output_3,mix,io.outputs_individual_output_3 from Navixy (https://www.notion.so/io-outputs_individual_output_3-from-Navixy-2d13e766c9018199a834d2c9a78f491a?pvs=21),AVL 380 seems to be associated in Flespi doc with “Manual CAN” and “Manual CAN HEX”,"outputs (https://www.notion.so/outputs-2c73e766c901818d8a65d6eddebb8fb1?pvs=21), avl_io_380 (https://www.notion.so/avl_io_380-2c73e766c90181178655f8f5b417d71b?pvs=21)","outputs,params.avl_io_380",-,/telemetry (FLEETI),inactive,none,1.0.0,
+movement_last_updated_at,motion,"Calculated: derive from is_moving_value, speed, and last_updated_at using derive_movement_last_updated_at function. Updates when motion-related Fleeti fields (is_moving_value or speed) are present. Set to last_updated_at when either is_moving_value or speed has a value. Indicates when motion data was last updated. Updates on every packet that contains motion data.
+
+Pseudo code:
+if (is_moving_value !== null || speed !== null) {
+movement_last_updated_at = last_updated_at  // Use root-level last_updated_at timestamp
+} else {
+movement_last_updated_at = null  // no motion data available
+}","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_movement_last_updated_at"",
+""parameters"": {
+""fleeti"": [
+""is_moving_value"",
+""speed"",
+""last_updated_at""
+]
+}
+}",datetime,"is_moving_value (https://www.notion.so/is_moving_value-2d03e766c90181ad9c30c74cd862e17c?pvs=21), speed (https://www.notion.so/speed-2d03e766c901815da497ea0c01239cc8?pvs=21), last_updated_at (https://www.notion.so/last_updated_at-2d03e766c90181f0a2c1d615f9506341?pvs=21)",The last time any movement-related data (like speed or 'is moving' status) was received from the device.,motion.last_updated_at,calculated,motion.movement_last_updated_at from Navixy (https://www.notion.so/motion-movement_last_updated_at-from-Navixy-2d13e766c90181a4a73eee85072e6146?pvs=21),,,,,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,live.asset.details
+speed,motion,"Prioritized: Navixy can_speed (path: params.can_speed, priority 1), then Navixy obd_speed (path: params.obd_speed, priority 2), then Navixy avl_io_24 (path: params.avl_io_24, priority 3), then Navixy speed (path: speed, priority 4), then Navixy avl_io_37 (path: params.avl_io_37, priority 5), then Navixy avl_io_81 (path: params.avl_io_81, priority 6) - Speed in km/h. GNSS Speed is the fallback. Use highest priority available source.","{
+""type"": ""prioritized"",
+""sources"": [
+{
+""priority"": 1,
+""field"": ""can_speed"",
+""path"": ""params.can_speed""
+},
+{
+""priority"": 2,
+""field"": ""obd_speed"",
+""path"": ""params.obd_speed""
+},
+{
+""priority"": 3,
+""field"": ""avl_io_24"",
+""path"": ""params.avl_io_24""
+},
+{
+""priority"": 4,
+""field"": ""speed"",
+""path"": ""speed""
+},
+{
+""priority"": 5,
+""field"": ""avl_io_37"",
+""path"": ""params.avl_io_37""
+},
+{
+""priority"": 6,
+""field"": ""avl_io_81"",
+""path"": ""params.avl_io_81""
+}
+]
+}",number,"movement_last_updated_at (https://www.notion.so/movement_last_updated_at-2d03e766c90181708a1bc787847e6c67?pvs=21), statuses_transit_code (https://www.notion.so/statuses_transit_code-2d03e766c90181fe92d0e5e6f5f074d1?pvs=21)","The current speed of the asset in kilometers per hour (km/h), using the most reliable source available.",motion.speed.value,prioritized,motion.speed from Navixy (https://www.notion.so/motion-speed-from-Navixy-2d13e766c90181c699fdde42374787c5?pvs=21),"AVL 37 stands for can.fuel.level and can.vehicle.speed. Further investigation should be made to make sure it is speed.
+AVL 81 stands also for can.cruise.control and can.vehicule.speed.","can_speed (https://www.notion.so/can_speed-2c73e766c9018127b9ddf0a16ddaccd9?pvs=21), speed (https://www.notion.so/speed-2c73e766c90181829270d0e7b9080f3f?pvs=21), obd_speed (https://www.notion.so/obd_speed-2c73e766c90181fa976cf199e13e9231?pvs=21), avl_io_37 (https://www.notion.so/avl_io_37-2c73e766c90181dcbe63eec2c78d1d27?pvs=21), avl_io_81 (https://www.notion.so/avl_io_81-2c73e766c901819cb0b9f557f555242b?pvs=21), avl_io_24 (https://www.notion.so/avl_io_24-2c73e766c901812ba0f4f839a0266ecd?pvs=21)","params.can_speed,speed,params.obd_speed,params.avl_io_37,params.avl_io_81,params.avl_io_24","km/h,km/h,km/h,km/h,km/h,km/h","/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,km/h,1.0.0,"live.asset.details, live.assets.list, live.map.markers"
+is_moving_value,motion,"Prioritized: Navixy avl_io_240 (path: params.avl_io_240, priority 1), then Navixy moving (path: params.moving, priority 2) - Movement status. Values: 0 = Movement Off, 1 = Movement On. Indicates whether the asset is currently moving.","{
+""type"": ""prioritized"",
+""sources"": [
+{
+""priority"": 1,
+""field"": ""avl_io_240"",
+""path"": ""params.avl_io_240""
+},
+{
+""priority"": 2,
+""field"": ""moving"",
+""path"": ""params.moving""
+}
+]
+}",number,"movement_last_updated_at (https://www.notion.so/movement_last_updated_at-2d03e766c90181708a1bc787847e6c67?pvs=21), statuses_transit_code (https://www.notion.so/statuses_transit_code-2d03e766c90181fe92d0e5e6f5f074d1?pvs=21), is_moving_last_updated_at (https://www.notion.so/is_moving_last_updated_at-2d03e766c9018119b691e68c4f1ec728?pvs=21)",Indicates whether the asset is currently moving (true) or stopped (false).,motion.is_moving.value,prioritized,motion.is_moving_value from Navixy (https://www.notion.so/motion-is_moving_value-from-Navixy-2d13e766c9018177a7eec9640fce6d8a?pvs=21),,"avl_io_240 (https://www.notion.so/avl_io_240-2c73e766c9018164bb21e8e204983540?pvs=21), moving (https://www.notion.so/moving-2c73e766c9018101ae38de6662e01b5a?pvs=21)","params.avl_io_240,params.moving",-,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,live.asset.details
+is_moving_last_updated_at,motion,"Calculated: derive from is_moving_value using derive_is_moving_last_updated_at function. Updates when movement status changes (not on every packet). Backend compares current is_moving_value with previous value. If different, update timestamp to current ISO8601 UTC time. If same, keep previous timestamp unchanged. Used to show ""vehicle stopped since X"" and calculate dwell times. Enables movement duration tracking and timeline features.
+
+Pseudo code:
+if (current_is_moving_value !== previous_is_moving_value) {
+is_moving_last_updated_at = last_updated_at;  // ISO8601 UTC timestamp
+} else {
+is_moving_last_updated_at = previous_is_moving_last_updated_at  // keep unchanged
+}","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_is_moving_last_updated_at"",
+""parameters"": {
+""fleeti"": [
+""is_moving_value"",
+""last_updated_at""
+]
+}
+}",datetime,"last_updated_at (https://www.notion.so/last_updated_at-2d03e766c90181f0a2c1d615f9506341?pvs=21), is_moving_value (https://www.notion.so/is_moving_value-2d03e766c90181ad9c30c74cd862e17c?pvs=21)",The timestamp when the asset's movement status (moving or stopped) last changed.,motion.is_moving.last_changed_at,calculated,motion.is_moving_last_updated_at from Navixy (https://www.notion.so/motion-is_moving_last_updated_at-from-Navixy-2d13e766c901815aac38d264fab13d30?pvs=21),,moving (https://www.notion.so/moving-2c73e766c9018101ae38de6662e01b5a?pvs=21),params.moving,-,"/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,live.asset.details
+geofences,metadata,"Calculated: derive from location_latitude and location_longitude using derive_geofences function. Calls Geofence Service to determine which geofences the asset is currently inside. Returns array of geofence objects with geofence_id and geofence_name. Supports overlapping geofences - asset can be in multiple geofences simultaneously.
+
+Pseudo code:
+coordinates = { lat: location_latitude, lng: location_longitude }
+geofences = geofenceService.getGeofencesAtLocation(coordinates, asset_id)
+return geofences.map(g => ({ geofence_id: g.id, geofence_name: g.name }))","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_geofences"",
+""parameters"": {
+""fleeti"": [
+""location_latitude"",
+""location_longitude""
+]
+}
+}",array,"location_latitude (https://www.notion.so/location_latitude-2ca3e766c9018183a4bee9dc39aca7e4?pvs=21), location_longitude (https://www.notion.so/location_longitude-2ca3e766c9018187a2d5f688c85c2e55?pvs=21)",Current geofences the asset is inside,geofences[],calculated,,,"lat (https://www.notion.so/lat-2c73e766c901812bb29fdd17260022c1?pvs=21), lng (https://www.notion.so/lng-2c73e766c90181908795d204fb2d7e0e?pvs=21)","lat,lng","degrees,degrees","/telemetry (CUSTOMER), /telemetry (FLEETI)",planned,none,1.0.0,"live.asset.details, live.assets.list"
+sensors.environment[],sensors,"# Computation Approach: Calculated: derive from asset.accessories[].sensors[] metadata and telemetry provider fields using derive_sensors_environment function. Function reads sensor configuration from asset metadata where each sensor has a provider_field array property listing which provider fields map to that sensor. Matches provider fields to sensors based on provider_field array in sensor metadata. Applies prioritized mapping with unit conversions and validation. If provider_field array is empty, fetches sensor configuration from Navixy API (GET https://api.navixy.com/v2/fsm/tracker/sensor/list) matching by sensor ID. Enriches provider fields with correspondences from matrix (maps processed Navixy fields to raw avl_io equivalents). Returns array of sensor objects with grouped measurements (temperature, humidity, battery) from same physical sensor.
+#
+# Backend Processing:
+# - Triggers function when any provider field listed above is present in telemetry packet
+# - Function receives full telemetry packet and reads relevant provider fields dynamically
+# - Function matches provider fields to sensors via asset.accessories[].sensors[] metadata
+#
+# Unit Conversion Rules:
+# - Temperature: Divide by 10 for raw avl_io (except avl_io_202 and avl_io_204)
+# - Humidity: Divide by 10 for raw avl_io (multiplier 0.1 per Teltonika spec)
+# - Battery: Already in percent, no division needed
+#
+# Validation Rules:
+# - Temperature: -120 to 120, exclude -128 (error)
+# - Humidity: 0-1000, exclude 65535, 65534, 65533 (error codes)
+# - Battery: 0-100, exclude -128 (error)
+#
+# Implementation Location: notion/2-documentation/1-specifications/1-databases/2-fleeti-fields/scripts/functions/derive_sensors_environment.js","{
+""type"": ""calculated"",
+""calculation_type"": ""function_reference"",
+""function"": ""derive_sensors_environment"",
+""parameters"": {
+""fleeti"": [],
+""provider"": {
+""navixy"": [
+""avl_io_202"",
+""avl_io_204"",
+""avl_io_72"",
+""avl_io_73"",
+""avl_io_74"",
+""avl_io_75"",
+""avl_io_25"",
+""avl_io_26"",
+""avl_io_27"",
+""avl_io_28"",
+""ext_temp_sensor_1"",
+""ext_temp_sensor_2"",
+""ext_temp_sensor_3"",
+""ext_temp_sensor_4"",
+""ble_temp_sensor_1"",
+""ble_temp_sensor_2"",
+""ble_temp_sensor_3"",
+""ble_temp_sensor_4"",
+""lls_temperature_1"",
+""lls_temperature_2"",
+""temp_sensor"",
+""avl_io_86"",
+""avl_io_104"",
+""avl_io_106"",
+""avl_io_108"",
+""ble_humidity_1"",
+""ble_humidity_2"",
+""ble_humidity_3"",
+""ble_humidity_4"",
+""humidity_1"",
+""humidity_2"",
+""avl_io_29"",
+""avl_io_20"",
+""avl_io_22"",
+""avl_io_23"",
+""ble_battery_level_1"",
+""ble_battery_level_2"",
+""ble_battery_level_3"",
+""ble_battery_level_4""
+]
+}
+}
+}",array,,"Array of environmental sensor readings (temperature, humidity, battery). Each entry represents one physical sensor/accessory. Sensor identity (id, name, position) and provider field mappings derived from asset.accessories[].sensors[] metadata. ",sensors.environment[],calculated,,A complex backend function should be called for this.,"avl_io_202 (https://www.notion.so/avl_io_202-2c73e766c90181bba3efd981fde81f5d?pvs=21), avl_io_204 (https://www.notion.so/avl_io_204-2c73e766c901819d9e86f49d9fcfc1dc?pvs=21), avl_io_72 (https://www.notion.so/avl_io_72-2c73e766c9018162abe4ce5ec7274004?pvs=21), avl_io_73 (https://www.notion.so/avl_io_73-2c73e766c9018122a5a6d9f7d09efe95?pvs=21), avl_io_25 (https://www.notion.so/avl_io_25-2c73e766c9018140a474f4289a69d49c?pvs=21), avl_io_26 (https://www.notion.so/avl_io_26-2c73e766c90181dc8bcffc8924558497?pvs=21), avl_io_27 (https://www.notion.so/avl_io_27-2c73e766c90181a2ac4fca547a3fb907?pvs=21), avl_io_28 (https://www.notion.so/avl_io_28-2c73e766c9018133a4dffe45618c99ed?pvs=21), ext_temp_sensor_1 (https://www.notion.so/ext_temp_sensor_1-2c73e766c90181c08443cf9e6b61458b?pvs=21), ext_temp_sensor_2 (https://www.notion.so/ext_temp_sensor_2-2c73e766c90181f593d1fd04c7e371a8?pvs=21), ext_temp_sensor_3 (https://www.notion.so/ext_temp_sensor_3-2c73e766c90181a6981ac73c5410b3be?pvs=21), temp_sensor (https://www.notion.so/temp_sensor-2c73e766c901810ca963d988b6a7ec34?pvs=21), ble_temp_sensor_2 (https://www.notion.so/ble_temp_sensor_2-2c73e766c90181c5b066ed13aaa01410?pvs=21), ble_temp_sensor_3 (https://www.notion.so/ble_temp_sensor_3-2c73e766c901816e84fee05d50c802cc?pvs=21), ble_temp_sensor_4 (https://www.notion.so/ble_temp_sensor_4-2c73e766c90181769b2ee387612bf244?pvs=21), ble_temp_sensor_1 (https://www.notion.so/ble_temp_sensor_1-2c73e766c901814892def7b04e169a56?pvs=21), lls_temperature_1 (https://www.notion.so/lls_temperature_1-2c73e766c9018118a68ac366a1a7e417?pvs=21), lls_temperature_2 (https://www.notion.so/lls_temperature_2-2c73e766c9018133bcd5c7107c9c3b30?pvs=21), avl_io_86 (https://www.notion.so/avl_io_86-2c73e766c90181979e45d928b79b9681?pvs=21), avl_io_104 (https://www.notion.so/avl_io_104-2c73e766c90181eebb88df4b9f0b4d61?pvs=21), avl_io_106 (https://www.notion.so/avl_io_106-2c73e766c90181079e97f9453d0c3748?pvs=21), avl_io_108 (https://www.notion.so/avl_io_108-2c73e766c901813a8a58d339b0bd7baf?pvs=21), humidity_1 (https://www.notion.so/humidity_1-2c73e766c901815990d7d20afa42c2e2?pvs=21), humidity_2 (https://www.notion.so/humidity_2-2c73e766c901815dbcaaf38e4e7c3c6e?pvs=21), ble_humidity_1 (https://www.notion.so/ble_humidity_1-2c73e766c90181fcb10bc6f1a0c74db4?pvs=21), ble_humidity_2 (https://www.notion.so/ble_humidity_2-2c73e766c901810ea9a2ff6bae980fca?pvs=21), ble_humidity_3 (https://www.notion.so/ble_humidity_3-2c73e766c901818c8b4bd935eb2a2c69?pvs=21), ble_humidity_4 (https://www.notion.so/ble_humidity_4-2c73e766c90181a2b936e25ad459ac3e?pvs=21), avl_io_20 (https://www.notion.so/avl_io_20-2c73e766c90181ea8563e0194258c07f?pvs=21), avl_io_22 (https://www.notion.so/avl_io_22-2c73e766c9018139b96bee97d3006c9c?pvs=21), avl_io_23 (https://www.notion.so/avl_io_23-2c73e766c90181e1a6d2c9e10d4a322a?pvs=21), avl_io_74 (https://www.notion.so/avl_io_74-2d23e766c901802288eec1447e17f43c?pvs=21), avl_io_75 (https://www.notion.so/avl_io_75-2d23e766c90180fa8fefd78d42e15b9b?pvs=21), ext_temp_sensor_4 (https://www.notion.so/ext_temp_sensor_4-2d23e766c90180af9dd4ca2d0d98f5d1?pvs=21), avl_io_29 (https://www.notion.so/avl_io_29-2d23e766c901809d84ffd5bff1fd384f?pvs=21), ble_battery_level_1 (https://www.notion.so/ble_battery_level_1-2d23e766c901802e87e4ebf91c58f9a9?pvs=21)","params.avl_io_202,params.avl_io_204,params.avl_io_72,params.avl_io_73,params.avl_io_25,params.avl_io_26,params.avl_io_27,params.avl_io_28,params.ext_temp_sensor_1,params.ext_temp_sensor_2,params.ext_temp_sensor_3,params.temp_sensor,params.ble_temp_sensor_2,params.ble_temp_sensor_3,params.ble_temp_sensor_4,params.ble_temp_sensor_1,params.lls_temperature_1,params.lls_temperature_2,params.avl_io_86,params.avl_io_104,params.avl_io_106,params.avl_io_108,params.humidity_1,params.humidity_2,params.ble_humidity_1,params.ble_humidity_2,params.ble_humidity_3,params.ble_humidity_4,params.avl_io_20,params.avl_io_22,params.avl_io_23,params.avl_io_74,params.avl_io_75,params.ext_temp_sensor_4,params.avl_io_29,params.ble_battery_level_1","°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,%RH,%RH,%RH,%RH,%,%,%,%,%,%,%,°C,°C,°C,%,%","/telemetry (CUSTOMER), /telemetry (FLEETI)",inactive,none,1.0.0,"live.asset.details, live.assets.list"
