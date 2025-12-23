@@ -1,0 +1,18 @@
+﻿Name,Category,Computation Approach,Computation Structure JSON,Data Type,Description,Field Path,Field Type,Notes,Status,Unit,Version Added
+engine_hours_value,counters,,,number,Engine Hours counter.,counters.engine_hours.value,,,planned,hours,1.0.3
+engine_hours_last_updated_at,counters,,,datetime,Last time the Engine Hours counter has been updated.,counters.engine_hours.last_updated_at,,,planned,none,1.0.3
+odometer_value,counters,,,number,Odometer counter.,counters.odometer.value,,,planned,km,1.0.3
+odometer_last_updated_at,counters,,,datetime,Last time the odometer has been updated.,counters.odometer.last_updated_at,,,planned,none,1.0.3
+magnet[],sensors,,,array,"Array of magnet sensors value (id, label, state, last_changed_at, last_updated_at)",sensors.magnet,,,planned,none,1.0.3
+driver_name,driver,,,string,Driver's name.,driver.driver_name,,,planned,none,1.0.3
+driver_key,driver,,,string,Driver's authentication key.,driver.driver_key,,,planned,none,1.0.3
+dtc_codes,diagnostics,,,array,DTC Fault Code available through the CAN.,diagnostics.health.dtc_codes,,,planned,none,1.0.3
+remaining_range,power,,,number,Number of estimated kilometers remaining on the battery (EV).,power.ev.remaining_range,,,planned,km,1.0.3
+fuel_tank_level_value,fuel,,,number,Fuel Remaining in the tank (liters or percents).,fuel.tank_level.value,,,planned,"L,%",1.0.3
+fuel_tank_level_last_updated_at,fuel,,,datetime,Last time the fuel level has been updated.,fuel.tank_level.last_updated_at,,,planned,none,1.0.3
+fuel_consumption_cumulative,fuel,,,number,Total volume of fuel consumed.,fuel.consumption.cumulative,,,planned,L,1.0.3
+ongoing_trip_started_at,metadata,,,datetime,Start time of the ongoing trip.,trip.ongoing_trip.started_at,,,planned,none,1.0.3
+ongoing_trip_mileage,metadata,,,number,Mileage of the ongoing trip.,trip.ongoing_trip.mileage,,,planned,km,1.0.3
+ongoing_trip_start_address,metadata,,,string,Start address of the ongoing trip.,trip.ongoing_trip.start_address,,,planned,none,1.0.3
+ongoing_trip_current_address,metadata,,,string,Last location geocoded address of the ongoing trip.,trip.ongoing_trip.current_address,,,planned,none,1.0.3
+ongoing_trip_waypoints[],metadata,,,array,Array of waypoints of the ongoing trip (latitude and longitude).,trip.ongoing_trip.waypoints,,,planned,none,1.0.3

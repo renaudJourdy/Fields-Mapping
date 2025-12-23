@@ -6,7 +6,7 @@
 
 # Overview
 
-This WebSocket stream provides real-time marker updates for assets displayed on the live map. It delivers `top_status`, position, heading, and status information needed for marker rendering.
+This WebSocket stream provides real-time marker updates for assets displayed on the live map. It delivers position, heading, status, and motion information needed for marker rendering. The stream includes server-side clustering support, where assets are automatically grouped into clusters based on viewport and zoom level.
 
 ---
 
@@ -14,8 +14,8 @@ This WebSocket stream provides real-time marker updates for assets displayed on 
 
 - **Stream Name:** `live.map.markers`
 - **Version:** `v1`
-- **Purpose:** Real-time marker updates for live map display
-- **Frontend Use:** Marker rendering with status-based iconography
+- **Purpose:** Real-time marker updates for live map display with server-side clustering
+- **Frontend Use:** Marker rendering with status-based iconography and cluster visualization
 
 ---
 
@@ -30,31 +30,70 @@ This WebSocket stream provides real-time marker updates for assets displayed on 
 # Subscription
 
 **Client → Server:**
+
 ```json
 {
   "action": "subscribe",
   "stream": "live.map.markers",
   "version": "v1",
-  "viewport": {
-    "north": 14.68,
-    "south": 14.65,
-    "east": -17.05,
-    "west": -17.09
-  },
-  "zoom": 10,
-  "rate_limit_hz": 5
+  "params": {
+    "viewport": {
+      "bounds": [[-25.0, -20.0], [60.0, 70.0]],
+      "zoom": 5
+    },
+    "filters": {
+      "search": null
+    },
+    "rate_limit_hz": 2
+  }
 }
 ```
 
+**Viewport Structure:**
+- `bounds`: 2D array defining southwest and northeast corners `[[min_lat, min_lng], [max_lat, max_lng]]`
+- `zoom`: Integer zoom level (used by backend for clustering decisions)
+
+**Filters Structure:**
+- `search`: String or null - filters assets by metadata (name, group name, etc.)
+
+**Future Filters (not yet available):**
+- `group_ids`: array of integers - Restrict to specific asset groups
+- `customer_reference`: array of strings - Restrict to specific customer accounts
+- `country`: string - Restrict to assets in a specific country
+- `focus`: string - Define focus mode (default, fuel, temperature, etc.)
+- `top_status`: string - Restrict to assets with specific top-level status
+
 **Server → Client (Response):**
+
 ```json
 {
   "type": "subscribed",
-  "subscription_id": "sub_markers",
-  "stream": "live.map.markers.v1",
-  "at": "2025-01-21T12:00:00Z"
+  "subscription_id": "live.map.markers",
+  "stream": "live.map.markers",
+  "version": "v1",
+  "at": "2025-10-23T14:00:00Z",
+  "params_echo": {
+    "viewport": {
+      "bounds": [[-25.0, -20.0], [60.0, 70.0]],
+      "zoom": 5
+    },
+    "filters": {
+      "search": null
+    },
+    "rate_limit_hz": 2
+  },
+  "server_caps": {
+    "snapshot": true,
+    "delta": true,
+    "clustering": "server"
+  }
 }
 ```
+
+**Server Capabilities:**
+- `snapshot: true` - Server sends initial full state snapshot
+- `delta: true` - Server sends incremental updates after snapshot
+- `clustering: "server"` - Backend handles clustering based on viewport and zoom
 
 ---
 
@@ -62,50 +101,274 @@ This WebSocket stream provides real-time marker updates for assets displayed on 
 
 ## Snapshot
 
-Initial full state sent after subscription.
+Initial full state sent after subscription. Contains all assets and clusters within the subscribed viewport.
 
-[Full message format to be defined based on Fleeti Fields Database]
+**Structure:**
+
+```json
+{
+  "type": "snapshot",
+  "subscription_id": "live.map.markers",
+  "seq": 1,
+  "at": "2025-10-23T14:00:01Z",
+  "data": [
+    {
+      "kind": "asset",
+      "asset_id": 1001,
+      "name": "Vehicle 12",
+      "asset_type": "vehicle",
+      "asset_subtype": "truck",
+      "last_updated_at": "2025-10-23T13:59:50Z",
+      "location": {
+        "latitude": 48.8566,
+        "longitude": 2.3522,
+        "heading": 270
+      },
+      "status": {
+        "top_status": {
+          "family": "transit",
+          "code": "in_transit",
+          "last_changed_at": "2025-10-23T13:45:00Z"
+        },
+        "statuses": {
+          "connectivity": {
+            "code": "online"
+          },
+          "immobilization": {
+            "code": null
+          },
+          "engine": {
+            "code": null
+          },
+          "transit": {
+            "code": "in_transit"
+          }
+        }
+      },
+      "motion": {
+        "speed": {
+          "value": 65
+        }
+      }
+    },
+    {
+      "kind": "cluster",
+      "cluster_id": "c_1",
+      "location": {
+        "latitude": 48.8600,
+        "longitude": 2.3400
+      },
+      "cluster_count": 17,
+      "top_status": {
+        "family": "immobilization",
+        "code": "immobilized"
+      }
+    }
+  ]
+}
+```
 
 ## Delta
 
-Incremental updates after snapshot.
+Incremental updates sent after snapshot. Contains only changed assets and cluster updates.
 
-[Full message format to be defined based on Fleeti Fields Database]
+**Structure:**
+
+```json
+{
+  "type": "delta",
+  "subscription_id": "live.map.markers",
+  "seq": 42,
+  "at": "2025-10-23T14:01:30Z",
+  "changes": [
+    {
+      "kind": "asset",
+      "asset_id": 1001,
+      "status": {
+        "top_status": {
+          "code": "parked",
+          "last_changed_at": "2025-10-23T14:01:25Z"
+        },
+        "statuses": {
+          "transit": {
+            "code": "parked"
+          }
+        }
+      },
+      "motion": {
+        "speed": {
+          "value": 0
+        }
+      }
+    },
+    {
+      "kind": "cluster",
+      "cluster_id": "c_1",
+      "cluster_count": 18,
+      "top_status": {
+        "family": "transit",
+        "code": "in_transit"
+      }
+    },
+    {
+      "kind": "asset",
+      "asset_id": 1002,
+      "removed": true
+    }
+  ]
+}
+```
 
 ## Update
 
-Client updates viewport/zoom.
+Client sends viewport/filter/zoom changes. Server responds with new snapshot or delta.
 
-[Full message format to be defined based on Fleeti Fields Database]
+**Client → Server:**
+
+```json
+{
+  "action": "update",
+  "subscription_id": "live.map.markers",
+  "params": {
+    "viewport": {
+      "bounds": [[47.0, -18.0], [49.0, -16.0]],
+      "zoom": 8
+    },
+    "filters": {
+      "search": "truck"
+    },
+    "rate_limit_hz": 2
+  }
+}
+```
 
 ## Error & Resync
 
-Error handling and resync requests.
+**Error Message:**
 
-[Full message format to be defined]
+```json
+{
+  "type": "error",
+  "subscription_id": "live.map.markers",
+  "code": "invalid_viewport",
+  "message": "Invalid viewport bounds",
+  "at": "2025-10-23T14:02:00Z"
+}
+```
+
+**Resync Required:**
+
+```json
+{
+  "type": "resync_required",
+  "subscription_id": "live.map.markers",
+  "reason": "sequence_gap",
+  "last_valid_seq": 100,
+  "at": "2025-10-23T14:02:00Z"
+}
+```
+
+Client should re-subscribe when receiving `resync_required`.
 
 ---
 
 # Field References
 
-This stream includes Fleeti fields from the [🎯 Fleeti Fields Database](./databases/fleeti-fields/README.md):
-- `status.top_status` (computed)
-- `status.statuses[]` (computed)
-- `location.latitude`, `location.longitude`
-- `location.heading`
-- `asset.id`, `asset.type`
-- [Additional fields to be defined based on frontend needs]
+This stream includes Fleeti telemetry fields grouped by category, using exact field paths from the [🎯 Fleeti Fields Database](../1-databases/2-fleeti-fields/README.md).
+
+## Telemetry Fields (from Fleeti Telemetry System)
+
+### Location Category (grouped under `location` object)
+
+- `location.latitude` (number, degrees) - Latitude in decimal degrees
+- `location.longitude` (number, degrees) - Longitude in decimal degrees
+- `location.heading` (number, degrees, nullable) - Heading in degrees (0-359)
+
+### Metadata Category (root level)
+
+- `last_updated_at` (datetime) - Timestamp of when the telemetry record was originally created
+
+### Status Category (grouped under `status` object)
+
+- `status.top_status.family` (string) - Main status category (connectivity/immobilization/engine/transit)
+- `status.top_status.code` (string) - Current status code (offline/immobilized/running/in_transit/parked/online)
+- `status.top_status.last_changed_at` (datetime) - When the main status last changed
+- `status.statuses.connectivity.code` (string) - Connectivity status (online/offline)
+- `status.statuses.immobilization.code` (string, nullable) - Immobilization status (immobilized/free/immobilizing/releasing)
+- `status.statuses.engine.code` (string, nullable) - Engine status (running/standby)
+- `status.statuses.transit.code` (string, nullable) - Transit status (in_transit/parked)
+
+### Motion Category (grouped under `motion` object)
+
+- `motion.speed.value` (number, km/h, nullable) - Current speed in kilometers per hour
+
+## Asset Metadata Fields (from Asset Service)
+
+- `asset_id` (integer) - Unique asset identifier
+- `name` (string) - Asset name
+- `asset_type` (string) - Asset type (vehicle/equipment/site/phone)
+- `asset_subtype` (string) - Asset subtype (truck/car/generator/etc.)
+
+---
+
+# Clustering
+
+Clustering is performed server-side based on viewport bounds and zoom level. The backend automatically groups nearby assets into clusters when appropriate.
+
+## Cluster Structure
+
+- `kind`: Always `"cluster"`
+- `cluster_id`: Unique cluster identifier (string)
+- `location.latitude`: Cluster center latitude (number)
+- `location.longitude`: Cluster center longitude (number)
+- `cluster_count`: Number of assets in cluster (integer)
+- `top_status.family`: Top status family for cluster color display (string: connectivity/immobilization/engine/transit)
+- `top_status.code`: Top status code for cluster color display (string: offline/immobilized/running/in_transit/parked/online) - determined by highest priority status among clustered assets
+
+## Clustering Behavior
+
+- Clusters are computed automatically by the backend
+- Clustering algorithm and thresholds are implementation details
+- Client should render clusters as provided without attempting local re-clustering
+- Clusters may appear, merge, split, or disappear as viewport changes
+- Cluster `top_status.code` determines the visual color/styling of the cluster marker
+
+---
+
+# Filters
+
+Filters scope the real-time data to a meaningful subset of assets based on metadata and status.
+
+## Current Filter Support
+
+### Search Filter
+
+- `filters.search`: String or null
+- Filters assets by metadata fields (name, group name, customer reference, etc.)
+- Search is case-insensitive and matches partial strings
+- When null, no search filtering is applied
+
+## Future Filter Support (not yet available)
+
+The following filters are planned for future releases:
+
+- `filters.group_ids`: Array of integers - Restrict to specific asset groups
+- `filters.customer_reference`: Array of strings - Restrict to specific customer accounts
+- `filters.country`: String - Restrict to assets located in a specific country
+- `filters.focus`: String - Define focus mode (default, fuel, temperature, ecodriving, etc.)
+- `filters.top_status`: String - Restrict to assets with specific top-level statuses
+
+When filters change in the UI, the client must send an `update` action with the new filter set.
 
 ---
 
 # Related Documentation
 
 - **[✅ Epic 3 - Status Computation](../E3-Status-Computation/README.md)**: Top status computation logic
-- **[🎯 Fleeti Fields Database](./databases/fleeti-fields/README.md)**: Field definitions
+- **[🎯 Fleeti Fields Database](./1-databases/2-fleeti-fields/README.md)**: Complete field definitions with computation approaches
 - **[Mobile App Specs](../../../docs/rag/SPECIFICATIONS_FAQ.md)**: Frontend requirements
 
 ---
 
-**Last Updated:** 2025-01-XX  
-**Status:** 🎯 To Be Created
-
+**Last Updated:** 2025-01-21  
+**Status:** ✅ Specification Complete
