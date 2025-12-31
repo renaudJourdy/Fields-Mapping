@@ -1,0 +1,468 @@
+version: "1.0.3"
+provider: "navixy"
+
+mappings:
+  engine_hours_value:
+    type: prioritized
+    sources:
+    - priority: 1
+      field: avl_io_102
+      path: params.avl_io_102
+      unit: minutes
+    - priority: 2
+      field: can_engine_hours
+      path: params.can_engine_hours
+      unit: hours
+    - priority: 3
+      type: calculated
+      calculation_type: function_reference
+      function: add_installation_offset_engine_hours
+      parameters:
+        provider:
+          navixy: avl_io_103
+      unit: minutes
+    - priority: 4
+      type: calculated
+      calculation_type: function_reference
+      function: add_installation_offset_engine_hours
+      parameters:
+        provider:
+          navixy: can_engine_hours_relative
+      unit: hours
+    - priority: 5
+      field: avl_io_449
+      path: params.avl_io_449
+      unit: seconds
+    unit: hours
+    data_type: number
+    error_handling: return_null
+    # Field Path: counters.engine_hours.value
+    # Computation Approach: Prioritized: Navixy avl_io_102 (path: params.avl_io_102, priority 1), then Navixy can_engine_hours (path: params.can_engine_hours, priority 2), then Navixy avl_io_103 (path: params.avl_io_103, priority 3), then Navixy can_engine_hours_relative (path: params.can_engine_hours_relative, priority 4), then Navixy avl_io_449 (path: params.avl_io_449, priority 5) - Engine Hours counter in hours. CAN Engine Hours is preferred when available. Engine Worktime (avl_io_102) provides exact work time and should be coupled with asset.installation.initial_engine_hours (relative counter that starts incrementing from zero at first or can be reset by remote command). CAN Engine Hours Relative requires addition of asset.installation.initial_engine_hours offset to get absolute engine hours. Ignition On Counter (avl_io_449) is the last priority. Unit conversion: Some sources report in seconds, others in hours. Apply unit conversion as needed (divide seconds by 3600 to convert to hours). Offset handling: For relative counters (avl_io_102, can_engine_hours_relative), backend must add asset.installation.initial_engine_hours value to get absolute engine hours.
+
+  engine_hours_last_updated_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_engine_hours_last_updated_at
+    parameters:
+      fleeti:
+      - engine_hours_value
+      - last_updated_at
+    data_type: datetime
+    unit: none
+    error_handling: return_null
+    # Field Path: counters.engine_hours.last_updated_at
+    # Computation Approach: Calculated: derive from engine_hours_value and last_updated_at using derive_engine_hours_last_updated_at function. Sets timestamp to last_updated_at whenever engine_hours_value is updated/received in the packet. Updates every time a new value for engine hours is received, regardless of whether the value changed. Same logic as other last_updated_at fields that track data freshness: indicates freshness of the data, not when the value last changed.
+    # 
+    # Pseudo code:
+    # if (engine_hours_value !== null && engine_hours_value !== undefined) {
+    #   engine_hours_last_updated_at = last_updated_at  // Use timestamp from telemetry packet
+    # } else {
+    #   engine_hours_last_updated_at = previous_engine_hours_last_updated_at  // keep unchanged if no value received
+    # }
+
+  odometer_value:
+    type: prioritized
+    sources:
+    - priority: 1
+      field: avl_io_87
+      path: params.avl_io_87
+      unit: meters
+    - priority: 2
+      field: can_mileage
+      path: params.can_mileage
+      unit: km
+    - priority: 3
+      field: avl_io_389
+      path: params.avl_io_389
+      unit: meters
+    - priority: 4
+      field: obd_custom_odometer
+      path: params.obd_custom_odometer
+      unit: km
+    - priority: 5
+      type: calculated
+      calculation_type: function_reference
+      function: add_installation_offset_odometer
+      parameters:
+        provider:
+          navixy: avl_io_105
+      unit: meters
+    - priority: 6
+      type: calculated
+      calculation_type: function_reference
+      function: add_installation_offset_odometer
+      parameters:
+        provider:
+          navixy: can_mileage_relative
+      unit: km
+    - priority: 7
+      field: avl_io_16
+      path: params.avl_io_16
+      unit: meters
+    - priority: 8
+      field: hw_mileage
+      path: params.hw_mileage
+      unit: km
+    unit: km
+    data_type: number
+    error_handling: return_null
+    # Field Path: counters.odometer.value
+    # Computation Approach: Prioritized: Navixy avl_io_87 (path: params.avl_io_87, priority 1), then Navixy can_mileage (path: params.can_mileage, priority 2), then Navixy avl_io_389 (path: params.avl_io_389, priority 3), then Navixy obd_custom_odometer (path: params.obd_custom_odometer, priority 4), then Navixy avl_io_105 (path: params.avl_io_105, priority 5), then Navixy can_mileage_relative (path: params.can_mileage_relative, priority 6), then Navixy avl_io_16 (path: params.avl_io_16, priority 7), then Navixy hw_mileage (path: params.hw_mileage, priority 8) - Odometer counter in kilometers. CAN Mileage is preferred when available. No offset applied: This is the raw counter value from the device. Installation offset (asset.installation.initial_odometer) is applied separately if needed. Unit conversion: Priorities 1, 3, 5, and 7 require unit conversion from meters to kilometers (divide by 1000). Priorities 5 and 6 are relative counters requiring asset.installation.initial_odometer offset addition to get absolute odometer value.
+
+  odometer_last_updated_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_odometer_last_updated_at
+    parameters:
+      fleeti:
+      - odometer_value
+      - last_updated_at
+    data_type: datetime
+    unit: none
+    error_handling: return_null
+    # Field Path: counters.odometer.last_updated_at
+    # Computation Approach: Calculated: derive from odometer_value and last_updated_at using derive_odometer_last_updated_at function. Sets timestamp to last_updated_at whenever odometer_value is updated/received in the packet. Updates every time a new value for odometer is received, regardless of whether the value changed. Same logic as other last_updated_at fields that track data freshness: indicates freshness of the data, not when the value last changed.
+    # 
+    # Pseudo code:
+    # if (odometer_value !== null && odometer_value !== undefined) {
+    #   odometer_last_updated_at = last_updated_at  // Use timestamp from telemetry packet
+    # } else {
+    #   odometer_last_updated_at = previous_odometer_last_updated_at  // keep unchanged if no value received
+    # }
+
+  magnet:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_sensors_magnet
+    parameters:
+      fleeti: []
+      provider:
+        navixy:
+        - ble_magnet_sensor_1
+        - avl_io_10808
+        - ble_magnet_sensor_2
+        - avl_io_10809
+        - ble_magnet_sensor_3
+        - avl_io_10810
+        - ble_magnet_sensor_4
+        - avl_io_10811
+    data_type: array
+    unit: none
+    error_handling: return_null
+    # Field Path: sensors.magnet[]
+    # Computation Approach: Calculated: derive from asset.accessories[].sensors[] metadata and telemetry provider fields using derive_sensors_magnet function (similar pattern to derive_sensors_environment). Function reads sensor configuration from asset metadata where each sensor has a provider_field array property listing which provider fields map to that sensor. Matches provider fields to sensors based on provider_field array in sensor metadata. Applies prioritized mapping with validation. If provider_field array is empty, fetches sensor configuration from Navixy API (GET https://api.navixy.com/v2/fsm/tracker/sensor/list) matching by sensor ID. Enriches provider fields with correspondences from matrix (maps processed Navixy fields to raw avl_io equivalents). Returns array of sensor objects with id, label, position, state, last_updated_at, and last_changed_at fields. Each array element represents one physical magnet sensor/accessory. Sensor identity (id, label, position) derived from asset.accessories[].sensors[] metadata. State values: Boolean (0 = no magnetic field detected, 1 = magnetic field detected). Provider fields: ble_magnet_sensor_1, ble_magnet_sensor_2, ble_magnet_sensor_3 (and corresponding avl_io fields if available). Validation: State values should be 0 or 1. Exclude invalid/error values.
+    # #
+    # # Backend Processing:
+    # # - Triggers function when any provider field listed above is present in telemetry packet
+    # # - Function receives full telemetry packet and reads relevant provider fields dynamically
+    # # - Function matches provider fields to sensors via asset.accessories[].sensors[] metadata
+    # #
+    # # Validation Rules:
+    # # - State: 0 or 1 (Boolean - 0 = no magnetic field detected, 1 = magnetic field detected)
+    # # - Exclude invalid/error values
+    # #
+    # # Implementation Location: notion documentation provides specifications for the function.
+
+  driver_name:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_driver_name
+    parameters:
+      fleeti:
+      - driver_key
+    data_type: string
+    unit: none
+    error_handling: return_null
+    # Field Path: driver.driver_name
+    # Computation Approach: Calculated: derive from driver_key using derive_driver_name function. Lookup driver_key (hardware key) in Fleeti driver catalog with state preservation logic. State preservation logic: If driver_key is not received or is null/empty in current packet, keep last known driver_name state (do not update). If new driver_key is received (different from previous value): Lookup hardware key in Fleeti driver catalog. If driver found in catalog, update driver_name with name from catalog. If driver not found in catalog (unknown driver), set driver_name to null (hardware_key will still be displayed). If driver_key is unchanged from previous packet, keep current driver_name state (even if telemetry resends the same hardware_key value). The hardware key comes from Navixy provider fields (see driver_key field for source priority). Backend determines key type (iButton vs RFID) based on device model and signal characteristics.
+    # 
+    # Pseudo code:
+    # if (driver_key === null || driver_key === undefined || driver_key === "") {
+    #   driver_name = previous_driver_name  // Keep last known state, do not update
+    # } else if (driver_key !== previous_driver_key) {
+    #   // New driver_key received, lookup in catalog
+    #   driver = driver_catalog.lookup(driver_key)
+    #   if (driver !== null) {
+    #     driver_name = driver.name  // Update with name from catalog
+    #   } else {
+    #     driver_name = null  // Unknown driver, hardware_key will still be displayed
+    #   }
+    # } else {
+    #   driver_name = previous_driver_name  // driver_key unchanged, keep current state
+    # }
+
+  driver_key:
+    type: prioritized
+    sources:
+    - priority: 1
+      field: avl_io_78
+      path: params.avl_io_78
+      unit: none
+    - priority: 2
+      field: ibutton
+      path: ibutton
+      unit: none
+    - priority: 3
+      field: avl_io_207
+      path: params.avl_io_207
+      unit: none
+    unit: none
+    data_type: string
+    error_handling: return_null
+    # Field Path: driver.driver_key
+    # Computation Approach: Prioritized: Navixy avl_io_78 (path: params.avl_io_78, priority 1), then Navixy ibutton (path: ibutton, priority 2), then Navixy avl_io_207 (path: params.avl_io_207, priority 3) - Driver's authentication key. Hardware key identifier as hex string. Can be iButton or RFID code. iButton (avl_io_78) is preferred over processed field ibutton. Processed Navixy field ibutton is fallback if AVL_IO not available. RFID (avl_io_207) is third priority. Default preference: iButton over RFID (but both are never present simultaneously). Backend determines key type (iButton vs RFID) based on device model and signal characteristics. Used to lookup driver in Fleeti catalog (see driver_name computation for lookup logic).
+
+  dtc_count:
+    type: prioritized
+    sources:
+    - priority: 1
+      field: avl_io_30
+      path: params.avl_io_30
+      unit: none
+    - priority: 2
+      field: obd_dtc_number
+      path: params.obd_dtc_number
+      unit: none
+    unit: none
+    data_type: number
+    error_handling: return_null
+    # Field Path: diagnostics.health.dtc.count
+    # Computation Approach: Prioritized: Navixy avl_io_30 (path: params.avl_io_30, priority 1), then Navixy obd_dtc_number (path: params.obd_dtc_number, priority 2) - DTC Fault Codes Count. Integer value representing the number of Diagnostic Trouble Codes (DTCs) present. OBD DTC Count (obd_dtc_number) is preferred when available.
+
+  dtc_status:
+    type: prioritized
+    sources:
+    - priority: 1
+      field: avl_io_519
+      path: params.avl_io_519
+      unit: none
+    - priority: 2
+      field: obd_mil_status
+      path: params.obd_mil_status
+      unit: none
+    unit: none
+    data_type: boolean
+    error_handling: return_null
+    # Field Path: diagnostics.health.dtc.status
+    # Computation Approach: Prioritized: Navixy avl_io_519 (path: params.avl_io_519, priority 1), then Navixy obd_mil_status (path: params.obd_mil_status, priority 2) - Malfunction indicator lamp status read from CAN. Malfunction Indicator Lamp (MIL) status. Values depend on source/protocol version. Typically: 0 = MIL off (no faults), 1 = MIL on (fault detected). Boolean value. OBD MIL Status (obd_mil_status) is preferred when available.
+
+  dtc_codes:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_dtc_codes_combined
+    parameters:
+      provider:
+        navixy:
+        - avl_io_281
+        - avl_io_282
+    data_type: array
+    unit: none
+    error_handling: return_null
+    # Field Path: diagnostics.health.dtc.codes[]
+    # Computation Approach: Calculated: derive from provider fields avl_io_281 and avl_io_282 using derive_dtc_codes_combined function. Both provider fields are complementary sources that need to be serialized/combined. Array of Diagnostic Trouble Code objects or strings (display as-is from provider fields). Backend reads both avl_io_281 (path: params.avl_io_281) and avl_io_282 (path: params.avl_io_282) from telemetry packet and combines their DTC code arrays into a single array.
+    # 
+    # Pseudo code:
+    # dtc_codes_1 = telemetry_packet.params.avl_io_281  // CAN DTC Array
+    # dtc_codes_2 = telemetry_packet.params.avl_io_282  // CAN DTC Array (complementary)
+    # dtc_codes = []
+    # if (dtc_codes_1 !== null && Array.isArray(dtc_codes_1)) {
+    #   dtc_codes = dtc_codes.concat(dtc_codes_1)
+    # }
+    # if (dtc_codes_2 !== null && Array.isArray(dtc_codes_2)) {
+    #   dtc_codes = dtc_codes.concat(dtc_codes_2)
+    # }
+    # return dtc_codes  // Combined array of DTC codes
+
+  remaining_range:
+    type: direct
+    sources:
+    - field: avl_io_304
+      path: params.avl_io_304
+      unit: meters
+    unit: km
+    data_type: number
+    error_handling: return_null
+    # Field Path: power.ev.remaining_range
+    # Computation Approach: Direct mapping from Navixy: avl_io_304 (path: params.avl_io_304) - Number of estimated kilometers remaining on the battery (EV). Remaining range on battery for EV/hybrid vehicles, measured in kilometers. Only populated when the vehicle exposes this signal (EV/hybrid vehicles).
+
+  fuel_tank_level_value:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_fuel_levels
+    parameters:
+      fleeti: []
+      provider:
+        navixy:
+        - avl_io_89 # Fuel level // %
+        - can_fuel_1 # Fuel level // %
+        - avl_io_84 # Fuel level // l
+        - can_fuel_litres # Fuel level // l
+        - avl_io_390 # OBD OEM Fuel Level // to divide by 10 to get value in liters
+        - obd_custom_fuel_litres # OBD Custom Fuel Level // L
+        - avl_io_234 # CNG Level // %
+        - avl_io_270 # BLE Fuel Level #1 // always equals to ble_lls_level_1 // Calibration table needed // kvants
+        - ble_lls_level_1 # Fuel level // always equals to avl_io_270 // Calibration table needed // kvants
+        - avl_io_273 # BLE Fuel Level #2 // always equals to ble_lls_level_2 // Calibration table needed // kvants
+        - ble_lls_level_2 # BLE LLS Level 2 // always equals to avl_io_273 // Calibration table needed // kvants
+        - avl_io_201 # LLS 1 Fuel Level // always equals to lls_level_1 // Calibration table needed // kvants
+        - lls_level_1 # LLS Level 1 // always equals to avl_io_201 // Calibration table needed // kvants
+        - avl_io_203 # LLS 2 Fuel Level // always equals to lls_level_2 // Calibration table needed // kvants
+        - lls_level_2 # LLS Level 2 // always equals to avl_io_203 // Calibration table needed // kvants
+        - avl_io_210 # LLS 3 Fuel Level // always equals to lls_level_3 // Calibration table needed // kvants 
+        - lls_level_3 # LLS Level 3 // always equals to avl_io_210 // Calibration table needed // kvants
+        - avl_io_212 # LLS 4 Fuel Level // always equals to lls_level_4 // Calibration table needed // kvants 
+        - lls_level_4 # LLS Level 4 // always equals to avl_io_212 // Calibration table needed // kvants
+    data_type: number
+    unit: none
+    error_handling: return_null
+    # Field Path: fuel.tank_level.value
+    # Computation Approach: Calculated: derive from asset.accessories[].sensors[] metadata and telemetry provider fields using derive_fuel_levels function (similar pattern to derive_sensors_environment). Function reads sensor configuration from asset metadata where each fuel sensor has a provider_field array property listing which provider fields map to that sensor. Matches provider fields to sensors based on provider_field array in sensor metadata. Applies prioritized mapping with unit conversions and validation. If provider_field array is empty, fetches sensor configuration from Navixy API (GET https://api.navixy.com/v2/fsm/tracker/sensor/list) matching by sensor ID. Enriches provider fields with correspondences from matrix (maps processed Navixy fields to raw avl_io equivalents). Supports multiple fuel tanks/sensors (array structure). Provider fields (prioritized): can_fuel_1, can_fuel_litres (CAN fuel level), avl_io_390 (OBD OEM Fuel Level), obd_custom_fuel_litres (OBD Custom Fuel Level), avl_io_201 (LLS 1 Fuel Level), avl_io_203 (LLS 2 Fuel Level), avl_io_210 (LLS 3 Fuel Level), avl_io_212 (LLS 4 Fuel Level), avl_io_234 (CNG Level), avl_io_270 (BLE Fuel Level #1), avl_io_273 (BLE Fuel Level #2), avl_io_84 (Fuel Level), avl_io_89 (Fuel level), ble_lls_level_1 (fuel), ble_lls_level_2 (fuel), fuel_level (Fuel Level), lls_level_1 (LLS Level 1), lls_level_2 (LLS Level 2), lls_level_3 (LLS Level 3), lls_level_4 (LLS Level 4). Unit: May be in liters (l) or percentage (%) depending on source. Note: Pseudocode function will be provided separately due to complexity of handling multiple fuel sources.
+    # #
+    # # Backend Processing:
+    # # - Triggers function when any provider field listed above is present in telemetry packet
+    # # - Function receives full telemetry packet and reads relevant provider fields dynamically
+    # # - Function matches provider fields to sensors via asset.accessories[].sensors[] metadata
+    # #
+    # # Unit Conversion Rules:
+    # # - May be in liters (l) or percentage (%) depending on source (see inline comments above for specific units)
+    # # - Some fields require division (e.g., avl_io_390: divide by 10 to get liters)
+    # # - Unit conversion handled by function based on sensor configuration
+    # #
+    # # Validation Rules:
+    # # - Exclude invalid/error values
+    # #
+    # # Implementation Location: notion documentation provides specifications for the function.
+
+  fuel_tank_level_last_updated_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_fuel_tank_level_last_updated_at
+    parameters:
+      fleeti:
+      - fuel_tank_level_value
+      - last_updated_at
+    data_type: datetime
+    unit: none
+    error_handling: return_null
+    # Field Path: fuel.tank_level.last_updated_at
+    # Computation Approach: Calculated: derive from fuel_tank_level_value and last_updated_at using derive_fuel_tank_level_last_updated_at function. Sets timestamp to last_updated_at whenever fuel_tank_level_value (or fuel.levels[].value) is updated/received in the packet. Updates every time a new fuel level value is received, regardless of whether the value changed. Same logic as other last_updated_at fields that track data freshness: indicates freshness of the data.
+    # 
+    # Pseudo code:
+    # if (fuel_tank_level_value !== null && fuel_tank_level_value !== undefined) {
+    #   fuel_tank_level_last_updated_at = last_updated_at  // Use timestamp from telemetry packet
+    # } else {
+    #   fuel_tank_level_last_updated_at = previous_fuel_tank_level_last_updated_at  // keep unchanged if no value received
+    # }
+
+  fuel_consumption_cumulative:
+    type: prioritized
+    sources:
+    - priority: 1
+      type: calculated
+      calculation_type: function_reference
+      function: divide_by_10
+      parameters:
+        provider:
+          navixy: avl_io_83
+    - priority: 2
+      field: can_consumption
+      path: params.can_consumption
+      unit: liters
+    - priority: 3
+      field: avl_io_107
+      path: params.avl_io_107
+      unit: liters
+    - priority: 4
+      field: can_consumption_relative
+      path: params.can_consumption_relative
+      unit: liters
+    unit: L
+    data_type: number
+    error_handling: return_null
+    # Field Path: fuel.consumption.cumulative
+    # Computation Approach: Prioritized: Navixy avl_io_83 (path: params.avl_io_83, priority 1), then Navixy can_consumption (path: params.can_consumption, priority 2), then Navixy avl_io_107 (path: params.avl_io_107, priority 3), then Navixy can_consumption_relative (path: params.can_consumption_relative, priority 4) - Total volume of fuel consumed. Total fuel consumed (cumulative value), measured in liters (l). Priority 1: Uses divide_by_10 function to convert avl_io_83 from deciliters to liters (function divides by 10). Fuel Consumed (avl_io_83) is preferred. CAN Consumption (can_consumption) is same source as avl_io_83, different name, already in liters. Fuel Consumed counted (avl_io_107) is relative consumption. CAN Consumption Relative (can_consumption_relative) is same source as avl_io_107, different name.
+
+  ongoing_trip_started_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_ongoing_trip_started_at
+    parameters:
+      fleeti:
+      - statuses_transit_code
+      - last_updated_at
+    data_type: datetime
+    unit: none
+    error_handling: return_null
+    # Field Path: trip.ongoing_trip.started_at
+    # Computation Approach: Calculated: derive from statuses_transit_code and last_updated_at using derive_ongoing_trip_started_at function. Part of ongoing trip information computed from Fleeti status fields (no provider fields used). Trip starts when status.statuses.transit.code transitions from parked to in_transit. ISO8601 timestamp when the transit status changed to in-transit (new trip began). trip object is nullable (null when no trip is ongoing). Uses Fleeti's own logic based on transit status family changes.
+    # 
+    # Pseudo code:
+    # previous_transit_code = getPreviousTransitStatus()
+    # if (previous_transit_code === "parked" && statuses_transit_code === "in_transit") {
+    #   // Trip started: transition from parked to in_transit
+    #   ongoing_trip_started_at = last_updated_at  // Set to current timestamp
+    # } else if (statuses_transit_code === "in_transit") {
+    #   // Trip ongoing, keep existing start time
+    #   ongoing_trip_started_at = previous_ongoing_trip_started_at  // Keep unchanged
+    # } else {
+    #   // Not in transit, no trip ongoing
+    #   ongoing_trip_started_at = null
+    # }
+
+  ongoing_trip_mileage:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_ongoing_trip_mileage
+    parameters:
+      fleeti:
+      - ongoing_trip_started_at
+      - odometer_value
+    data_type: number
+    unit: km
+    error_handling: return_null
+    # Field Path: trip.ongoing_trip.mileage
+    # Computation Approach: Calculated: derive from ongoing_trip_started_at and odometer_value using derive_ongoing_trip_mileage function. Calculated distance traveled during the ongoing trip (from trip start to current position). Distance traveled during the ongoing trip, measured in kilometers. Updates as trip progresses. Backend calculates cumulative distance from trip start location to current location using GPS coordinates, or uses odometer difference if available.
+    # 
+    # Pseudo code:
+    # if (ongoing_trip_started_at === null) {
+    #   return null  // No trip ongoing
+    # }
+    # trip_start_odometer = getOdometerAtTime(ongoing_trip_started_at)
+    # if (trip_start_odometer !== null && odometer_value !== null) {
+    #   ongoing_trip_mileage = odometer_value - trip_start_odometer  // Use odometer difference
+    # } else {
+    #   // Fallback: calculate distance from GPS coordinates
+    #   trip_start_location = getLocationAtTime(ongoing_trip_started_at)
+    #   current_location = getCurrentLocation()  // From location_latitude, location_longitude
+    #   ongoing_trip_mileage = calculateDistance(trip_start_location, current_location)  // in km
+    # }
+
+  ongoing_trip_waypoints:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_ongoing_trip_waypoints
+    parameters:
+      fleeti:
+      - ongoing_trip_started_at
+      - location_latitude
+      - location_longitude
+    data_type: array
+    unit: none
+    error_handling: return_null
+    # Field Path: trip.ongoing_trip.waypoints
+    # Computation Approach: Calculated: derive from ongoing_trip_started_at, location_latitude, and location_longitude using derive_ongoing_trip_waypoints function. Array of latitude and longitude coordinates representing the trip path for map display. Waypoints consist of location coordinates (latitude, longitude) collected during the ongoing trip. Used to display the trip path on the map when viewing asset details. Structure: Each waypoint contains latitude and longitude values. Array of coordinate pairs collected as the trip progresses. Backend accumulates waypoints from trip start to current time.
+    # 
+    # Pseudo code:
+    # if (ongoing_trip_started_at === null) {
+    #   return []  // No trip ongoing, return empty array
+    # }
+    # // Backend accumulates waypoints from trip start
+    # waypoints = getAccumulatedWaypoints(asset_id, ongoing_trip_started_at)
+    # // Add current location if it's different from last waypoint (with threshold to filter GPS noise)
+    # current_waypoint = { latitude: location_latitude, longitude: location_longitude }
+    # last_waypoint = waypoints[waypoints.length - 1]
+    # if (last_waypoint === undefined || calculateDistance(current_waypoint, last_waypoint) > threshold) {
+    #   waypoints.push(current_waypoint)  // Add current location to waypoints
+    # }
+    # return waypoints
+
