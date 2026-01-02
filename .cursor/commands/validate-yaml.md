@@ -59,6 +59,18 @@ AI Analysis:
 Identify missing units in direct/prioritized mappings
 Distinguish between intentional omissions (unitless fields) and errors
 Cross-reference with data types to determine if unit omission is correct
+
+3.5 Dependency Order Validation (New)
+AI Check: YAML mappings must be ordered so that any field referenced in parameters.fleeti
+appears earlier in the file. This includes:
+- Top-level calculated mappings (parameters.fleeti)
+- Calculated sources inside prioritized mappings (sources[].parameters.fleeti)
+Expected: For every mapping A, all Fleeti dependencies appear before A in YAML order.
+AI Analysis:
+- Extract the mapping order as it appears in the file.
+- Build a dependency list per mapping from parameters.fleeti.
+- Flag any dependency that appears after its dependent.
+- If cycles are detected (A depends on B, B depends on A), call them out explicitly.
 4. Mapping Type-Specific Validation (AI Pattern Recognition)
 Direct Mappings
 AI Pattern: type: direct → single source → no priority → units present
@@ -78,6 +90,11 @@ AI Analysis: Verify comment consistency and formatting
 AI Check: All mappings have data_type field
 AI Check: All mappings have error_handling field
 AI Analysis: Identify missing required fields
+AI Check: data_type vs unit consistency (sanity check)
+- boolean, string, datetime should use unit: none
+- number should use a concrete unit or none if truly unitless
+- array should use unit: none (unless explicitly documented otherwise)
+AI Analysis: Flag mismatches between data_type and unit
 AI Analysis Methodology
 Read Files: Load reference spec and generated YAML(s) into memory
 Pattern Matching: Use AI's pattern recognition to identify structures
@@ -96,6 +113,12 @@ Rule-by-Rule Analysis: Detailed findings for each of the 8 rules
 Mapping Type Analysis: Validation results by mapping type
 Specific Examples: Cite actual field names and line numbers
 Recommendations: Actionable fixes for any issues found
+
+Additional Recommendations
+- Cross-file consistency: compare YAML mapping keys against the latest Fleeti Fields CSV export
+  to detect missing or extra fields.
+- Function registry sanity: flag calculated mappings whose function is not in the known registry
+  (if a registry list is maintained).
 Key Advantages of AI Validation
 Contextual Understanding: Can determine if missing units are intentional (unitless fields) vs. errors
 Pattern Recognition: Identifies subtle inconsistencies across the entire file

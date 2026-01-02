@@ -220,10 +220,9 @@ def apply_optimization_rules(
         # Rule 6: Omit dependencies when redundant with parameters.fleeti
         # (dependencies field is not included in optimized output)
         
-        # Rule 8: Add unit at top level ONLY if data_type is number
-        if data_type == 'number':
-            top_unit = normalize_unit(fleeti_unit, default_to_none=True) if fleeti_unit else "none"
-            optimized['unit'] = top_unit
+        # Rule 8: Add unit at top level for all calculated mappings
+        top_unit = normalize_unit(fleeti_unit, default_to_none=True) if fleeti_unit else "none"
+        optimized['unit'] = top_unit
     
     elif mapping_type == 'transformed':
         # Keep transformation and service_fields
@@ -232,10 +231,9 @@ def apply_optimization_rules(
         if 'service_fields' in computation_json:
             optimized['service_fields'] = computation_json['service_fields']
         
-        # Rule 8: Add unit at top level ONLY if data_type is number
-        if data_type == 'number':
-            top_unit = normalize_unit(fleeti_unit, default_to_none=True) if fleeti_unit else "none"
-            optimized['unit'] = top_unit
+        # Rule 8: Add unit at top level for all transformed mappings
+        top_unit = normalize_unit(fleeti_unit, default_to_none=True) if fleeti_unit else "none"
+        optimized['unit'] = top_unit
     
     elif mapping_type == 'io_mapped':
         # Keep default_source and installation_metadata
@@ -244,10 +242,9 @@ def apply_optimization_rules(
         if 'installation_metadata' in computation_json:
             optimized['installation_metadata'] = computation_json['installation_metadata']
         
-        # Rule 8: Add unit at top level ONLY if data_type is number
-        if data_type == 'number':
-            top_unit = normalize_unit(fleeti_unit, default_to_none=True) if fleeti_unit else "none"
-            optimized['unit'] = top_unit
+        # Rule 8: Add unit at top level for all io_mapped mappings
+        top_unit = normalize_unit(fleeti_unit, default_to_none=True) if fleeti_unit else "none"
+        optimized['unit'] = top_unit
     
     return optimized
 
@@ -300,8 +297,32 @@ def format_yaml_with_comments(yaml_dict: Dict, field_path: str, computation_appr
     return yaml_str
 
 
+def extract_fleeti_dependencies(computation_json: Dict) -> List[str]:
+    """Extract Fleeti field dependencies from parameters.fleeti."""
+    deps = set()
+
+    def add_from_params(params: Optional[Dict]) -> None:
+        if not params:
+            return
+        fleeti = params.get('fleeti')
+        if isinstance(fleeti, list):
+            for name in fleeti:
+                if name:
+                    deps.add(name)
+
+    # Top-level parameters
+    add_from_params(computation_json.get('parameters'))
+
+    # Source-level parameters (for prioritized mappings with calculated sources)
+    for source in computation_json.get('sources', []):
+        if source.get('type') == 'calculated' or 'parameters' in source:
+            add_from_params(source.get('parameters'))
+
+    return sorted(deps)
+
+
 def process_csv_row(row: Dict, provider: str) -> Optional[tuple]:
-    """Process a single CSV row and return (field_name, yaml_entry_dict, comments)."""
+    """Process a single CSV row and return (field_name, yaml_entry_dict, comments, deps)."""
     # Filter by status
     status = row.get('Status', '').strip().lower()
     if status not in ['planned', 'active']:
@@ -360,8 +381,49 @@ def process_csv_row(row: Dict, provider: str) -> Optional[tuple]:
     # Get field path and computation approach for comments
     field_path = row.get('Fleeti Field Path', '').strip()
     computation_approach = row.get('Computation Approach', '').strip()
-    
-    return (field_name, optimized, field_path, computation_approach)
+
+    deps = extract_fleeti_dependencies(computation_json)
+
+    return (field_name, optimized, field_path, computation_approach, deps)
+
+
+def order_mappings_by_dependencies(entries: List[Dict]) -> List[str]:
+    """Topologically sort mappings by parameters.fleeti dependencies."""
+    name_to_entry = {e['name']: e for e in entries}
+    order_index = {e['name']: e['order'] for e in entries}
+
+    deps_map = {}
+    reverse_deps = {}
+    in_degree = {}
+
+    for name, entry in name_to_entry.items():
+        deps = [d for d in entry['deps'] if d in name_to_entry and d != name]
+        deps_map[name] = deps
+        in_degree[name] = len(deps)
+        for dep in deps:
+            reverse_deps.setdefault(dep, []).append(name)
+
+    available = [name for name, deg in in_degree.items() if deg == 0]
+    available.sort(key=lambda n: order_index[n])
+
+    ordered = []
+    while available:
+        name = available.pop(0)
+        ordered.append(name)
+        for dependent in reverse_deps.get(name, []):
+            in_degree[dependent] -= 1
+            if in_degree[dependent] == 0:
+                insert_at = 0
+                while insert_at < len(available) and order_index[available[insert_at]] <= order_index[dependent]:
+                    insert_at += 1
+                available.insert(insert_at, dependent)
+
+    if len(ordered) != len(entries):
+        # Cycle or missing dependency; fall back to original CSV order
+        print("Warning: Dependency ordering incomplete (cycle detected). Falling back to CSV order.")
+        return [e['name'] for e in sorted(entries, key=lambda e: e['order'])]
+
+    return ordered
 
 
 def generate_yaml_config(csv_path: Path) -> Path:
@@ -385,16 +447,30 @@ def generate_yaml_config(csv_path: Path) -> Path:
     # Process rows
     mappings = OrderedDict()
     comments_dict = {}  # Store comments separately
+    entries = []
     
     for row in rows:
         result = process_csv_row(row, provider)
         if result:
-            field_name, yaml_entry, field_path, computation_approach = result
-            mappings[field_name] = yaml_entry
-            comments_dict[field_name] = {
+            field_name, yaml_entry, field_path, computation_approach, deps = result
+            entries.append({
+                'name': field_name,
+                'yaml_entry': yaml_entry,
                 'field_path': field_path,
-                'computation_approach': computation_approach
-            }
+                'computation_approach': computation_approach,
+                'deps': deps,
+                'order': len(entries)
+            })
+
+    ordered_names = order_mappings_by_dependencies(entries)
+    entries_by_name = {e['name']: e for e in entries}
+    for name in ordered_names:
+        entry = entries_by_name[name]
+        mappings[name] = entry['yaml_entry']
+        comments_dict[name] = {
+            'field_path': entry['field_path'],
+            'computation_approach': entry['computation_approach']
+        }
     
     # Build final YAML structure
     yaml_config = OrderedDict([
