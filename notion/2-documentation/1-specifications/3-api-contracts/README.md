@@ -1,4 +1,4 @@
-**Status:** 🎯 Structure Created - Content To Be Developed
+**Status:** Done
 
 This section contains detailed API contract specifications for REST endpoints that expose Fleeti telemetry data.
 
@@ -20,10 +20,15 @@ API contracts define:
 
 ## Telemetry API Endpoints
 
-[To be created as separate contract documents]
+- [Telemetry Snapshots](./1-telemetry-snapshots.md)
+  - Latest telemetry snapshot per asset (customer vs admin tiers)
+- [Asset Telemetry History](./2-asset-telemetry-history.md)
+  - Time-range history for a single asset (customer vs admin tiers)
+- [Telemetry Visibility Rules](./3-telemetry-visibility-rules.md)
+  - Role-based field visibility (customer vs admin)
 
-**Status:** 🎯 To Be Created  
-**Priority:** 🟡 MEDIUM
+**Status:** Published  
+**Priority:** HIGH
 
 ---
 
@@ -38,6 +43,7 @@ Each contract document includes:
 - Field references (Fleeti fields from database)
 - Rate limiting
 - Examples
+- Visibility rules (customer vs admin)
 
 ---
 
@@ -54,12 +60,11 @@ API contracts should specify which storage tier is used and expected latency.
 
 # Related Documentation
 
-- **[🔗 Epic 6 - API & Consumption](../E6-API-Consumption/README.md)**: Usage and implementation needs
-- **[🎯 Fleeti Fields Database](./databases/fleeti-fields/README.md)**: Field definitions
-- **[💾 Storage Strategy](../E4-Storage-Data-Management/README.md)**: Storage tier details
+- **[Epic 6 - API & Consumption](../E6-API-Consumption/README.md)**: Usage and implementation needs
+- **[Fleeti Fields Database](../1-databases/2-fleeti-fields/README.md)**: Field definitions
+- **[Storage Strategy](../E4-Storage-Data-Management/README.md)**: Storage tier details
 
 ---
 
-**Last Updated:** 2025-01-XX  
-**Section Status:** 🎯 Structure Created - Content To Be Developed
-
+**Last Updated:** 2026-01-07  
+**Section Status:** Done

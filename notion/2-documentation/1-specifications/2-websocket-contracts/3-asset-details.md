@@ -1,4 +1,10 @@
-﻿# Overview
+﻿# Disclamer
+
+These WebSocket contract documents are provided for reference and to communicate product requirements. They are not prescriptive implementation specs. Engineering teams are responsible for determining the correct backend mapping, payload structure, and transport behavior based on system constraints and architecture. Any production WebSocket contracts must be validated, documented, and maintained by the responsible engineering owners.
+
+---
+
+# Overview
 
 This WebSocket stream provides real-time updates for a single asset details panel. It delivers comprehensive telemetry and status fields required to render KPIs, live data, sensors, trip context, and diagnostics.
 
@@ -51,6 +57,7 @@ This WebSocket stream provides real-time updates for a single asset details pane
 ```
 
 **subscription_id Guidance:**
+
 - Treat `subscription_id` as an opaque identifier. Use the value provided by the server for subsequent updates.
 - A single connection may support multiple subscriptions in the future; do not assume `subscription_id` equals the stream name.
 
@@ -81,6 +88,11 @@ Initial full state sent after subscription. Contains all Fleeti fields listed in
       "make": "Isuzu",
       "model": "D-Max",
       "license_plate": "AA 772 FP DK-10"
+    },
+    "kpis": {
+      "today_transit_time": "PT58M",
+      "today_idle_time": "PT2H11M",
+      "today_mileage_km": 23.5
     },
     "last_updated_at": "2025-10-23T13:59:50Z",
     "location": {
@@ -127,7 +139,7 @@ Initial full state sent after subscription. Contains all Fleeti fields listed in
         "last_changed_at": "2025-10-23T13:40:00Z"
       },
       "ev": {
-        "remaining_range": 48
+        "remaining_range": { "value": 65, "unit": "km" },
       }
     },
     "motion": {
@@ -159,20 +171,21 @@ Initial full state sent after subscription. Contains all Fleeti fields listed in
           "id": "door_1",
           "label": "Entrance",
           "position": "front",
-          "state": 1,
+          "state": "open",
           "last_updated_at": "2025-10-23T13:59:50Z",
           "last_changed_at": "2025-10-23T13:58:30Z"
         }
       ]
     },
     "driver": {
-      "driver_name": "Cheikh Fall",
-      "driver_key": "A1B2C3D4"
+      "name": "Cheikh Fall",
+      "key": "A1B2C3D4",
+      "last_changed_at":"2025-10-23T13:58:30Z"
     },
     "diagnostics": {
       "health": {
         "dtc": {
-          "count": 5,
+          "count": 6,
           "status": true,
           "codes": ["P0204", "P0089", "P0405", "P0122", "P0183", "P0073"]
         }
@@ -195,17 +208,19 @@ Initial full state sent after subscription. Contains all Fleeti fields listed in
     "counters": {
       "engine_hours": {
         "value": 18745.7,
+        "unit":"hours",
         "last_updated_at": "2025-10-23T13:59:50Z"
       },
       "odometer": {
         "value": 23054.4,
+        "unit":"km",
         "last_updated_at": "2025-10-23T13:59:50Z"
       }
     },
     "trip": {
       "ongoing_trip": {
         "started_at": "2025-10-23T13:40:00Z",
-        "mileage": 23.5,
+        "mileage": {"value": 23.5,"unit":"km"},
         "waypoints": [
           { "latitude": 48.8566, "longitude": 2.3522 },
           { "latitude": 48.8580, "longitude": 2.3500 }
@@ -245,6 +260,7 @@ Incremental updates after snapshot. Deltas are partial and may omit unchanged fi
     }
   ]
 }
+
 ```
 
 ## Update
@@ -276,6 +292,7 @@ Client changes selected asset. Server responds with a new snapshot for the new a
   "message": "Invalid asset_id",
   "at": "2025-10-23T14:02:00Z"
 }
+
 ```
 
 **Resync Required:**
@@ -297,9 +314,8 @@ Client should re-subscribe when receiving `resync_required`.
 # Field References
 
 This stream includes Fleeti telemetry fields grouped by category, using exact field paths from the Fleeti Fields Database.
-Field paths listed below were verified against the latest Fleeti Fields export (`Fleeti Fields (db) 1-2-26.csv`).
 
-## Telemetry Fields (from Fleeti Telemetry System)
+[Untitled](https://www.notion.so/2e13e766c9018062b6acc963879f354e?pvs=21)
 
 ### Location Category (grouped under `location` object)
 
@@ -353,12 +369,13 @@ Field paths listed below were verified against the latest Fleeti Fields export (
 ### Sensors Category
 
 - `sensors.environment[]`
-- `sensors.magnet`
+- `sensors.magnet[]`
 
 ### Driver Category
 
 - `driver.driver_name`
 - `driver.driver_key`
+- `driver.driver_last_updated_at`
 
 ### Diagnostics Category
 
@@ -371,6 +388,7 @@ Field paths listed below were verified against the latest Fleeti Fields export (
 - `fuel.tank_level.value` (unit conditional)
 - `fuel.tank_level.last_updated_at`
 - `fuel.consumption.cumulative`
+- `fuel.consumption.cumulative.last_updated_at`
 
 ### Counters Category
 
@@ -395,25 +413,19 @@ Field paths listed below were verified against the latest Fleeti Fields export (
 - `asset.group_name`
 - `asset.make`
 - `asset.model`
-- `asset.registration`
+- `asset.license_plate`
+
+## KPI Fields (from Reports Module)
+
+- `kpis.today_transit_time` (duration, ISO8601) - Today only
+- `kpis.today_idle_time` (duration, ISO8601) - Today only
+- `kpis.today_mileage_km` (number) - Today only
 
 ---
 
 # UI Notes (from Figma)
 
 - Header shows asset identity, type/subtype, group, and quick actions (immobilize, overflow).
-- KPIs: transit time, idle time, mileage.
+- KPIs: transit time, idle time, mileage (today-only values from report module).
 - Tabs: Live data vs Trip history.
 - Sections: current driver (with call action), status list, location (geofence + coordinates + geocoded address + last change), temperatures, external door state, counters, and trip visualization.
-
----
-
-# Related Documentation
-
-- **[Fleeti Fields Database](../1-databases/2-fleeti-fields/README.md)**: Field definitions
-- **[Mobile App Specs](../../../docs/rag/SPECIFICATIONS_FAQ.md)**: Frontend requirements
-
----
-
-**Last Updated:** 2025-02-01
-**Status:** Specification Draft

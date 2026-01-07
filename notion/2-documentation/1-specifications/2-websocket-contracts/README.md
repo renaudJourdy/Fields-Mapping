@@ -1,5 +1,13 @@
 **Status:** 🎯 Structure Created - Content To Be Developed
 
+# Disclaimer
+
+This documentation is provided for reference to describe product needs and expected data shapes.
+Implementation details, mapping, and final API/WebSocket contract behavior are owned by the development team.
+The authoritative API contract must be defined and maintained in this Wiki.
+
+---
+
 This section contains detailed WebSocket contract specifications for real-time telemetry streaming to frontend applications.
 
 # Purpose

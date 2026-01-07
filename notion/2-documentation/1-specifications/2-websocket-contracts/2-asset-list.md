@@ -1,4 +1,10 @@
-﻿# Overview
+﻿# Disclamer
+
+These WebSocket contract documents are provided for reference and to communicate product requirements. They are not prescriptive implementation specs. Engineering teams are responsible for determining the correct backend mapping, payload structure, and transport behavior based on system constraints and architecture. Any production WebSocket contracts must be validated, documented, and maintained by the responsible engineering owners.
+
+---
+
+# Overview
 
 This WebSocket stream provides real-time updates for the Asset List panel. It delivers asset metadata and key telemetry/status fields required to render list cards, grouping headers, and status states (including temperatures for cold storage assets). The stream is windowed for performance: the client subscribes to the visible list window plus a small buffer, while the server still returns global counts for a seamless UX.
 

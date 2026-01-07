@@ -4,6 +4,12 @@
 
 ---
 
+# Disclamer
+
+These WebSocket contract documents are provided for reference and to communicate product requirements. They are not prescriptive implementation specs. Engineering teams are responsible for determining the correct backend mapping, payload structure, and transport behavior based on system constraints and architecture. Any production WebSocket contracts must be validated, documented, and maintained by the responsible engineering owners.
+
+---
+
 # Overview
 
 This WebSocket stream provides real-time marker updates for assets displayed on the live map. It delivers position, heading, status, and motion information needed for marker rendering. The stream includes server-side clustering support, where assets are automatically grouped into clusters based on viewport and zoom level.
@@ -138,24 +144,14 @@ Initial full state sent after subscription. Contains all assets and clusters wit
           "last_changed_at": "2025-10-23T13:45:00Z"
         },
         "statuses": {
-          "connectivity": {
-            "code": "online"
-          },
-          "immobilization": {
-            "code": null
-          },
-          "engine": {
-            "code": null
-          },
-          "transit": {
-            "code": "in_transit"
-          }
+          "connectivity": {"code": "online"},
+          "immobilization": {"code": null},
+          "engine": {"code": null},
+          "transit": {"code": "in_transit"}
         }
       },
       "motion": {
-        "speed": {
-          "value": 65
-        }
+        "speed": {"value": 65, "unit":"km/h"}
       }
     },
     {
@@ -198,15 +194,11 @@ Incremental updates sent after snapshot. Contains only changed assets and cluste
           "last_changed_at": "2025-10-23T14:01:25Z"
         },
         "statuses": {
-          "transit": {
-            "code": "parked"
-          }
+          "transit": {"code": "parked"}
         }
       },
       "motion": {
-        "speed": {
-          "value": 0
-        }
+        "speed": {"value": 0, "unit":"km/h"}
       }
     },
     {
@@ -225,7 +217,6 @@ Incremental updates sent after snapshot. Contains only changed assets and cluste
     }
   ]
 }
-
 ```
 
 ## Update
