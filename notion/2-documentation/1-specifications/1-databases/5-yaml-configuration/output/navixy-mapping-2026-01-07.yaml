@@ -1,4 +1,4 @@
-version: "1.0.3"
+version: "1.0.0"
 provider: "navixy"
 
 mappings:
@@ -1004,7 +1004,7 @@ mappings:
     # geofences = geofenceService.getGeofencesAtLocation(coordinates, asset_id)
     # return geofences.map(g => ({ geofence_id: g.id, geofence_name: g.name }))
 
-  environment[]:
+  environment:
     type: calculated
     calculation_type: function_reference
     function: derive_sensors_environment
@@ -1434,39 +1434,6 @@ mappings:
     #   fuel_tank_level_last_updated_at = previous_fuel_tank_level_last_updated_at  // Keep unchanged if no value received
     # }
 
-  fuel_consumption_cumulative:
-    type: prioritized
-    sources:
-    - priority: 1
-      type: calculated
-      calculation_type: function_reference
-      function: divide_by_10
-      parameters:
-        provider:
-          navixy: avl_io_83
-    - priority: 2
-      field: can_consumption
-      path: params.can_consumption
-      unit: liters
-    - priority: 3
-      field: avl_io_107
-      path: params.avl_io_107
-      unit: liters
-    - priority: 4
-      field: can_consumption_relative
-      path: params.can_consumption_relative
-      unit: liters
-    unit: liters
-    data_type: number
-    error_handling: return_null
-    # Field Path: fuel.consumption.cumulative
-    # Computation Approach: Prioritized mapping from multiple Navixy provider fields. Fuel Consumed (avl_io_83) is preferred but requires unit conversion from deciliters to liters using divide_by_10 function. 
-    # CAN Consumption (can_consumption) is the same source as avl_io_83, already in liters. Total fuel consumed (cumulative value), measured in liters.
-    # 
-    # Pseudo code:
-    # value = get_provider_field_value('avl_io_83')
-    # return value / 10  // Convert deciliters to liters
-
   ongoing_trip_started_at:
     type: calculated
     calculation_type: function_reference
@@ -1551,3 +1518,58 @@ mappings:
     #   waypoints.push(current_waypoint)  // Add current location to waypoints
     # }
     # return waypoints
+
+  driver_last_changed_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_driver_last_changed_at
+    parameters:
+      fleeti:
+      - driver_key
+      - last_updated_at
+    unit: none
+    data_type: datetime
+    error_handling: return_null
+    # Field Path: driver.driver_last_updated_at
+    # Computation Approach: Calculated: derive from driver_key and last_updated_at using derive_driver_last_changed_at. Updates only when the driver key changes. If driver_key is missing/empty in the packet, keep the previous timestamp. If a new (different) key is received, set driver.last_changed_at to last_updated_at from the telemetry packet.
+    # Pseudo code:
+    # if (driver_key is null/empty) {
+    #   return previous_driver_last_changed_at
+    # }
+    # if (driver_key != previous_driver_key) {
+    #   return last_updated_at
+    # }
+    # return previous_driver_last_changed_at
+
+  fuel_consumption_cumulative:
+    type: prioritized
+    sources:
+    - priority: 1
+      type: calculated
+      calculation_type: function_reference
+      function: divide_by_10
+      parameters:
+        provider:
+          navixy: avl_io_83
+    - priority: 2
+      field: can_consumption
+      path: params.can_consumption
+      unit: liters
+    - priority: 3
+      field: avl_io_107
+      path: params.avl_io_107
+      unit: liters
+    - priority: 4
+      field: can_consumption_relative
+      path: params.can_consumption_relative
+      unit: liters
+    unit: liters
+    data_type: number
+    error_handling: return_null
+    # Field Path: fuel.consumption.cumulative
+    # Computation Approach: Prioritized mapping from multiple Navixy provider fields. Fuel Consumed (avl_io_83) is preferred but requires unit conversion from deciliters to liters using divide_by_10 function. 
+    # CAN Consumption (can_consumption) is the same source as avl_io_83, already in liters. Total fuel consumed (cumulative value), measured in liters.
+    # 
+    # Pseudo code:
+    # value = get_provider_field_value('avl_io_83')
+    # return value / 10  // Convert deciliters to liters

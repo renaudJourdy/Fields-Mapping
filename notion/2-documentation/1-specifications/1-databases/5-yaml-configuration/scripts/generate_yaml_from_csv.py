@@ -297,8 +297,11 @@ def format_yaml_with_comments(yaml_dict: Dict, field_path: str, computation_appr
     return yaml_str
 
 
-def extract_fleeti_dependencies(computation_json: Dict) -> List[str]:
-    """Extract Fleeti field dependencies from parameters.fleeti."""
+def extract_fleeti_dependencies(computation_json: Dict, field_name: str) -> List[str]:
+    """Extract Fleeti field dependencies from parameters.fleeti.
+
+    Enforces Fleeti field names (no field paths) in parameters.fleeti.
+    """
     deps = set()
 
     def add_from_params(params: Optional[Dict]) -> None:
@@ -308,6 +311,11 @@ def extract_fleeti_dependencies(computation_json: Dict) -> List[str]:
         if isinstance(fleeti, list):
             for name in fleeti:
                 if name:
+                    if '.' in name:
+                        raise ValueError(
+                            f"Invalid parameters.fleeti entry for {field_name}: '{name}' "
+                            "must be a Fleeti field name, not a field path."
+                        )
                     deps.add(name)
 
     # Top-level parameters
@@ -382,7 +390,7 @@ def process_csv_row(row: Dict, provider: str) -> Optional[tuple]:
     field_path = row.get('Fleeti Field Path', '').strip()
     computation_approach = row.get('Computation Approach', '').strip()
 
-    deps = extract_fleeti_dependencies(computation_json)
+    deps = extract_fleeti_dependencies(computation_json, field_name)
 
     return (field_name, optimized, field_path, computation_approach, deps)
 
@@ -419,16 +427,16 @@ def order_mappings_by_dependencies(entries: List[Dict]) -> List[str]:
                 available.insert(insert_at, dependent)
 
     if len(ordered) != len(entries):
-        # Cycle or missing dependency; fall back to original CSV order
-        print("Warning: Dependency ordering incomplete (cycle detected). Falling back to CSV order.")
-        return [e['name'] for e in sorted(entries, key=lambda e: e['order'])]
+        raise ValueError("Dependency ordering incomplete (cycle detected). Aborting YAML generation.")
 
     return ordered
 
 
 def generate_yaml_config(csv_path: Path) -> Path:
     """Generate YAML configuration from CSV file."""
-    print(f"Reading CSV file: {csv_path}")
+    print("=== YAML GENERATION ===")
+    print(f"CSV file: {csv_path.name}")
+    print("Reading CSV...")
     
     # Read CSV with UTF-8-sig encoding (handles BOM)
     with open(csv_path, 'r', encoding='utf-8-sig', newline='') as f:
@@ -447,23 +455,25 @@ def generate_yaml_config(csv_path: Path) -> Path:
     # Process rows
     mappings = OrderedDict()
     comments_dict = {}  # Store comments separately
-    entries = []
+    entries_by_name = {}
     
     for row in rows:
         result = process_csv_row(row, provider)
         if result:
             field_name, yaml_entry, field_path, computation_approach, deps = result
-            entries.append({
+            if field_name in entries_by_name:
+                print(f"Warning: Duplicate Fleeti field '{field_name}' found. Using last occurrence.")
+            entries_by_name[field_name] = {
                 'name': field_name,
                 'yaml_entry': yaml_entry,
                 'field_path': field_path,
                 'computation_approach': computation_approach,
                 'deps': deps,
-                'order': len(entries)
-            })
+                'order': len(entries_by_name)
+            }
 
+    entries = list(entries_by_name.values())
     ordered_names = order_mappings_by_dependencies(entries)
-    entries_by_name = {e['name']: e for e in entries}
     for name in ordered_names:
         entry = entries_by_name[name]
         mappings[name] = entry['yaml_entry']
@@ -547,11 +557,12 @@ def main():
             f"No CSV file found matching pattern 'Mapping Fields (db) *.csv' in {EXPORT_DIR}"
         )
     
-    print(f"Using CSV file: {csv_path}")
+    print(f"Using CSV: {csv_path.name}")
     
     # Generate YAML
     output_path = generate_yaml_config(csv_path)
-    print(f"\nSuccess! Generated YAML configuration at: {output_path}")
+    print(f"Generated YAML: {output_path.name}")
+    print("=== DONE ===")
 
 
 if __name__ == '__main__':

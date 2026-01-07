@@ -1,6 +1,6 @@
-**Status:** 🎯 To Be Created  
-**Priority:** 🔴 HIGH (Blocking Frontend Development)  
-**Stream:** `live.map.markers`
+# Updates
+
+- 2025-02-01: Clarified cluster top_status aggregation, subscription_id guidance, and verified Fleeti field paths against the latest export.
 
 ---
 
@@ -50,13 +50,16 @@ This WebSocket stream provides real-time marker updates for assets displayed on 
 ```
 
 **Viewport Structure:**
+
 - `bounds`: 2D array defining southwest and northeast corners `[[min_lat, min_lng], [max_lat, max_lng]]`
 - `zoom`: Integer zoom level (used by backend for clustering decisions)
 
 **Filters Structure:**
+
 - `search`: String or null - filters assets by metadata (name, group name, etc.)
 
 **Future Filters (not yet available):**
+
 - `group_ids`: array of integers - Restrict to specific asset groups
 - `customer_reference`: array of strings - Restrict to specific customer accounts
 - `country`: string - Restrict to assets in a specific country
@@ -91,9 +94,13 @@ This WebSocket stream provides real-time marker updates for assets displayed on 
 ```
 
 **Server Capabilities:**
+
 - `snapshot: true` - Server sends initial full state snapshot
 - `delta: true` - Server sends incremental updates after snapshot
 - `clustering: "server"` - Backend handles clustering based on viewport and zoom
+- `subscription_id` Guidance
+    - Treat subscription_id as an opaque identifier. Use the value provided by the server for subsequent updates.
+    - A single connection may support multiple subscriptions in the future; do not assume subscription_id equals the stream name.
 
 ---
 
@@ -166,6 +173,7 @@ Initial full state sent after subscription. Contains all assets and clusters wit
     }
   ]
 }
+
 ```
 
 ## Delta
@@ -217,6 +225,7 @@ Incremental updates sent after snapshot. Contains only changed assets and cluste
     }
   ]
 }
+
 ```
 
 ## Update
@@ -240,6 +249,7 @@ Client sends viewport/filter/zoom changes. Server responds with new snapshot or 
     "rate_limit_hz": 2
   }
 }
+
 ```
 
 ## Error & Resync
@@ -254,6 +264,7 @@ Client sends viewport/filter/zoom changes. Server responds with new snapshot or 
   "message": "Invalid viewport bounds",
   "at": "2025-10-23T14:02:00Z"
 }
+
 ```
 
 **Resync Required:**
@@ -266,6 +277,7 @@ Client sends viewport/filter/zoom changes. Server responds with new snapshot or 
   "last_valid_seq": 100,
   "at": "2025-10-23T14:02:00Z"
 }
+
 ```
 
 Client should re-subscribe when receiving `resync_required`.
@@ -274,40 +286,9 @@ Client should re-subscribe when receiving `resync_required`.
 
 # Field References
 
-This stream includes Fleeti telemetry fields grouped by category, using exact field paths from the [🎯 Fleeti Fields Database](../1-databases/2-fleeti-fields/README.md).
+This stream includes Fleeti telemetry fields grouped by category, using exact field paths from the Fleeti Fields Database. 
 
-## Telemetry Fields (from Fleeti Telemetry System)
-
-### Location Category (grouped under `location` object)
-
-- `location.latitude` (number, degrees) - Latitude in decimal degrees
-- `location.longitude` (number, degrees) - Longitude in decimal degrees
-- `location.heading` (number, degrees, nullable) - Heading in degrees (0-359)
-
-### Metadata Category (root level)
-
-- `last_updated_at` (datetime) - Timestamp of when the telemetry record was originally created
-
-### Status Category (grouped under `status` object)
-
-- `status.top_status.family` (string) - Main status category (connectivity/immobilization/engine/transit)
-- `status.top_status.code` (string) - Current status code (offline/immobilized/running/in_transit/parked/online)
-- `status.top_status.last_changed_at` (datetime) - When the main status last changed
-- `status.statuses.connectivity.code` (string) - Connectivity status (online/offline)
-- `status.statuses.immobilization.code` (string, nullable) - Immobilization status (immobilized/free/immobilizing/releasing)
-- `status.statuses.engine.code` (string, nullable) - Engine status (running/standby)
-- `status.statuses.transit.code` (string, nullable) - Transit status (in_transit/parked)
-
-### Motion Category (grouped under `motion` object)
-
-- `motion.speed.value` (number, km/h, nullable) - Current speed in kilometers per hour
-
-## Asset Metadata Fields (from Asset Service)
-
-- `asset_id` (integer) - Unique asset identifier
-- `name` (string) - Asset name
-- `asset_type` (string) - Asset type (vehicle/equipment/site/phone)
-- `asset_subtype` (string) - Asset subtype (truck/car/generator/etc.)
+[Untitled](https://www.notion.so/2d23e766c901800a8a21f5b1590d9aeb?pvs=21)
 
 ---
 
@@ -332,6 +313,7 @@ Clustering is performed server-side based on viewport bounds and zoom level. The
 - Client should render clusters as provided without attempting local re-clustering
 - Clusters may appear, merge, split, or disappear as viewport changes
 - Cluster `top_status.code` determines the visual color/styling of the cluster marker
+- Cluster `top_status` uses the same family priority as individual assets (Connectivity > Immobilization > Engine > Transit), applied across all assets in the cluster.
 
 ---
 
@@ -344,7 +326,7 @@ Filters scope the real-time data to a meaningful subset of assets based on metad
 ### Search Filter
 
 - `filters.search`: String or null
-- Filters assets by metadata fields (name, group name, customer reference, etc.)
+- Filters assets by metadata fields (name, group name, etc.)
 - Search is case-insensitive and matches partial strings
 - When null, no search filtering is applied
 
@@ -359,16 +341,3 @@ The following filters are planned for future releases:
 - `filters.top_status`: String - Restrict to assets with specific top-level statuses
 
 When filters change in the UI, the client must send an `update` action with the new filter set.
-
----
-
-# Related Documentation
-
-- **[✅ Epic 3 - Status Computation](../E3-Status-Computation/README.md)**: Top status computation logic
-- **[🎯 Fleeti Fields Database](./1-databases/2-fleeti-fields/README.md)**: Complete field definitions with computation approaches
-- **[Mobile App Specs](../../../docs/rag/SPECIFICATIONS_FAQ.md)**: Frontend requirements
-
----
-
-**Last Updated:** 2025-01-21  
-**Status:** ✅ Specification Complete
