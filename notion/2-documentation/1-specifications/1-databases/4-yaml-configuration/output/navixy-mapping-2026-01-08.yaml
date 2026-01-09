@@ -1,0 +1,1600 @@
+version: "1.0.6"
+provider: "navixy"
+
+mappings:
+  location_latitude:
+    type: direct
+    sources:
+    - field: lat
+      path: lat
+      unit: degrees
+    unit: degrees
+    data_type: number
+    error_handling: return_null
+    # Field Path: location.latitude
+    # Computation Approach: Direct mapping from Navixy: lat (path: lat) - Latitude in decimal degrees from Navixy
+
+  location_longitude:
+    type: direct
+    sources:
+    - field: lng
+      path: lng
+      unit: degrees
+    unit: degrees
+    data_type: number
+    error_handling: return_null
+    # Field Path: location.longitude
+    # Computation Approach: Direct mapping from Navixy: lng (path: lng) - Longitude in decimal degrees from Navixy
+
+  location_altitude:
+    type: direct
+    sources:
+    - field: alt
+      path: alt
+      unit: meters
+    unit: meters
+    data_type: number
+    error_handling: return_null
+    # Field Path: location.altitude
+    # Computation Approach: Direct mapping from Navixy: alt (path: alt) - Altitude in meters from Navixy
+
+  location_heading:
+    type: direct
+    sources:
+    - field: heading
+      path: heading
+      unit: degrees
+    unit: degrees
+    data_type: number
+    error_handling: return_null
+    # Field Path: location.heading
+    # Computation Approach: Direct mapping from Navixy: heading (path: heading) - Heading in degrees (0-359) from Navixy
+
+  location_precision_fix_quality:
+    type: direct
+    sources:
+    - field: avl_io_69
+      path: params.avl_io_69
+      unit: none
+    unit: none
+    data_type: number
+    error_handling: return_null
+    # Field Path: location.precision.fix_quality
+    # Computation Approach: Direct mapping from Navixy: avl_io_69 (path: params.avl_io_69) - GNSS Status: 0 - GNSS OFF, 1 – GNSS ON with fix, 2 - GNSS ON without fix, 3 - GNSS sleep, 4 - GNSS ON with fix, invalid data
+
+  location_precision_satellites:
+    type: direct
+    sources:
+    - field: satellites
+      path: satellites
+      unit: none
+    unit: none
+    data_type: number
+    error_handling: return_null
+    # Field Path: location.precision.satellites
+    # Computation Approach: Direct mapping from Navixy: satellites (path: satellites) - Number of satellites in fix from Navixy
+
+  location_precision_hdop:
+    type: prioritized
+    sources:
+    - priority: 1
+      field: hdop
+      path: hdop
+      unit: none
+    - priority: 2
+      field: avl_io_182
+      path: params.avl_io_182
+      unit: none
+    unit: none
+    data_type: number
+    error_handling: return_null
+    # Field Path: location.precision.hdop
+    # Computation Approach: Prioritized: Navixy hdop (path: hdop, priority 1), then Navixy avl_io_182 (path: params.avl_io_182, priority 2) - Horizontal Dilution of Precision
+
+  location_precision_pdop:
+    type: prioritized
+    sources:
+    - priority: 1
+      field: pdop
+      path: pdop
+      unit: none
+    - priority: 2
+      field: avl_io_181
+      path: params.avl_io_181
+      unit: none
+    unit: none
+    data_type: number
+    error_handling: return_null
+    # Field Path: location.precision.pdop
+    # Computation Approach: Prioritized: Navixy pdop (path: pdop, priority 1), then Navixy avl_io_181 (path: params.avl_io_181, priority 2) - Position Dilution of Precision
+
+  location_cardinal_direction:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_cardinal_direction
+    parameters:
+      fleeti:
+      - location_heading
+    unit: none
+    data_type: string
+    error_handling: return_null
+    # Field Path: location.cardinal_direction
+    # Computation Approach: Calculated: derive from location_heading using derive_cardinal_direction function. 
+    # Converts heading (0-359 degrees) to cardinal direction (N, NE, E, SE, S, SW, W, NW).
+    # 
+    # Pseudo code:
+    # dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
+    # index = Math.floor((location_heading + 22.5) % 360 / 45)
+    # cardinal_direction = dirs[index]
+
+  last_updated_at:
+    type: direct
+    sources:
+    - field: msg_time
+      path: msg_time
+      unit: none
+    unit: none
+    data_type: datetime
+    error_handling: return_null
+    # Field Path: last_updated_at
+    # Computation Approach: Direct mapping from Navixy: msg_time (path: msg_time) - Timestamp of when the telemetry record was originally created on the GPS tracker device, before transmission to the provider.
+
+  location_last_changed_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_location_last_changed_at
+    parameters:
+      fleeti:
+      - location_latitude
+      - location_longitude
+      - last_updated_at
+    unit: none
+    data_type: datetime
+    error_handling: return_null
+    # Field Path: location.last_changed_at
+    # Computation Approach: Calculated: derive from location_latitude and location_longitude using derive_location_last_changed_at function. 
+    # Backend compares current position with previous position. If latitude or longitude changed, sets timestamp to last_updated_at.
+    # 
+    # Pseudo code:
+    # if (current.lat !== previous.lat || current.lng !== previous.lng) {
+    # distance = calculateDistance(current, previous)
+    # if (distance > threshold) {
+    # location_last_changed_at = last_updated_at;
+    # }
+    # }
+
+  statuses_connectivity_code:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_statuses_connectivity_code
+    parameters:
+      fleeti:
+      - last_updated_at
+    unit: none
+    data_type: string
+    error_handling: return_null
+    # Field Path: status.statuses.connectivity.code
+    # Computation Approach: Calculated: derive from last_updated_at using derive_statuses_connectivity_code function. Function calls Asset Service to retrieve asset_type and asset_subtype. 
+    # Determines online/offline status based on time threshold: Vehicles, Equipment, and Phones use 24h threshold; Coldroom Sites use 1h threshold. Check asset type and subtype: if asset_type === Site (30) AND asset_subtype === Coldroom (10), use 1h threshold; otherwise use 24h threshold. 
+    # Compare root-level last_updated_at (derived from msg_time) with current time. 
+    # If difference < threshold ? "online", else ? "offline". Connectivity is based on the root-level last_updated_at timestamp (derived from msg_time), not GPS location updates.
+    # 
+    # Pseudo code:
+    # asset_type = asset_service.get_asset_type(asset_id)
+    # asset_subtype = asset_service.get_asset_subtype(asset_id)
+    # threshold = (asset_type === Site && asset_subtype === Coldroom) ? 1 : 24  // hours
+    # time_diff = current_time - last_updated_at
+    # if (time_diff < threshold) {
+    # return "online"
+    # } else {
+    # return "offline"
+    # }
+
+  statuses_connectivity_compatible:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_statuses_connectivity_compatible
+    parameters:
+      fleeti: []
+    unit: none
+    data_type: boolean
+    error_handling: return_null
+    # Field Path: status.statuses.connectivity.compatible
+    # Computation Approach: Calculated: derive using derive_statuses_connectivity_compatible function. Function calls Asset Service to retrieve asset_type and asset_subtype. 
+    # Check asset type/subtype against compatibility matrix (Connectivity: all types). Connectivity status is compatible with all asset types and subtypes. 
+    # Return true for all assets. 
+    # Connectivity applies to all asset types (Vehicles, Equipment, Sites, Phones) regardless of subtype.
+    # 
+    # Pseudo code:
+    # asset_type = asset_service.get_asset_type(asset_id)
+    # asset_subtype = asset_service.get_asset_subtype(asset_id)
+    # // Connectivity is compatible with all asset types
+    # return true
+
+  statuses_connectivity_last_changed_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_statuses_connectivity_last_changed_at
+    parameters:
+      fleeti:
+      - statuses_connectivity_code
+      - last_updated_at
+    unit: none
+    data_type: datetime
+    error_handling: return_null
+    # Field Path: status.statuses.connectivity.last_changed_at
+    # Computation Approach: Calculated: derive from statuses_connectivity_code and last_updated_at using derive_statuses_connectivity_last_changed_at function. 
+    # Updates when status family code changes (not on every packet). Backend compares current statuses_connectivity_code with previous value. If different, update timestamp to last_updated_at (from telemetry packet). 
+    # If same, keep previous timestamp unchanged. Used to calculate duration of current connectivity status (e.g., "offline for 2h", "online since yesterday"). 
+    # Enables connectivity duration tracking and timeline features.
+    # 
+    # Pseudo code:
+    # if (current_statuses_connectivity_code !== previous_statuses_connectivity_code) {
+    # statuses_connectivity_last_changed_at = last_updated_at  // Use timestamp from telemetry packet
+    # } else {
+    # statuses_connectivity_last_changed_at = previous_statuses_connectivity_last_changed_at  // keep unchanged
+    # }
+
+  statuses_immobilization_compatible:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_statuses_immobilization_compatible
+    parameters:
+      fleeti: []
+    unit: none
+    data_type: boolean
+    error_handling: return_null
+    # Field Path: status.statuses.immobilization.compatible
+    # Computation Approach: Calculated: derive using derive_statuses_immobilization_compatible function. 
+    # Function calls Asset Service to retrieve asset_type and asset_accessories. 
+    # Check asset type/subtype against compatibility matrix (Immobilization: Vehicles and Equipment only). Asset must have asset_type = Vehicle (10) OR Equipment (20). Asset must have immobilizer accessory installed (asset.accessories contains type_code="immobilizer"). 
+    # Return true if both conditions are met, false otherwise.
+    # 
+    # Pseudo code:
+    # asset_type = asset_service.get_asset_type(asset_id)
+    # asset_accessories = asset_service.get_asset_accessories(asset_id)
+    # if (asset_type === Vehicle || asset_type === Equipment) {
+    # if (hasImmobilizerAccessory(asset_accessories)) {
+    # return true
+    # }
+    # }
+    # return false
+
+  statuses_engine_compatible:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_statuses_engine_compatible
+    parameters:
+      fleeti: []
+    unit: none
+    data_type: boolean
+    error_handling: return_null
+    # Field Path: status.statuses.engine.compatible
+    # Computation Approach: Calculated: derive using derive_statuses_engine_compatible function. Function calls Asset Service to retrieve asset_type and asset_subtype. 
+    # Check asset type/subtype against compatibility matrix (Engine: Equipment.ElectricGenerator, Vehicle.Agricultural, Vehicle.Machine only). Equipment: Only Equipment.ElectricGenerator supports engine status. Vehicles: Only Vehicle.Agricultural and Vehicle.Machine support engine status. Sites: No (all subtypes). Phones: No (all subtypes). 
+    # Return true if asset type/subtype is compatible, false otherwise.
+    # 
+    # Pseudo code:
+    # asset_type = asset_service.get_asset_type(asset_id)
+    # asset_subtype = asset_service.get_asset_subtype(asset_id)
+    # if (asset_type === Equipment && asset_subtype === ElectricGenerator) {
+    # return true
+    # } else if (asset_type === Vehicle && (asset_subtype === Agricultural || asset_subtype === Machine)) {
+    # return true
+    # } else {
+    # return false
+    # }
+
+  statuses_transit_compatible:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_statuses_transit_compatible
+    parameters:
+      fleeti: []
+    unit: none
+    data_type: boolean
+    error_handling: return_null
+    # Field Path: status.statuses.transit.compatible
+    # Computation Approach: Calculated: derive using derive_statuses_transit_compatible function. Function calls Asset Service to retrieve asset_type and asset_subtype. Check asset type/subtype against compatibility matrix (Transit: Phone all subtypes, Equipment.Undefined, All Vehicle subtypes except excluded). Supported: Phone (all subtypes), Equipment.Undefined, All Vehicle subtypes (except those explicitly excluded). NOT supported: Site.Undefined, Site.Coldroom, Equipment.FuelTank, Equipment.ElectricGenerator. 
+    # Return true if asset type/subtype is compatible, false otherwise.
+    # 
+    # Pseudo code:
+    # asset_type = asset_service.get_asset_type(asset_id)
+    # asset_subtype = asset_service.get_asset_subtype(asset_id)
+    # if (asset_type === Site) {
+    # return false  // Sites not supported
+    # } else if (asset_type === Phone) {
+    # return true  // All phone subtypes supported
+    # } else if (asset_type === Equipment) {
+    # if (asset_subtype === Undefined) {
+    # return true
+    # } else {
+    # return false  // Equipment.FuelTank and Equipment.ElectricGenerator not supported
+    # }
+    # } else if (asset_type === Vehicle) {
+    # return true  // All vehicle subtypes supported (except those explicitly excluded in matrix)
+    # } else {
+    # return false
+    # }
+
+  inputs_individual_input_1:
+    type: prioritized
+    sources:
+    - priority: 1
+      type: calculated
+      calculation_type: function_reference
+      function: extract_bit_from_bitmask
+      parameters:
+        provider:
+          navixy: inputs
+        static:
+          bit_position: 0
+    - priority: 2
+      field: avl_io_1
+      path: params.avl_io_1
+      unit: none
+    unit: none
+    data_type: boolean
+    error_handling: return_null
+    # Field Path: io.inputs.individual.input_1
+    # Computation Approach: Prioritized: calculated using extract_bit_from_bitmask function from inputs (priority 1), then Navixy avl_io_1 (path: params.avl_io_1, priority 2) - Digital Input 1 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., ignition, door sensor) is defined in asset.installation.* metadata. 
+    # Used to compute canonical fields like power.ignition.
+    # 
+    # Pseudo code:
+    # if (inputs bitmask is available) {
+    # io_input_1 = extractBit(inputs, 0)  // extract bit 0 from Digital Inputs Bitmask at root level
+    # } else if (avl_io_1 is available) {
+    # io_input_1 = avl_io_1  // fallback: direct mapping from params.avl_io_1
+    # } else {
+    # io_input_1 = null
+    # }
+
+  inputs_individual_input_2:
+    type: prioritized
+    sources:
+    - priority: 1
+      type: calculated
+      calculation_type: function_reference
+      function: extract_bit_from_bitmask
+      parameters:
+        provider:
+          navixy: inputs
+        static:
+          bit_position: 1
+    - priority: 2
+      field: avl_io_2
+      path: params.avl_io_2
+      unit: none
+    unit: none
+    data_type: boolean
+    error_handling: return_null
+    # Field Path: io.inputs.individual.input_2
+    # Computation Approach: Prioritized: calculated using extract_bit_from_bitmask function from inputs (priority 1), then Navixy avl_io_2 (path: params.avl_io_2, priority 2) - Digital Input 2 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., door sensor, alarm) is defined in asset.installation.* metadata. 
+    # Used to compute canonical fields.
+    # 
+    # Pseudo code:
+    # if (inputs bitmask is available) {
+    # io_input_2 = extractBit(inputs, 1)  // extract bit 1 from Digital Inputs Bitmask at root level
+    # } else if (avl_io_2 is available) {
+    # io_input_2 = avl_io_2  // fallback: direct mapping from params.avl_io_2
+    # } else {
+    # io_input_2 = null
+    # }
+
+  inputs_individual_input_3:
+    type: prioritized
+    sources:
+    - priority: 1
+      type: calculated
+      calculation_type: function_reference
+      function: extract_bit_from_bitmask
+      parameters:
+        provider:
+          navixy: inputs
+        static:
+          bit_position: 2
+    - priority: 2
+      field: avl_io_3
+      path: params.avl_io_3
+      unit: none
+    unit: none
+    data_type: boolean
+    error_handling: return_null
+    # Field Path: io.inputs.individual.input_3
+    # Computation Approach: Prioritized: calculated using extract_bit_from_bitmask function from inputs (priority 1), then Navixy avl_io_3 (path: params.avl_io_3, priority 2) - Digital Input 3 state. Values: 0 = low/inactive, 1 = high/active. Semantic meaning (e.g., door sensor, alarm) is defined in asset.installation.* metadata. 
+    # Used to compute canonical fields.
+    # 
+    # Pseudo code:
+    # if (inputs bitmask is available) {
+    # io_input_3 = extractBit(inputs, 2)  // extract bit 2 from Digital Inputs Bitmask at root level
+    # } else if (avl_io_3 is available) {
+    # io_input_3 = avl_io_3  // fallback: direct mapping from params.avl_io_3
+    # } else {
+    # io_input_3 = null
+    # }
+
+  inputs_individual_input_4:
+    type: prioritized
+    sources:
+    - priority: 1
+      type: calculated
+      calculation_type: function_reference
+      function: extract_bit_from_bitmask
+      parameters:
+        provider:
+          navixy: inputs
+        static:
+          bit_position: 3
+    - priority: 2
+      field: avl_io_4
+      path: params.avl_io_4
+      unit: none
+    unit: none
+    data_type: boolean
+    error_handling: return_null
+    # Field Path: io.inputs.individual.input_4
+    # Computation Approach: Prioritized: calculated using extract_bit_from_bitmask function from inputs (priority 1), then Navixy avl_io_4 (path: params.avl_io_4, priority 2) - Digital Input 4 state (also functions as pulse counter). Values: 0 = low/inactive, 1 = high/active. 
+    # Pulse count resets when records are saved. Semantic meaning (e.g., door sensor, alarm) is defined in asset.installation.* metadata. Used to compute canonical fields.
+    # 
+    # Pseudo code:
+    # if (inputs bitmask is available) {
+    # io_input_4 = extractBit(inputs, 3)  // extract bit 3 from Digital Inputs Bitmask at root level
+    # } else if (avl_io_4 is available) {
+    # io_input_4 = avl_io_4  // fallback: direct mapping from params.avl_io_4
+    # } else {
+    # io_input_4 = null
+    # }
+
+  ignition_value:
+    type: prioritized
+    sources:
+    - priority: 1
+      field: avl_io_239
+      path: params.avl_io_239
+      unit: none
+    - priority: 2
+      type: calculated
+      calculation_type: function_reference
+      function: derive_ignition_value
+      parameters:
+        fleeti:
+        - inputs_individual_input_1
+        - inputs_individual_input_2
+        - inputs_individual_input_3
+        - inputs_individual_input_4
+    unit: none
+    data_type: boolean
+    error_handling: return_null
+    # Field Path: power.ignition.value
+    # Computation Approach: Prioritized mapping: 1. Direct mapping from Navixy: avl_io_239 (path: params.avl_io_239) - AVL ID 239 (Ignition: 0 - Ignition Off, 1 - Ignition On). 2. Calculated: derive from asset_installation_ignition_input_number, inputs_individual_input_1, inputs_individual_input_2, inputs_individual_input_3, and inputs_individual_input_4 using derive_ignition_value function. Read ignition input number from asset.installation.ignition_input_number (default to 1 if not specified). Read digital input state from the corresponding individual input field: inputs_individual_input_1 (if ignition_input_number = 1), inputs_individual_input_2 (if ignition_input_number = 2), inputs_individual_input_3 (if ignition_input_number = 3), or inputs_individual_input_4 (if ignition_input_number = 4). If ignition_input_number is not available, fallback to inputs_individual_input_1. If anything else fails, return null. This is the primary ignition field used by the rest of the Fleeti system for status computation and business logic.
+    # 
+    # Pseudo code:
+    # // Priority 1: Try direct mapping from AVL ID 239
+    # if (avl_io_239 !== null && avl_io_239 !== undefined) {
+    # return avl_io_239 === 1  // Convert 0/1 to boolean: 0 = false, 1 = true
+    # }
+    # 
+    # // Priority 2: Fallback to calculated approach
+    # ignition_input_number = asset_installation_ignition_input_number || 1  // default to 1
+    # ignition_state = null
+    # if (ignition_input_number === 1) {
+    # ignition_state = inputs_individual_input_1
+    # } else if (ignition_input_number === 2) {
+    # ignition_state = inputs_individual_input_2
+    # } else if (ignition_input_number === 3) {
+    # ignition_state = inputs_individual_input_3
+    # } else if (ignition_input_number === 4) {
+    # ignition_state = inputs_individual_input_4
+    # } else {
+    # ignition_state = inputs_individual_input_1  // invalid input number, fallback
+    # }
+    # return ignition_state
+
+  statuses_engine_code:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_statuses_engine_code
+    parameters:
+      fleeti:
+      - statuses_engine_compatible
+      - ignition_value
+    unit: none
+    data_type: string
+    error_handling: return_null
+    # Field Path: status.statuses.engine.code
+    # Computation Approach: Calculated: derive from statuses_engine_compatible and ignition_value using derive_statuses_engine_code function. 
+    # Prerequisites: Check statuses_engine_compatible (must be true). If false, return null (engine status not applicable). 
+    # If true, check ignition state: If ignition_value = true (ON) ? "running". If ignition_value = false (OFF) ? "standby". 
+    # If ignition_value is null or unavailable, return null. Engine status is based on ignition state for compatible assets. 
+    # The ignition_value field already handles reading from the correct input based on installation metadata (ignition_input_number), with fallback to input 1 if metadata unavailable.
+    # 
+    # Pseudo code:
+    # if (!statuses_engine_compatible) {
+    # return null  // Engine status not applicable
+    # }
+    # if (ignition_value === true) {
+    # return "running"
+    # } else if (ignition_value === false) {
+    # return "standby"
+    # } else {
+    # return null  // Ignition state unavailable
+    # }
+
+  statuses_engine_last_changed_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_statuses_engine_last_changed_at
+    parameters:
+      fleeti:
+      - statuses_engine_code
+      - last_updated_at
+    unit: none
+    data_type: datetime
+    error_handling: return_null
+    # Field Path: status.statuses.engine.last_changed_at
+    # Computation Approach: Calculated: derive from statuses_engine_code and last_updated_at using derive_statuses_engine_last_changed_at function. Updates when status family code changes (not on every packet). 
+    # Backend compares current statuses_engine_code with previous value. If different, update timestamp to last_updated_at (from telemetry packet). If same, keep previous timestamp unchanged. 
+    # Used to calculate duration of current engine status (e.g., "running for 2h", "standby since yesterday"). Enables engine duration tracking and timeline features.
+    # 
+    # Pseudo code:
+    # if (current_statuses_engine_code !== previous_statuses_engine_code) {
+    # statuses_engine_last_changed_at = last_updated_at  // Use timestamp from telemetry packet
+    # } else {
+    # statuses_engine_last_changed_at = previous_statuses_engine_last_changed_at  // keep unchanged
+    # }
+
+  ignition_last_changed_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_ignition_last_changed_at
+    parameters:
+      fleeti:
+      - ignition_value
+      - last_updated_at
+    unit: none
+    data_type: datetime
+    error_handling: return_null
+    # Field Path: power.ignition.last_changed_at
+    # Computation Approach: Calculated: derive from ignition_value and last_updated_at using derive_ignition_last_changed_at function. 
+    # Updates when ignition state changes (not on every packet). Backend compares current ignition_value with previous value. If different, update timestamp to last_updated_at (from telemetry packet). 
+    # If same, keep previous timestamp unchanged. Used to calculate duration of current ignition state (e.g., "ignition on for 2h", "ignition off since yesterday"). 
+    # Enables ignition duration tracking and timeline features.
+    # 
+    # Pseudo code:
+    # if (current_ignition_value !== previous_ignition_value) {
+    # ignition_last_changed_at = last_updated_at  // Use timestamp from telemetry packet
+    # } else {
+    # ignition_last_changed_at = previous_ignition_last_changed_at  // keep unchanged
+    # }
+
+  outputs_individual_output_1:
+    type: prioritized
+    sources:
+    - priority: 1
+      type: calculated
+      calculation_type: function_reference
+      function: extract_bit_from_bitmask
+      parameters:
+        provider:
+          navixy: outputs
+        static:
+          bit_position: 0
+    - priority: 2
+      field: avl_io_179
+      path: params.avl_io_179
+      unit: none
+    unit: none
+    data_type: boolean
+    error_handling: return_null
+    # Field Path: io.outputs.individual.output_1
+    # Computation Approach: Prioritized: calculated using extract_bit_from_bitmask function from outputs (priority 1), then Navixy avl_io_179 (path: params.avl_io_179, priority 2) - Digital Output 1 state. Values: 0 = inactive, 1 = active. Semantic meaning (e.g., immobilizer relay) is defined in asset.installation.* metadata. 
+    # Used for immobilization control and status computation.
+    # 
+    # Pseudo code:
+    # if (outputs bitmask is available) {
+    # io_output_1 = extractBit(outputs, 0)  // extract bit 0 from Output Status Bitmask at root level
+    # } else if (avl_io_179 is available) {
+    # io_output_1 = avl_io_179  // fallback: direct mapping from params.avl_io_179
+    # } else {
+    # io_output_1 = null
+    # }
+
+  outputs_individual_output_2:
+    type: prioritized
+    sources:
+    - priority: 1
+      type: calculated
+      calculation_type: function_reference
+      function: extract_bit_from_bitmask
+      parameters:
+        provider:
+          navixy: outputs
+        static:
+          bit_position: 1
+    - priority: 2
+      field: avl_io_180
+      path: params.avl_io_180
+      unit: none
+    unit: none
+    data_type: boolean
+    error_handling: return_null
+    # Field Path: io.outputs.individual.output_2
+    # Computation Approach: Prioritized: calculated using extract_bit_from_bitmask function from outputs (priority 1), then Navixy avl_io_180 (path: params.avl_io_180, priority 2) - Digital Output 2 state. Values: 0 = inactive, 1 = active. Semantic meaning (e.g., immobilizer relay) is defined in asset.installation.* metadata. 
+    # Used for immobilization control and status computation.
+    # 
+    # Pseudo code:
+    # if (outputs bitmask is available) {
+    # io_output_2 = extractBit(outputs, 1)  // extract bit 1 from Output Status Bitmask at root level
+    # } else if (avl_io_180 is available) {
+    # io_output_2 = avl_io_180  // fallback: direct mapping from params.avl_io_180
+    # } else {
+    # io_output_2 = null
+    # }
+
+  outputs_individual_output_3:
+    type: prioritized
+    sources:
+    - priority: 1
+      type: calculated
+      calculation_type: function_reference
+      function: extract_bit_from_bitmask
+      parameters:
+        provider:
+          navixy: outputs
+        static:
+          bit_position: 2
+    - priority: 2
+      field: avl_io_380
+      path: params.avl_io_380
+      unit: none
+    unit: none
+    data_type: boolean
+    error_handling: return_null
+    # Field Path: io.outputs.individual.output_3
+    # Computation Approach: Prioritized: calculated using extract_bit_from_bitmask function from outputs (priority 1), then Navixy avl_io_380 (path: params.avl_io_380, priority 2) - Digital Output 3 state. Values: 0 = inactive, 1 = active. Semantic meaning (e.g., immobilizer relay) is defined in asset.installation.* metadata. 
+    # Used for immobilization control and status computation.
+    # 
+    # Pseudo code:
+    # if (outputs bitmask is available) {
+    # io_output_3 = extractBit(outputs, 2)  // extract bit 2 from Output Status Bitmask at root level
+    # } else if (avl_io_380 is available) {
+    # io_output_3 = avl_io_380  // fallback: direct mapping from params.avl_io_380
+    # } else {
+    # io_output_3 = null
+    # }
+
+  statuses_immobilization_code:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_statuses_immobilization_code
+    parameters:
+      fleeti:
+      - statuses_immobilization_compatible
+      - outputs_individual_output_1
+      - outputs_individual_output_2
+      - outputs_individual_output_3
+    unit: none
+    data_type: string
+    error_handling: return_null
+    # Field Path: status.statuses.immobilization.code
+    # Computation Approach: Calculated: derive from statuses_immobilization_compatible, outputs_individual_output_1, outputs_individual_output_2, and outputs_individual_output_3 using derive_statuses_immobilization_code function. 
+    # Function calls Asset Service to retrieve asset.installation.immobilizer_output_number. Prerequisites: Check statuses_immobilization_compatible (must be true). If false, return null (immobilization not applicable). 
+    # Read immobilizer output number from asset.installation.immobilizer_output_number (default to 1 if not specified). Read digital output state from the corresponding individual output field: outputs_individual_output_1 (if output_number = 1), outputs_individual_output_2 (if output_number = 2), or outputs_individual_output_3 (if output_number = 3). Status determination: If output state = 1 ? "immobilized". 
+    # If output state = 0 ? "free". If immobilization command sent via REST API ? "immobilizing" (persists until output changes to 1 or timeout, managed by backend command tracking). 
+    # If release command sent ? "releasing" (persists until output changes to 0 or timeout, managed by backend command tracking).
+    # 
+    # Pseudo code:
+    # if (!statuses_immobilization_compatible) {
+    #      return null  // Immobilization not applicable
+    # }
+    # output_number = asset_service.get_installation_metadata('immobilizer_output_number') || 1  // default to 1
+    # output_state = null
+    # if (output_number === 1) {
+    # output_state = outputs_individual_output_1
+    # } else if (output_number === 2) {
+    # output_state = outputs_individual_output_2
+    # } else if (output_number === 3) {
+    # output_state = outputs_individual_output_3
+    # }
+    # if (isImmobilizingCommandActive()) {
+    # return "immobilizing"
+    # } else if (isReleasingCommandActive()) {
+    # return "releasing"
+    # } else if (output_state === 1) {
+    # return "immobilized"
+    # } else if (output_state === 0) {
+    # return "free"
+    # } else {
+    # return null  // output state unavailable
+    # }
+
+  statuses_immobilization_last_changed_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_statuses_immobilization_last_changed_at
+    parameters:
+      fleeti:
+      - statuses_immobilization_code
+      - last_updated_at
+    unit: none
+    data_type: datetime
+    error_handling: return_null
+    # Field Path: status.statuses.immobilization.last_changed_at
+    # Computation Approach: Calculated: derive from statuses_immobilization_code and last_updated_at using derive_statuses_immobilization_last_changed_at function. 
+    # Updates when status family code changes (not on every packet). Backend compares current statuses_immobilization_code with previous value. 
+    # If different, update timestamp to last_updated_at (from telemetry packet). 
+    # If same, keep previous timestamp unchanged. Used to calculate duration of current immobilization status (e.g., "immobilized for 2h", "free since yesterday"). Enables immobilization duration tracking and timeline features.
+    # 
+    # Pseudo code:
+    # if (current_statuses_immobilization_code !== previous_statuses_immobilization_code) {
+    # statuses_immobilization_last_changed_at = last_updated_at  // Use timestamp from telemetry packet
+    # } else {
+    # statuses_immobilization_last_changed_at = previous_statuses_immobilization_last_changed_at  // keep unchanged
+    # }
+
+  speed:
+    type: prioritized
+    sources:
+    - priority: 1
+      field: can_speed
+      path: params.can_speed
+      unit: km/h
+    - priority: 2
+      field: obd_speed
+      path: params.obd_speed
+      unit: km/h
+    - priority: 3
+      field: avl_io_24
+      path: params.avl_io_24
+      unit: km/h
+    - priority: 4
+      field: speed
+      path: speed
+      unit: km/h
+    - priority: 5
+      field: avl_io_37
+      path: params.avl_io_37
+      unit: km/h
+    - priority: 6
+      field: avl_io_81
+      path: params.avl_io_81
+      unit: km/h
+    unit: km/h
+    data_type: number
+    error_handling: return_null
+    # Field Path: motion.speed.value
+    # Computation Approach: Prioritized: Navixy can_speed (path: params.can_speed, priority 1), then Navixy obd_speed (path: params.obd_speed, priority 2), then Navixy avl_io_24 (path: params.avl_io_24, priority 3), then Navixy speed (path: speed, priority 4), then Navixy avl_io_37 (path: params.avl_io_37, priority 5), then Navixy avl_io_81 (path: params.avl_io_81, priority 6) - Speed in km/h. GNSS Speed is the fallback. Use highest priority available source.
+
+  is_moving_value:
+    type: prioritized
+    sources:
+    - priority: 1
+      field: avl_io_240
+      path: params.avl_io_240
+      unit: none
+    - priority: 2
+      field: moving
+      path: params.moving
+      unit: none
+    unit: none
+    data_type: number
+    error_handling: return_null
+    # Field Path: motion.is_moving.value
+    # Computation Approach: Prioritized: Navixy avl_io_240 (path: params.avl_io_240, priority 1), then Navixy moving (path: params.moving, priority 2) - Movement status. Values: 0 = Movement Off, 1 = Movement On. 
+    # Indicates whether the asset is currently moving.
+
+  statuses_transit_code:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_statuses_transit_code
+    parameters:
+      fleeti:
+      - statuses_transit_compatible
+      - ignition_value
+      - is_moving_value
+      - speed
+    unit: none
+    data_type: string
+    error_handling: return_null
+    # Field Path: status.statuses.transit.code
+    # Computation Approach: Calculated: derive from statuses_transit_compatible, ignition_value, is_moving_value, and speed using derive_statuses_transit_code function. Prerequisites: Check statuses_transit_compatible (must be true). If false, return null (transit status not applicable). 
+    # Uses state machine with ignition triggers and movement/speed conditions. Immediate transitions: Ignition OFF → ON: → "in_transit" (immediate). Ignition ON → OFF: → "parked" (immediate). Duration-based transitions: IN_TRANSIT → PARKED: (movement = false OR speed = 0) for 3 minutes → "parked". PARKED → IN_TRANSIT: (movement = true OR speed > 0.5 km/h) → "in_transit" (immediate). Initial state: If ignition = true OR (movement = true OR speed > 0.5 km/h) → "in_transit". 
+    # If (movement = false AND speed = 0) for 3 minutes → "parked". Default → "in_transit" (conservative). 
+    # Speed threshold: 0.5 km/h (filters GPS drift). Parked detection duration: 3 minutes (180 seconds). 
+    # Ignition state only used when true (ignition ON); false or null = unavailable. Backend must track current Transit Status to apply transition rules. 
+    # If movement_status and speed are unavailable, maintain current status (no transition).
+    # 
+    # Pseudo code:
+    # if (!statuses_transit_compatible) {
+    # return null  // Transit status not applicable
+    # }
+    # // Immediate ignition transitions
+    # if (previous_ignition_value === false && ignition_value === true) {
+    # return "in_transit"  // Ignition OFF → ON
+    # }
+    # if (previous_ignition_value === true && ignition_value === false) {
+    # return "parked"  // Ignition ON → OFF
+    # }
+    # // State machine logic (requires backend state tracking)
+    # current_state = getPreviousTransitStatus()  // Backend tracks state
+    # if (current_state === "in_transit") {
+    # if ((is_moving_value === false || is_moving_value === 0) && (speed === null || speed === 0)) {
+    # if (durationInState >= 3 minutes) {
+    # return "parked"
+    # }
+    # }
+    # } else if (current_state === "parked") {
+    # if (is_moving_value === true || is_moving_value === 1 || (speed !== null && speed > 0.5)) {
+    # return "in_transit"
+    # }
+    # } else {
+    # // Initial state
+    # if (ignition_value === true || is_moving_value === true || (speed !== null && speed > 0.5)) {
+    # return "in_transit"
+    # } else if ((is_moving_value === false || is_moving_value === 0) && (speed === null || speed === 0)) {
+    # if (durationInState >= 3 minutes) {
+    # return "parked"
+    # }
+    # }
+    # return "in_transit"  // Default conservative
+    # }
+
+  top_status_family:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_top_status_family
+    parameters:
+      fleeti:
+      - statuses_connectivity_code
+      - statuses_immobilization_code
+      - statuses_engine_code
+      - statuses_transit_code
+    unit: none
+    data_type: string
+    error_handling: return_null
+    # Field Path: status.top_status.family
+    # Computation Approach: Calculated: derive from statuses_connectivity_code, statuses_immobilization_code, statuses_engine_code, and statuses_transit_code using derive_top_status_family function. 
+    # Function calls Asset Service internally to check compatibility for each status family (statuses_connectivity_compatible, statuses_immobilization_compatible, statuses_engine_compatible, statuses_transit_compatible). 
+    # Evaluates status families in conditional priority order: (1) Connectivity if compatible and code = "offline", (2) Immobilization if compatible and code = "immobilized", (3) Engine if compatible and code = "running", (4) Transit if compatible, (5) Connectivity fallback (code = "online"). 
+    # Returns the family name (connectivity/immobilization/engine/transit) of the selected status family.
+    # 
+    # Pseudo code:
+    # connectivity_compatible = checkConnectivityCompatible()  // Calls Asset Service internally
+    # immobilization_compatible = checkImmobilizationCompatible()  // Calls Asset Service internally
+    # engine_compatible = checkEngineCompatible()  // Calls Asset Service internally
+    # transit_compatible = checkTransitCompatible()  // Calls Asset Service internally
+    # if (connectivity_compatible && statuses_connectivity_code === "offline") {
+    # return "connectivity"
+    # } else if (immobilization_compatible && statuses_immobilization_code === "immobilized") {
+    # return "immobilization"
+    # } else if (engine_compatible && statuses_engine_code === "running") {
+    # return "engine"
+    # } else if (transit_compatible) {
+    # return "transit"
+    # } else {
+    # return "connectivity"  // fallback (online)
+    # }
+
+  top_status_code:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_top_status_code
+    parameters:
+      fleeti:
+      - statuses_connectivity_code
+      - statuses_immobilization_code
+      - statuses_engine_code
+      - statuses_transit_code
+    unit: none
+    data_type: string
+    error_handling: return_null
+    # Field Path: status.top_status.code
+    # Computation Approach: Calculated: derive from statuses_connectivity_code, statuses_immobilization_code, statuses_engine_code, and statuses_transit_code using derive_top_status_code function. 
+    # Function calls Asset Service internally to check compatibility for each status family (statuses_connectivity_compatible, statuses_immobilization_compatible, statuses_engine_compatible, statuses_transit_compatible). 
+    # Evaluates status families in conditional priority order: (1) Connectivity if compatible and code = "offline", (2) Immobilization if compatible and code = "immobilized", (3) Engine if compatible and code = "running", (4) Transit if compatible, (5) Connectivity fallback (code = "online"). 
+    # Returns the code value from the selected status family (e.g., "offline", "immobilized", "running", "in_transit", "parked", "online").
+    # 
+    # Pseudo code:
+    # connectivity_compatible = checkConnectivityCompatible()  // Calls Asset Service internally
+    # immobilization_compatible = checkImmobilizationCompatible()  // Calls Asset Service internally
+    # engine_compatible = checkEngineCompatible()  // Calls Asset Service internally
+    # transit_compatible = checkTransitCompatible()  // Calls Asset Service internally
+    # if (connectivity_compatible && statuses_connectivity_code === "offline") {
+    # return statuses_connectivity_code
+    # } else if (immobilization_compatible && statuses_immobilization_code === "immobilized") {
+    # return statuses_immobilization_code
+    # } else if (engine_compatible && statuses_engine_code === "running") {
+    # return statuses_engine_code
+    # } else if (transit_compatible) {
+    # return statuses_transit_code
+    # } else {
+    # return statuses_connectivity_code  // fallback ("online")
+    # }
+
+  top_status_last_changed_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_top_status_last_changed_at
+    parameters:
+      fleeti:
+      - top_status_code
+      - last_updated_at
+    unit: none
+    data_type: datetime
+    error_handling: return_null
+    # Field Path: status.top_status.last_changed_at
+    # Computation Approach: Calculated: derive from top_status_code and last_updated_at using derive_top_status_last_changed_at function. 
+    # Updates when top_status.code changes (not on every packet). Backend compares current top_status.code with previous value. If different, update timestamp to last_updated_at (from telemetry packet). If same, keep previous timestamp unchanged. 
+    # Used to calculate duration of current top status state (e.g., "immobilized for 2 hours", "engine running since 10:30"). 
+    # Enables timeline features and status duration calculations.
+    # 
+    # Pseudo code:
+    # if (current_top_status_code !== previous_top_status_code) {
+    # top_status_last_changed_at = last_updated_at  // Use timestamp from telemetry packet
+    # } else {
+    # top_status_last_changed_at = previous_top_status_last_changed_at  // keep unchanged
+    # }
+
+  statuses_transit_last_changed_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_statuses_transit_last_changed_at
+    parameters:
+      fleeti:
+      - statuses_transit_code
+      - last_updated_at
+    unit: none
+    data_type: datetime
+    error_handling: return_null
+    # Field Path: status.statuses.transit.last_changed_at
+    # Computation Approach: Calculated: derive from statuses_transit_code and last_updated_at using derive_statuses_transit_last_changed_at function. 
+    # Updates when status family code changes (not on every packet). Backend compares current statuses_transit_code with previous value. 
+    # If different, update timestamp to last_updated_at (from telemetry packet). If same, keep previous timestamp unchanged. Used to calculate duration of current transit status (e.g., "parked for 2h", "in_transit since 10:30"). 
+    # Enables transit duration tracking and timeline features.
+    # 
+    # Pseudo code:
+    # if (current_statuses_transit_code !== previous_statuses_transit_code) {
+    # statuses_transit_last_changed_at = last_updated_at  // Use timestamp from telemetry packet
+    # } else {
+    # statuses_transit_last_changed_at = previous_statuses_transit_last_changed_at  // keep unchanged
+    # }
+
+  movement_last_updated_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_movement_last_updated_at
+    parameters:
+      fleeti:
+      - is_moving_value
+      - speed
+      - last_updated_at
+    unit: none
+    data_type: datetime
+    error_handling: return_null
+    # Field Path: motion.last_updated_at
+    # Computation Approach: Calculated: derive from is_moving_value, speed, and last_updated_at using derive_movement_last_updated_at function. 
+    # Updates when motion-related Fleeti fields (is_moving_value or speed) are present. 
+    # Set to last_updated_at when either is_moving_value or speed has a value. Indicates when motion data was last updated. Updates on every packet that contains motion data.
+    # 
+    # Pseudo code:
+    # if (is_moving_value !== null || speed !== null) {
+    # movement_last_updated_at = last_updated_at  // Use root-level last_updated_at timestamp
+    # } else {
+    # movement_last_updated_at = null  // no motion data available
+    # }
+
+  is_moving_last_updated_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_is_moving_last_updated_at
+    parameters:
+      fleeti:
+      - is_moving_value
+      - last_updated_at
+    unit: none
+    data_type: datetime
+    error_handling: return_null
+    # Field Path: motion.is_moving.last_changed_at
+    # Computation Approach: Calculated: derive from is_moving_value using derive_is_moving_last_updated_at function. 
+    # Updates when movement status changes (not on every packet). 
+    # Backend compares current is_moving_value with previous value. If different, update timestamp to current ISO8601 UTC time. 
+    # If same, keep previous timestamp unchanged. Used to show "vehicle stopped since X" and calculate dwell times. 
+    # Enables movement duration tracking and timeline features.
+    # 
+    # Pseudo code:
+    # if (current_is_moving_value !== previous_is_moving_value) {
+    # is_moving_last_updated_at = last_updated_at;  // ISO8601 UTC timestamp
+    # } else {
+    # is_moving_last_updated_at = previous_is_moving_last_updated_at  // keep unchanged
+    # }
+
+  geofences:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_geofences
+    parameters:
+      fleeti:
+      - location_latitude
+      - location_longitude
+    unit: none
+    data_type: array
+    error_handling: return_null
+    # Field Path: geofences[]
+    # Computation Approach: Calculated: derive from location_latitude and location_longitude using derive_geofences function. 
+    # Calls Geofence Service to determine which geofences the asset is currently inside. 
+    # Returns array of geofence objects with geofence_id and geofence_name. Supports overlapping geofences - asset can be in multiple geofences simultaneously.
+    # 
+    # Pseudo code:
+    # coordinates = { lat: location_latitude, lng: location_longitude }
+    # geofences = geofenceService.getGeofencesAtLocation(coordinates, asset_id)
+    # return geofences.map(g => ({ geofence_id: g.id, geofence_name: g.name }))
+
+  environment:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_sensors_environment
+    parameters:
+      fleeti: []
+      provider:
+        navixy:
+        - avl_io_202
+        - avl_io_204
+        - avl_io_72
+        - avl_io_73
+        - avl_io_74
+        - avl_io_75
+        - avl_io_25
+        - avl_io_26
+        - avl_io_27
+        - avl_io_28
+        - ext_temp_sensor_1
+        - ext_temp_sensor_2
+        - ext_temp_sensor_3
+        - ext_temp_sensor_4
+        - ble_temp_sensor_1
+        - ble_temp_sensor_2
+        - ble_temp_sensor_3
+        - ble_temp_sensor_4
+        - lls_temperature_1
+        - lls_temperature_2
+        - temp_sensor
+        - avl_io_86
+        - avl_io_104
+        - avl_io_106
+        - avl_io_108
+        - ble_humidity_1
+        - ble_humidity_2
+        - ble_humidity_3
+        - ble_humidity_4
+        - humidity_1
+        - humidity_2
+        - avl_io_29
+        - avl_io_20
+        - avl_io_22
+        - avl_io_23
+        - ble_battery_level_1
+        - ble_battery_level_2
+        - ble_battery_level_3
+        - ble_battery_level_4
+    unit: none
+    data_type: array
+    error_handling: return_null
+    # Field Path: sensors.environment[]
+    # Computation Approach: Computation Approach: Calculated: derive from asset.accessories[].sensors[] metadata and telemetry provider fields using derive_sensors_environment function. 
+    # Function reads sensor configuration from asset metadata where each sensor has a provider_field array property listing which provider fields map to that sensor. 
+    # Matches provider fields to sensors based on provider_field array in sensor metadata. 
+    # Applies prioritized mapping with unit conversions and validation. If provider_field array is empty, fetches sensor configuration from Navixy API (GET https://api.navixy.com/v2/fsm/tracker/sensor/list) matching by sensor ID. 
+    # Enriches provider fields with correspondences from matrix (maps processed Navixy fields to raw avl_io equivalents). 
+    # Returns array of sensor objects with grouped measurements (temperature, humidity, battery) from same physical sensor.
+    # 
+    # Backend Processing:
+    #  - Triggers function when any provider field listed above is present in telemetry packet
+    #  - Function receives full telemetry packet and reads relevant provider fields dynamically
+    #  - Function matches provider fields to sensors via asset.accessories[].sensors[] metadata
+    # 
+    #  Unit Conversion Rules:
+    #  - Temperature: Divide by 10 for raw avl_io (except avl_io_202 and avl_io_204)
+    #  - Humidity: Divide by 10 for raw avl_io (multiplier 0.1 per Teltonika spec)
+    #  - Battery: Already in percent, no division needed
+    # 
+    #  Validation Rules:
+    #  - Temperature: -120 to 120, exclude -128 (error)
+    #  - Humidity: 0-1000, exclude 65535, 65534, 65533 (error codes)
+    #  - Battery: 0-100, exclude -128 (error)
+    # 
+    #  Implementation Location: notion documented.
+
+  engine_hours_value:
+    type: prioritized
+    sources:
+    - priority: 1
+      field: avl_io_102
+      path: params.avl_io_102
+      unit: hours
+    - priority: 2
+      field: can_engine_hours
+      path: params.can_engine_hours
+      unit: hours
+    - priority: 3
+      type: calculated
+      calculation_type: function_reference
+      function: add_installation_offset_engine_hours
+      parameters:
+        provider:
+          navixy: avl_io_103
+    - priority: 4
+      type: calculated
+      calculation_type: function_reference
+      function: add_installation_offset_engine_hours
+      parameters:
+        provider:
+          navixy: can_engine_hours_relative
+    - priority: 5
+      field: avl_io_449
+      path: params.avl_io_449
+      unit: seconds
+    unit: hours
+    data_type: number
+    error_handling: return_null
+    # Field Path: counters.engine_hours.value
+    # Computation Approach: Prioritized mapping from multiple Navixy provider fields. CAN Engine Hours (can_engine_hours) is preferred when available as it provides absolute engine hours directly. 
+    # Engine Worktime (avl_io_102) is a relative counter that starts from zero and requires addition of asset.installation.initial_engine_hours offset. 
+    # Priorities 3 and 4 use add_installation_offset_engine_hours function to handle relative counters (avl_io_103, can_engine_hours_relative). Ignition On Counter (avl_io_449) is the last priority fallback. 
+    # Unit conversion: Sources report in different units (seconds, minutes, hours) - backend applies conversion to hours as needed.
+    # 
+    # Pseudo code:
+    # relative_value = get_provider_field_value(provider_field_name)
+    # initial_offset = asset_service.get_installation_metadata('initial_engine_hours') || 0
+    # // Convert relative value to hours if needed (based on source unit)
+    # absolute_hours = convert_to_hours(relative_value) + initial_offset
+    # return absolute_hours
+
+  engine_hours_last_updated_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_engine_hours_last_updated_at
+    parameters:
+      fleeti:
+      - engine_hours_value
+      - last_updated_at
+    unit: none
+    data_type: datetime
+    error_handling: return_null
+    # Field Path: counters.engine_hours.last_updated_at
+    # Computation Approach: Calculated: derive from engine_hours_value and last_updated_at using derive_engine_hours_last_updated_at function. Tracks data freshness (when value was last received), not when the value changed.
+    # 
+    # Pseudo code:
+    # if (engine_hours_value !== null && engine_hours_value !== undefined) {
+    #   engine_hours_last_updated_at = last_updated_at  // Use timestamp from telemetry packet
+    # } else {
+    #   engine_hours_last_updated_at = previous_engine_hours_last_updated_at  // Keep unchanged if no value received
+    # }
+
+  odometer_value:
+    type: prioritized
+    sources:
+    - priority: 1
+      field: avl_io_87
+      path: params.avl_io_87
+      unit: meters
+    - priority: 2
+      field: can_mileage
+      path: params.can_mileage
+      unit: km
+    - priority: 3
+      field: avl_io_389
+      path: params.avl_io_389
+      unit: none
+    - priority: 4
+      field: obd_custom_odometer
+      path: params.obd_custom_odometer
+      unit: km
+    - priority: 5
+      type: calculated
+      calculation_type: function_reference
+      function: add_installation_offset_odometer
+      parameters:
+        provider:
+          navixy: avl_io_105
+    - priority: 6
+      type: calculated
+      calculation_type: function_reference
+      function: add_installation_offset_odometer
+      parameters:
+        provider:
+          navixy: can_mileage_relative
+    - priority: 7
+      field: avl_io_16
+      path: params.avl_io_16
+      unit: meters
+    - priority: 8
+      field: hw_mileage
+      path: params.hw_mileage
+      unit: km
+    unit: km
+    data_type: number
+    error_handling: return_null
+    # Field Path: counters.odometer.value
+    # Computation Approach: Prioritized mapping from multiple Navixy provider fields. CAN Mileage (can_mileage) is preferred when available as it provides absolute odometer directly. Priorities 5 and 6 use add_installation_offset_odometer function to handle relative counters (avl_io_105, can_mileage_relative) which require addition of asset.installation.initial_odometer offset. Unit conversion: Sources reporting in meters (priorities 1, 3, 5, 7) are converted to kilometers (divide by 1000). This field stores raw counter values; installation offset is applied separately if needed.
+    # 
+    # Pseudo code:
+    # relative_value = get_provider_field_value(provider_field_name)
+    # initial_offset = asset_service.get_installation_metadata('initial_odometer') || 0
+    # // Convert relative value to km if needed (based on source unit)
+    # absolute_km = convert_to_km(relative_value) + initial_offset
+    # return absolute_km
+
+  odometer_last_updated_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_odometer_last_updated_at
+    parameters:
+      fleeti:
+      - odometer_value
+      - last_updated_at
+    unit: none
+    data_type: datetime
+    error_handling: return_null
+    # Field Path: counters.odometer.last_updated_at
+    # Computation Approach: Calculated: derive from odometer_value and last_updated_at using derive_odometer_last_updated_at function. Tracks data freshness (when value was last received), not when the value changed.
+    # 
+    # Pseudo code:
+    # if (odometer_value !== null && odometer_value !== undefined) {
+    #   odometer_last_updated_at = last_updated_at  // Use timestamp from telemetry packet
+    # } else {
+    #   odometer_last_updated_at = previous_odometer_last_updated_at  // Keep unchanged if no value received
+    # }
+
+  magnet:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_sensors_magnet
+    parameters:
+      fleeti: []
+      provider:
+        navixy:
+        - ble_magnet_sensor_1
+        - avl_io_10808
+        - ble_magnet_sensor_2
+        - avl_io_10809
+        - ble_magnet_sensor_3
+        - avl_io_10810
+        - ble_magnet_sensor_4
+        - avl_io_10811
+    unit: none
+    data_type: array
+    error_handling: return_null
+    # Field Path: sensors.magnet
+    # Computation Approach: Calculated: derive from asset.accessories[].sensors[] metadata and telemetry provider fields using derive_sensors_magnet function. Builds `sensors.magnet[]` with one entry per physical magnet sensor (e.g., multiple doors on a single asset). 
+    # Matches provider fields to sensors via asset metadata, applies prioritized mapping with validation, and enriches fields with correspondences. 
+    # Prioritize raw `avl_io_*` values over BLE `ble_magnet_sensor_*` values (use BLE only when raw is empty). If `provider_field` metadata is missing, fetch sensor configuration via Navixy API and map by sensor ID. 
+    # Returns array of sensor objects (id, label, position, state, last_updated_at, last_changed_at). State values: 0 = no magnetic field detected, 1 = magnetic field detected. Store numeric state (0/1); UI localizes labels (e.g., Open/Closed vs Ouvert/Fermé).
+    # 
+    #  Implementation Location: notion documented.
+
+  driver_key:
+    type: prioritized
+    sources:
+    - priority: 1
+      field: avl_io_78
+      path: params.avl_io_78
+      unit: none
+    - priority: 2
+      field: ibutton
+      path: ibutton
+      unit: none
+    - priority: 3
+      field: avl_io_207
+      path: params.avl_io_207
+      unit: none
+    unit: none
+    data_type: string
+    error_handling: return_null
+    # Field Path: driver.driver_key
+    # Computation Approach: Prioritized driver key from Navixy AVL I/O (iButton preferred), with `ibutton` as fallback and RFID last. 
+    # Hardware key is a hex string (iButton or RFID). Backend infers key type from device model/signal. Used to resolve `driver_name` via Fleeti driver catalog.
+
+  driver_name:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_driver_name
+    parameters:
+      fleeti:
+      - driver_key
+    unit: none
+    data_type: string
+    error_handling: return_null
+    # Field Path: driver.driver_name
+    # Computation Approach: Calculated: derive from driver_key using derive_driver_name function. Looks up hardware key in Fleeti driver catalog with state preservation logic. 
+    # The hardware key comes from Navixy provider fields (see driver_key field for source priority). Backend determines key type (iButton vs RFID) based on device model and signal characteristics.
+    # 
+    # Pseudo code:
+    # if (driver_key === null || driver_key === undefined || driver_key === "") {
+    #   driver_name = previous_driver_name  // Keep last known state, do not update
+    # } else if (driver_key !== previous_driver_key) {
+    #   // New driver_key received, lookup in catalog
+    #   driver = driver_catalog.lookup(driver_key)
+    #   if (driver !== null) {
+    #     driver_name = driver.name  // Update with name from catalog
+    #   } else {
+    #     driver_name = null  // Unknown driver, hardware_key will still be displayed
+    #   }
+    # } else {
+    #   driver_name = previous_driver_name  // driver_key unchanged, keep current state
+    # }
+
+  dtc_count:
+    type: prioritized
+    sources:
+    - priority: 1
+      field: avl_io_30
+      path: params.avl_io_30
+      unit: none
+    - priority: 2
+      field: obd_dtc_number
+      path: params.obd_dtc_number
+      unit: none
+    unit: none
+    data_type: number
+    error_handling: return_null
+    # Field Path: diagnostics.health.dtc.count
+    # Computation Approach: Prioritized mapping from Navixy provider fields. Number of DTC (avl_io_30) is priority 1, OBD DTC Count (obd_dtc_number) is priority 2. Integer value representing the number of Diagnostic Trouble Codes (DTCs) present.
+
+  dtc_status:
+    type: prioritized
+    sources:
+    - priority: 1
+      field: avl_io_519
+      path: params.avl_io_519
+      unit: none
+    - priority: 2
+      field: obd_mil_status
+      path: params.obd_mil_status
+      unit: none
+    unit: none
+    data_type: boolean
+    error_handling: return_null
+    # Field Path: diagnostics.health.dtc.status
+    # Computation Approach: Prioritized mapping from Navixy provider fields. CAN MIL Status (avl_io_519) is priority 1, OBD MIL Status (obd_mil_status) is priority 2. Malfunction Indicator Lamp (MIL) status read from CAN. 
+    # Values: 0 = MIL off (no faults), 1 = MIL on (fault detected). Boolean value.
+
+  dtc_codes:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_dtc_codes_combined
+    parameters:
+      provider:
+        navixy:
+        - avl_io_281
+        - avl_io_282
+    unit: none
+    data_type: array
+    error_handling: return_null
+    # Field Path: diagnostics.health.dtc.codes[]
+    # Computation Approach: Calculated: derive from provider fields avl_io_281 and avl_io_282 using derive_dtc_codes_combined function. 
+    # Both fields are complementary sources that need to be combined into a single array.
+    # 
+    # Pseudo code:
+    # dtc_codes_1 = telemetry_packet.params.avl_io_281  // CAN DTC Array
+    # dtc_codes_2 = telemetry_packet.params.avl_io_282  // CAN DTC Array (complementary)
+    # dtc_codes = []
+    # if (dtc_codes_1 !== null && Array.isArray(dtc_codes_1)) {
+    #   dtc_codes = dtc_codes.concat(dtc_codes_1)
+    # }
+    # if (dtc_codes_2 !== null && Array.isArray(dtc_codes_2)) {
+    #   dtc_codes = dtc_codes.concat(dtc_codes_2)
+    # }
+    # return dtc_codes  // Combined array of DTC codes
+
+  remaining_range:
+    type: direct
+    sources:
+    - field: avl_io_304
+      path: params.avl_io_304
+      unit: meters
+    unit: km
+    data_type: number
+    error_handling: return_null
+    # Field Path: power.ev.remaining_range
+    # Computation Approach: Direct mapping from Navixy: avl_io_304 (path: params.avl_io_304). Remaining range on battery for EV/hybrid vehicles, measured in kilometers. 
+    # Only populated when the vehicle exposes this signal (EV/hybrid vehicles). Unit conversion: Provider field reports in meters, converted to kilometers.
+
+  fuel_tank_level_value:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_fuel_levels
+    parameters:
+      fleeti: []
+      provider:
+        navixy:
+        - avl_io_89
+        - can_fuel_1
+        - avl_io_84
+        - can_fuel_litres
+        - avl_io_390
+        - obd_custom_fuel_litres
+        - avl_io_234
+        - avl_io_270
+        - ble_lls_level_1
+        - avl_io_273
+        - ble_lls_level_2
+        - avl_io_201
+        - lls_level_1
+        - avl_io_203
+        - lls_level_2
+        - avl_io_210
+        - lls_level_3
+        - avl_io_212
+        - lls_level_4
+    unit: conditionnal
+    data_type: number
+    error_handling: return_null
+    # Field Path: fuel.tank_level.value
+    # Computation Approach: Calculated: derive from asset.accessories[].sensors[] metadata and telemetry provider fields using derive_fuel_levels function. Returns an array to support multiple tanks/sensors per asset. 
+    # Provider fields are grouped by correspondences (raw `avl_io_*` preferred over processed names); values are normalized by unit rules: `avl_io_390` divide by 10 (liters), `avl_io_234` percent, CAN/OBD sources in liters or percent, and LLS/BLE LLS in kvants. 
+    # Kvants require a calibration table (stored locally; if missing, initialize by fetching from Navixy and caching). 
+    # Percent values are converted to liters when tank capacity is known; otherwise kept as percent. Applies validation and selects the first valid value per sensor.
+    # 
+    #  Implementation Location: notion documented.
+
+  fuel_tank_level_last_updated_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_fuel_tank_level_last_updated_at
+    parameters:
+      fleeti:
+      - fuel_tank_level_value
+      - last_updated_at
+    unit: none
+    data_type: datetime
+    error_handling: return_null
+    # Field Path: fuel.tank_level.last_updated_at
+    # Computation Approach: Calculated: derive from fuel_tank_level_value and last_updated_at using derive_fuel_tank_level_last_updated_at function. 
+    # Tracks data freshness (when value was last received), not when the value changed.
+    # 
+    # Pseudo code:
+    # if (fuel_tank_level_value !== null && fuel_tank_level_value !== undefined) {
+    #   fuel_tank_level_last_updated_at = last_updated_at  // Use timestamp from telemetry packet
+    # } else {
+    #   fuel_tank_level_last_updated_at = previous_fuel_tank_level_last_updated_at  // Keep unchanged if no value received
+    # }
+
+  ongoing_trip_started_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_ongoing_trip_started_at
+    parameters:
+      fleeti:
+      - statuses_transit_code
+      - last_updated_at
+    unit: none
+    data_type: datetime
+    error_handling: return_null
+    # Field Path: trip.ongoing_trip.started_at
+    # Computation Approach: Calculated: derive from statuses_transit_code and last_updated_at using derive_ongoing_trip_started_at function. 
+    # Part of ongoing trip information computed from Fleeti status fields (no provider fields used). 
+    # Trip starts when transit status transitions from parked to in_transit. Uses Fleeti's own logic based on transit status family changes.
+    # 
+    # Pseudo code:
+    # previous_transit_code = getPreviousTransitStatus()
+    # if (previous_transit_code === "parked" && statuses_transit_code === "in_transit") {
+    #   // Trip started: transition from parked to in_transit
+    #   ongoing_trip_started_at = last_updated_at  // Set to current timestamp
+    # } else if (statuses_transit_code === "in_transit") {
+    #   // Trip ongoing, keep existing start time
+    #   ongoing_trip_started_at = previous_ongoing_trip_started_at  // Keep unchanged
+    # } else {
+    #   // Not in transit, no trip ongoing
+    #   ongoing_trip_started_at = null
+    # }
+
+  ongoing_trip_mileage:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_ongoing_trip_mileage
+    parameters:
+      fleeti:
+      - ongoing_trip_started_at
+      - odometer_value
+    unit: km
+    data_type: number
+    error_handling: return_null
+    # Field Path: trip.ongoing_trip.mileage
+    # Computation Approach: Calculated: derive from ongoing_trip_started_at and odometer_value using derive_ongoing_trip_mileage function. 
+    # Calculates distance traveled during the ongoing trip (from trip start to current position), measured in kilometers. Updates as trip progresses.
+    # 
+    # Pseudo code:
+    # if (ongoing_trip_started_at === null) {
+    #   return null  // No trip ongoing
+    # }
+    # trip_start_odometer = getOdometerAtTime(ongoing_trip_started_at)
+    # if (trip_start_odometer !== null && odometer_value !== null) {
+    #   ongoing_trip_mileage = odometer_value - trip_start_odometer  // Use odometer difference
+    # } else {
+    #   ongoing_trip_mileage=null;
+    # }
+
+  ongoing_trip_waypoints:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_ongoing_trip_waypoints
+    parameters:
+      fleeti:
+      - ongoing_trip_started_at
+      - location_latitude
+      - location_longitude
+    unit: none
+    data_type: array
+    error_handling: return_null
+    # Field Path: trip.ongoing_trip.waypoints
+    # Computation Approach: Calculated: derive from ongoing_trip_started_at, location_latitude, and location_longitude using derive_ongoing_trip_waypoints function. 
+    # Array of latitude/longitude coordinates representing the trip path for map display. Backend accumulates waypoints from trip start to current time.
+    # 
+    # Pseudo code:
+    # if (ongoing_trip_started_at === null) {
+    #   return []  // No trip ongoing, return empty array
+    # }
+    # // Backend accumulates waypoints from trip start
+    # waypoints = getAccumulatedWaypoints(asset_id, ongoing_trip_started_at)
+    # // Add current location if it's different from last waypoint (with threshold to filter GPS noise)
+    # current_waypoint = { latitude: location_latitude, longitude: location_longitude }
+    # last_waypoint = waypoints[waypoints.length - 1]
+    # if (last_waypoint === undefined || calculateDistance(current_waypoint, last_waypoint) > threshold) {
+    #   waypoints.push(current_waypoint)  // Add current location to waypoints
+    # }
+    # return waypoints
+
+  driver_last_changed_at:
+    type: calculated
+    calculation_type: function_reference
+    function: derive_driver_last_changed_at
+    parameters:
+      fleeti:
+      - driver_key
+      - last_updated_at
+    unit: none
+    data_type: datetime
+    error_handling: return_null
+    # Field Path: driver.driver_last_updated_at
+    # Computation Approach: Calculated: derive from driver_key and last_updated_at using derive_driver_last_changed_at. Updates only when the driver key changes. If driver_key is missing/empty in the packet, keep the previous timestamp. If a new (different) key is received, set driver.last_changed_at to last_updated_at from the telemetry packet.
+    # Pseudo code:
+    # if (driver_key is null/empty) {
+    #   return previous_driver_last_changed_at
+    # }
+    # if (driver_key != previous_driver_key) {
+    #   return last_updated_at
+    # }
+    # return previous_driver_last_changed_at
+
+  fuel_consumption_cumulative:
+    type: prioritized
+    sources:
+    - priority: 1
+      type: calculated
+      calculation_type: function_reference
+      function: divide_by_10
+      parameters:
+        provider:
+          navixy: avl_io_83
+    - priority: 2
+      field: can_consumption
+      path: params.can_consumption
+      unit: liters
+    - priority: 3
+      field: avl_io_107
+      path: params.avl_io_107
+      unit: liters
+    - priority: 4
+      field: can_consumption_relative
+      path: params.can_consumption_relative
+      unit: liters
+    unit: liters
+    data_type: number
+    error_handling: return_null
+    # Field Path: fuel.consumption.cumulative
+    # Computation Approach: Prioritized mapping from multiple Navixy provider fields. Fuel Consumed (avl_io_83) is preferred but requires unit conversion from deciliters to liters using divide_by_10 function. 
+    # CAN Consumption (can_consumption) is the same source as avl_io_83, already in liters. Total fuel consumed (cumulative value), measured in liters.
+    # 
+    # Pseudo code:
+    # value = get_provider_field_value('avl_io_83')
+    # return value / 10  // Convert deciliters to liters

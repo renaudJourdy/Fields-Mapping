@@ -1,4 +1,4 @@
-**Status:** 🎯 In Progress
+**Status:** 🎯 Done
 
 This section defines the three critical databases that serve as the single source of truth for field definitions and mappings in the Fleeti Telemetry Mapping system.
 
@@ -11,7 +11,6 @@ The databases section provides:
 - **Provider Fields Database**: Complete catalog of all provider-specific telemetry fields
 - **Fleeti Fields Database**: Complete catalog of all Fleeti telemetry fields (~343+ fields)
 - **Mapping Fields Database**: Field transformation rules linking provider fields to Fleeti fields
-- **Change History Database** (Optional): Audit trail of all changes to fields and mappings
 - **YAML Configuration Database**: Versioned tracking of generated YAML configuration files
 
 **These databases are the definitive source of truth** for field definitions. Reference documents (like the schema specification) provide the big picture and help with prioritization, but field definitions come from these databases.
@@ -26,7 +25,7 @@ Catalog of all provider-specific telemetry fields organized by provider (Navixy,
 
 **Contents:**
 
-- Provider field names, types, descriptions
+- Provider field names, types, and descriptions
 - Observed values and formats
 - Provider-specific field metadata
 - Field availability by provider
@@ -41,7 +40,7 @@ Complete catalog of all Fleeti telemetry fields organized by section (Asset Meta
 
 **Contents:**
 
-- Fleeti field names, types, priorities
+- Fleeti field names, types, and priorities
 - Field sections and organization
 - Transformation requirements
 - Visibility and usage (P0-P3, T, BL)
@@ -66,22 +65,7 @@ Field transformation rules and priority chains linking provider fields to Fleeti
 
 ---
 
-[[📝 Change History Database](https://www.notion.so/4-change-history/README.md) (Optional)](https://www.notion.so/Change-History-Database-Optional-2c73e766c901809988fcf94d86a67f67?pvs=21)
-
-Complete audit trail of all changes to fields and mappings for versioning and compliance.
-
-**Contents:**
-
-- Change records for all field and mapping modifications
-- Change metadata (who, when, why)
-- Version tracking
-- YAML sync status
-
-**Purpose:** Maintains audit trail and enables change tracking, rollback planning, and compliance.
-
----
-
-[⚙️ YAML Configuration Database](https://www.notion.so/YAML-Configuration-Database-2cc3e766c901808ca93fcade58ca6999?pvs=21)
+[YAML Configuration Database](https://www.notion.so/YAML-Configuration-Database-2cc3e766c901808ca93fcade58ca6999?pvs=21)
 
 Versioned tracking of generated YAML configuration files per provider.
 
@@ -115,18 +99,18 @@ The databases are interconnected through relations:
            │ (via Field Mappings)
            │
            ▼
-┌─────────────────────────────┐
-│  Mapping Fields Database    │
-│                             │
-│  - Mapping Name (PK)        │
-│  - Fleeti Field (FK)        │
-│  - Provider Fields (FK)     │
-│  - Mapping Type             │
-│  - Priority JSON            │
-│  - Calculation Formula      │
-│  - Status                   │
-└──────────┬──────────────────┘
-           │
+┌──────────────────────────────────┐
+│  Mapping Fields Database         │
+│                                  │
+│  - Mapping Name (PK)             │
+│  - Fleeti Field (FK)             │
+│  - Provider Fields (FK)          │
+│  - Mapping Type                  │
+│  - Priority JSON                 │
+│  - Calculation Formula           │
+│  - Status                        │
+└──────────┬───────────────────┬───┘
+           │                   │
            │ many-to-one       │ one-to-many
            │                   │
            ▼                   ▼
@@ -154,11 +138,11 @@ The databases are interconnected through relations:
 
 **Via Field:** `Provider Fields` (Relation field in Mapping Fields)
 
-**Cardinality:** N:M (one provider field can be used in many mappings, one mapping can use many provider fields)
+**Cardinality:** N:M (one provider field can be used in many mappings; one mapping can use many provider fields)
 
 **Required:** Yes (mapping must reference at least one provider field)
 
-**Cascade Rules:** If provider field is deleted, mappings referencing it should be marked deprecated
+**Cascade Rules:** If the provider field is deleted, mappings referencing it should be marked deprecated
 
 **Purpose:** Links provider fields to mapping rules. Enables:
 
@@ -180,7 +164,7 @@ The databases are interconnected through relations:
 
 **Required:** Yes (mapping must reference a Fleeti field)
 
-**Cascade Rules:** If Fleeti field is deleted, mappings referencing it should be marked deprecated
+**Cascade Rules:** If the Fleeti field is deleted, mappings referencing it should be marked deprecated
 
 **Purpose:** Links mapping rules to target Fleeti fields. Enables:
 
@@ -194,7 +178,7 @@ The databases are interconnected through relations:
 
 **Via Field:** `Dependencies` (Relation field in Fleeti Fields)
 
-**Cardinality:** N:M (one field can depend on many fields, one field can be depended upon by many fields)
+**Cardinality:** N:M (one field can depend on many fields, and one field can be depended upon by many fields)
 
 **Required:** No (only for calculated/transformed fields)
 
@@ -206,23 +190,7 @@ The databases are interconnected through relations:
 - Identifying fields that need to be computed first
 - Preventing circular dependencies
 
-### Relationship 4: Change History (Optional)
-
-**Type:** One-to-Many
-
-**From Database:** Change History
-
-**To Database:** Provider Fields, Fleeti Fields, Mapping Fields
-
-**Via Field:** `Entity` (Relation field in Change History)
-
-**Cardinality:** 1:N (one change record per entity modification)
-
-**Required:** No (optional but recommended)
-
-**Purpose:** Complete audit trail of all changes to fields and mappings.
-
-### Relationship 5: Mapping Fields → YAML Configuration
+### Relationship 4: Mapping Fields → YAML Configuration
 
 **Type:** One-to-Many
 
@@ -232,7 +200,7 @@ The databases are interconnected through relations:
 
 **Via Field:** `YAML Config` (Relation field in Mapping Fields)
 
-**Cardinality:** 1:N (one YAML config contains many mappings, one mapping belongs to one YAML config version)
+**Cardinality:** 1:N (one YAML config contains many mappings; one mapping belongs to one YAML config version)
 
 **Required:** No (optional, but recommended for tracking)
 
@@ -245,18 +213,18 @@ The databases are interconnected through relations:
 
 ## Workflow
 
-1. **Provider fields are cataloged** in Provider Fields Database
+1. **Provider fields are cataloged** in the Provider Fields Database
     - Fields are discovered from provider packets
     - Field properties are documented (type, unit, availability)
-2. **Fleeti fields are defined** in Fleeti Fields Database
+2. **Fleeti fields are defined** in the Fleeti Fields Database
     - Fields are organized by category
     - Priorities are assigned (P0-P3)
     - Field types are specified (direct, calculated, etc.)
-3. **Mapping rules are created** in Mapping Fields Database
+3. **Mapping rules are created** in the Mapping Fields Database
     - Links provider fields to Fleeti fields
     - Defines transformation logic
     - Specifies priority orders, formulas, etc.
-4. **YAML configurations are generated and tracked** in YAML Configuration Database
+4. **YAML configurations are generated and tracked** in the YAML Configuration Database
     - Configurations are generated from mapping rules
     - Versions are tracked and managed per provider
     - Changes trigger new configuration versions
@@ -266,6 +234,6 @@ The databases are interconnected through relations:
 
 # Related Documentation
 
-- **Schema Specification**: Big picture reference (not definitive, databases are source of truth)
+- **Schema Specification**: Big picture reference (not definitive; databases are the source of truth)
 - **Field Mappings**: Field catalogs and mapping documentation
 - **Configuration Guide**: How configuration files are generated from databases

@@ -1,4 +1,4 @@
-**Status:** 🎯 In Progress
+**Status:** 🎯 Done
 
 # Purpose
 
@@ -140,4 +140,18 @@ This database is used to:
 
 # Fleeti Fields Database
 
+## Database
+
 [Fleeti Fields (db)](https://www.notion.so/2c73e766c901801d9ec1dbd299d1e30e?pvs=21)
+
+## Fleeti Fields Count
+
+[Untitled](https://www.notion.so/2dc3e766c90180f6a472de95fe871127?pvs=21)
+
+## Provider Fields Count
+
+[Untitled](https://www.notion.so/2dc3e766c901805fa4c4d638af851977?pvs=21)
+
+## Database Views
+
+[Untitled](https://www.notion.so/2dc3e766c901806d8153efbef8aa5351?pvs=21)

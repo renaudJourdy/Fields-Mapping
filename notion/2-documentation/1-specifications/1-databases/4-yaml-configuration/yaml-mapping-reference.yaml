@@ -40,6 +40,37 @@
 #    - Backend uses both units for automatic conversion when units differ
 #    - Omit `unit` only when unit is "none" or unitless (e.g., boolean, count)
 #
+# PARAMETER TYPES (for calculated sources):
+# -----------------------------------------
+# Calculated sources can use three types of parameters:
+#
+# 1. `provider:` - References provider telemetry fields
+#    - Format: `provider: { provider_name: field_name }`
+#    - Example: `provider: { navixy: inputs }`
+#    - Backend resolves field value from current telemetry packet
+#
+# 2. `fleeti:` - References other Fleeti fields (dependencies)
+#    - Format: `fleeti: [field_name_1, field_name_2, ...]`
+#    - Example: `fleeti: [location_heading, last_updated_at]`
+#    - Backend resolves values from previously computed Fleeti fields
+#    - Processing order inferred from dependencies
+#
+# 3. `static:` - Provides constant values needed by the function
+#    - Format: `static: { key: value }`
+#    - Example: `static: { bit_position: 0 }`
+#    - Values are passed directly to function (not resolved from telemetry)
+#    - Use for: bit positions, array indices, multipliers, thresholds, etc.
+#
+# All parameter types can be combined in a single function call:
+#   parameters:
+#     provider:
+#       navixy: inputs
+#     fleeti:
+#       - location_heading
+#     static:
+#       bit_position: 0
+#       threshold: 5
+#
 # MAPPING TYPES:
 # --------------
 # - direct: 1:1 provider field → Fleeti field mapping
@@ -299,25 +330,38 @@ mappings:
     # Field Path: fleeti.field.name.7
 
   # ========================================================================
-  # EXAMPLE 8: Prioritized Mapping - All Calculated Sources
+  # EXAMPLE 8: Prioritized Mapping - Calculated Sources with Static Parameters
   # ========================================================================
-  # Use Case: Priority chain where all sources are calculated (functions)
-  # Example: inputs_individual_input_1 = extract_bit(inputs, 0) > extract_bit(din, 0)
+  # Use Case: Priority chain with calculated sources that require static values
+  # Example: inputs_individual_input_1 = extract_bit_from_bitmask(inputs, bit_position=0)
+  #
+  # Parameter Types:
+  # - `provider:` - References provider telemetry fields (e.g., navixy: inputs)
+  # - `fleeti:` - References other Fleeti fields (e.g., location_heading)
+  # - `static:` - Provides static constant values (e.g., bit_position: 0)
   #
   # Rules Applied:
   # - `type: prioritized` at top level (required)
   # - `type: calculated` included for all sources (not default)
   # - `priority` included for each source (multiple sources)
-  # - `parameters` can use `provider:` or `fleeti:` keys
+  # - `parameters` can use `provider:`, `fleeti:`, or `static:` keys
+  # - `static:` parameters provide constant values needed by the function
   # - Omit `provider` in sources (functions handle provider context)
   # - Omit `unit` in calculated sources (function output already in Fleeti unit)
   # - Include `unit` at top level (Fleeti field unit)
   #
   # Backend Processing:
-  # - Tries priority 1: calls function with provider parameters
+  # - Tries priority 1: calls function with provider and static parameters
+  # - Function receives: provider field value (from `parameters.provider`) and static values (from `parameters.static`)
   # - Function returns value in Fleeti unit (no conversion needed)
-  # - If function fails, tries priority 2: calls alternative function
-  # - Functions receive parameters and return calculated values (already in Fleeti unit)
+  # - If function fails, tries priority 2: calls alternative function or uses direct field
+  # - Functions receive all parameter types and return calculated values (already in Fleeti unit)
+  #
+  # Static Parameters Use Cases:
+  # - Bit position for bitmask extraction (e.g., bit_position: 0, 1, 2, 3)
+  # - Array indices for multi-value fields
+  # - Constant multipliers, offsets, or thresholds
+  # - Configuration values that don't change per packet
   # ========================================================================
   fleeti_field_name_8:
     type: prioritized
@@ -329,15 +373,14 @@ mappings:
         parameters:
           provider:
             navixy: inputs
+          static:
+            bit_position: 0
         # No unit needed: function output already in Fleeti unit
       - priority: 2
-        type: calculated
-        calculation_type: function_reference
-        function: alternative_function
-        parameters:
-          fleeti:
-            - fleeti_field_name
-        # No unit needed: function output already in Fleeti unit
+        field: avl_io_1
+        path: params.avl_io_1
+        unit: none
+        # Direct field fallback when bitmask extraction unavailable
     unit: none  # Fleeti field unit (boolean, unitless)
     data_type: boolean
     error_handling: use_fallback

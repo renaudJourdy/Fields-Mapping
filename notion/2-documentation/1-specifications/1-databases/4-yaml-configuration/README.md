@@ -1,4 +1,4 @@
-**Status:** 🎯 Structure Created - Content To Be Developed
+**Status:** 🎯 Done
 
 # Purpose
 
@@ -76,24 +76,21 @@ This database is used to:
 ## Workflow
 
 1. **Generate Configuration**: Create new configuration entry from Mapping Fields Database
-   - Select provider and assign version number
-   - Generate YAML content using YAML Generation Specification
-   - Link to all Mapping Fields used in generation
-
+    - Select provider and assign version number
+    - Generate YAML content using YAML Generation Specification
+    - Link to all Mapping Fields used in generation
 2. **Review and Validate**: Review generated configuration
-   - Validate YAML syntax
-   - Verify all required mappings are included
-   - Set status to `draft` or `pending`
-
+    - Validate YAML syntax
+    - Verify all required mappings are included
+    - Set status to `draft` or `pending`
 3. **Deploy Configuration**: Deploy to target environment
-   - Update status to `active`
-   - Record deployment date and environment
-   - Mark previous version as `deprecated` if replacing it
-
+    - Update status to `active`
+    - Record deployment date and environment
+    - Mark previous version as `deprecated` if replacing it
 4. **Track Changes**: Monitor configuration lifecycle
-   - Link to Change History entries
-   - Track modifications and deployments
-   - Maintain audit trail
+    - Link to Change History entries
+    - Track modifications and deployments
+    - Maintain audit trail
 
 ---
 
@@ -106,10 +103,12 @@ YAML configurations are generated from the Mapping Fields Database following a d
 **Field Name vs Field Path**: YAML configurations use **Field Names** (stable identifiers like `location_latitude`) instead of **Field Paths** (can change like `location.latitude`). This ensures configurations remain valid even when telemetry object structure changes. The backend resolves Field Names to Field Paths at runtime using a lookup table.
 
 **Database Joins**: Generation requires joining with:
+
 - **Fleeti Fields Database**: For field metadata (Field Name, Field Path, Unit, Data Type)
 - **Provider Fields Database**: For provider field metadata (Field Path, Unit, Data Type, Availability)
 
 **Mapping Type Processing**: Different mapping types generate different YAML structures:
+
 - **Direct**: Simple 1:1 field mapping
 - **Prioritized**: Multiple provider fields with priority order
 - **Calculated**: Function references or formulas with dependencies
@@ -118,12 +117,11 @@ YAML configurations are generated from the Mapping Fields Database following a d
 - **Asset-Integrated**: Integration with external services
 
 **Function Registry Pattern**: Calculated fields use a function registry pattern that enables:
+
 - Direct function calls from backend registry
 - Structured parameter mapping to Fleeti field names
 - Validation of function existence and parameters
 - Stable configuration using Field Names
-
-For complete details on YAML generation, see the **[YAML Generation Specification](../3-mapping-fields/YAML_GENERATION_SPEC.md)**.
 
 ---
 
@@ -138,5 +136,4 @@ For complete details on YAML generation, see the **[YAML Generation Specificatio
 
 # Database
 
-[YAML Configuration (db)](https://www.notion.so/YAML-Configuration-db)
-
+[YAML Configurations (db)](https://www.notion.so/2cc3e766c90180199843f5b0ce72e2ed?pvs=21)

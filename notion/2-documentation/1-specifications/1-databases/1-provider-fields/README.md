@@ -1,7 +1,5 @@
 **Status:** 🎯 Done
 
-**Comment**: Miss relation with Fleeti Fields and Mapping Rules databases
-
 # Purpose
 
 The Provider Fields Database catalogs all provider-specific telemetry fields from all telemetry providers (Navixy, Teltonika, OEM manufacturers, etc.).

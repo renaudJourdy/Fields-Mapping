@@ -1,4 +1,4 @@
-**Status:** 🎯 In Progress
+**Status:** 🎯 Done
 
 # Purpose
 
@@ -72,7 +72,7 @@ Columns are organized into logical groups for clarity and YAML generation workfl
 | Column Name | Type | Required | Description | Example | Why It's Important |
 | --- | --- | --- | --- | --- | --- |
 | **Backend Function Name** | Text | Conditional | Function name in backend registry | `derive_cardinal_direction` | **Required** for `function_reference` type. Must exist in backend FUNCTION_REGISTRY. Links to backend implementation. Can be auto-extracted from Computation Approach. Enables function lookup in backend. |
-| **Function Parameters** | Text | Conditional | Structured parameter mapping (JSON or structured text) | `{"heading": "location_heading"}` or `heading: location_heading` | **Required** for `function_reference` type. Maps function parameter names to field references. **Default (no prefix)**: Fleeti Field Names (stable identifiers), e.g., `location_heading`. **Provider prefix**: Use `provider:` prefix for direct provider field access, e.g., `provider:lat`. Format: `param_name: "fleeti_field_name"` or `param_name: "provider:field_path"` or JSON. Documents function signature and enables parameter resolution in YAML. Backend resolves: Fleeti fields via Field Name → Field Path lookup; Provider fields directly from provider packet. |
+| **Function Parameters** | Text | Conditional | Structured parameter mapping (JSON or structured text) | `{"heading": "location_heading"}` or `heading: location_heading` | **Required** for `function_reference` type. Maps function parameter names to **Fleeti Field Names** (stable identifiers). Format: `param_name: "fleeti_field_name"` or JSON `{"param_name": "fleeti_field_name"}`. Documents function signature and enables parameter resolution in YAML. Backend resolves Field Names to Field Paths at runtime. |
 
 ### Group 7: Metadata (Required)
 
@@ -279,3 +279,5 @@ This database is used to:
 # Database
 
 [Mapping Fields (db)](https://www.notion.so/2cc3e766c901806b9904e69fec02b085?pvs=21)
+
+[Untitled](https://www.notion.so/2dc3e766c90180e8aa0efc06740d7505?pvs=21)

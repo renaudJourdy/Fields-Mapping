@@ -532,11 +532,15 @@ statuses_transit_last_changed_at = previous_statuses_transit_last_changed_at  //
 ]
 }
 }",default,statuses_transit_last_changed_at (https://www.notion.so/statuses_transit_last_changed_at-2d03e766c9018160aedafc7a2e1b8528?pvs=21),datetime,status.statuses.transit.last_changed_at,none,calculated,,navixy,,,,planned,1.0.1,navixy-v1.0.1 (https://www.notion.so/navixy-v1-0-1-2d13e766c90180dc967fdbc8fb40d2c9?pvs=21)
-power.ignition_value from Navixy,"Calculated: derive from asset_installation_ignition_input_number, inputs_individual_input_1, inputs_individual_input_2, inputs_individual_input_3, and inputs_individual_input_4 using derive_ignition_value function. 
-Read ignition input number from asset.installation.ignition_input_number (default to 1 if not specified). Read digital input state from the corresponding individual input field: inputs_individual_input_1 (if ignition_input_number = 1), inputs_individual_input_2 (if ignition_input_number = 2), inputs_individual_input_3 (if ignition_input_number = 3), or inputs_individual_input_4 (if ignition_input_number = 4). If ignition_input_number is not available, fallback to inputs_individual_input_1. 
-If anything else fails, return null. This is the primary ignition field used by the rest of the Fleeti system for status computation and business logic.
+power.ignition_value from Navixy,"Prioritized mapping: 1. Direct mapping from Navixy: avl_io_239 (path: params.avl_io_239) - AVL ID 239 (Ignition: 0 - Ignition Off, 1 - Ignition On). 2. Calculated: derive from asset_installation_ignition_input_number, inputs_individual_input_1, inputs_individual_input_2, inputs_individual_input_3, and inputs_individual_input_4 using derive_ignition_value function. Read ignition input number from asset.installation.ignition_input_number (default to 1 if not specified). Read digital input state from the corresponding individual input field: inputs_individual_input_1 (if ignition_input_number = 1), inputs_individual_input_2 (if ignition_input_number = 2), inputs_individual_input_3 (if ignition_input_number = 3), or inputs_individual_input_4 (if ignition_input_number = 4). If ignition_input_number is not available, fallback to inputs_individual_input_1. If anything else fails, return null. This is the primary ignition field used by the rest of the Fleeti system for status computation and business logic.
 
 Pseudo code:
+// Priority 1: Try direct mapping from AVL ID 239
+if (avl_io_239 !== null && avl_io_239 !== undefined) {
+return avl_io_239 === 1  // Convert 0/1 to boolean: 0 = false, 1 = true
+}
+
+// Priority 2: Fallback to calculated approach
 ignition_input_number = asset_installation_ignition_input_number || 1  // default to 1
 ignition_state = null
 if (ignition_input_number === 1) {
@@ -551,6 +555,16 @@ ignition_state = inputs_individual_input_4
 ignition_state = inputs_individual_input_1  // invalid input number, fallback
 }
 return ignition_state","{
+""type"": ""prioritized"",
+""sources"": [
+{
+""priority"": 1,
+""field"": ""avl_io_239"",
+""path"": ""params.avl_io_239"",
+""unit"": ""none""
+},
+{
+""priority"": 2,
 ""type"": ""calculated"",
 ""calculation_type"": ""function_reference"",
 ""function"": ""derive_ignition_value"",
@@ -562,6 +576,8 @@ return ignition_state","{
 ""inputs_individual_input_4""
 ]
 }
+}
+]
 }",default,ignition_value (https://www.notion.so/ignition_value-2d03e766c9018133b8f7c56f5b8a2191?pvs=21),boolean,power.ignition.value,none,calculated,,navixy,,,,planned,1.0.1,navixy-v1.0.1 (https://www.notion.so/navixy-v1-0-1-2d13e766c90180dc967fdbc8fb40d2c9?pvs=21)
 power.ignition_last_changed_at from Navixy,"Calculated: derive from ignition_value and last_updated_at using derive_ignition_last_changed_at function. 
 Updates when ignition state changes (not on every packet). Backend compares current ignition_value with previous value. If different, update timestamp to last_updated_at (from telemetry packet). 
@@ -605,6 +621,9 @@ io_input_1 = null
 ""parameters"": {
 ""provider"": {
 ""navixy"": ""inputs""
+},
+""static"": {
+""bit_position"": 0
 }
 }
 },
@@ -636,6 +655,9 @@ io_input_2 = null
 ""parameters"": {
 ""provider"": {
 ""navixy"": ""inputs""
+},
+""static"": {
+""bit_position"": 1
 }
 }
 },
@@ -667,6 +689,9 @@ io_input_3 = null
 ""parameters"": {
 ""provider"": {
 ""navixy"": ""inputs""
+},
+""static"": {
+""bit_position"": 2
 }
 }
 },
@@ -698,6 +723,9 @@ io_input_4 = null
 ""parameters"": {
 ""provider"": {
 ""navixy"": ""inputs""
+},
+""static"": {
+""bit_position"": 3
 }
 }
 },
@@ -729,6 +757,9 @@ io_output_1 = null
 ""parameters"": {
 ""provider"": {
 ""navixy"": ""outputs""
+},
+""static"": {
+""bit_position"": 0
 }
 }
 },
@@ -760,6 +791,9 @@ io_output_2 = null
 ""parameters"": {
 ""provider"": {
 ""navixy"": ""outputs""
+},
+""static"": {
+""bit_position"": 1
 }
 }
 },
@@ -791,6 +825,9 @@ io_output_3 = null
 ""parameters"": {
 ""provider"": {
 ""navixy"": ""outputs""
+},
+""static"": {
+""bit_position"": 2
 }
 }
 },
@@ -1487,7 +1524,7 @@ return previous_driver_last_changed_at","{
 ]
 }
 }
-",default,driver_last_changed_at (https://www.notion.so/driver_last_changed_at-2e03e766c901800c9802d683e48d93da?pvs=21),datetime,driver.driver_last_updated_at,none,calculated,,navixy,,,,planned,,
+",default,driver_last_changed_at (https://www.notion.so/driver_last_changed_at-2e03e766c901800c9802d683e48d93da?pvs=21),datetime,driver.driver_last_updated_at,none,calculated,,navixy,,,,planned,1.0.4,navixy-v1.0.4 (https://www.notion.so/navixy-v1-0-4-2e13e766c90180599ad4f1d7aab1e948?pvs=21)
 fuel.fuel_consumption_cumulative_last_updated_at from Navixy,"Prioritized mapping from multiple Navixy provider fields. Fuel Consumed (avl_io_83) is preferred but requires unit conversion from deciliters to liters using divide_by_10 function. 
 CAN Consumption (can_consumption) is the same source as avl_io_83, already in liters. Total fuel consumed (cumulative value), measured in liters.
 
@@ -1526,4 +1563,4 @@ return value / 10  // Convert deciliters to liters","{
       ""unit"": ""liters""
     }
   ]
-}",default,fuel_consumption_cumulative (https://www.notion.so/fuel_consumption_cumulative-2da3e766c90181e68066f2a1359e42b6?pvs=21),number,fuel.consumption.cumulative,liters,calculated,,navixy,,,"https://www.notion.so/2c73e766c9018108b661f478f39b8983, https://www.notion.so/2c73e766c901812bb14bc571c05dc541, https://www.notion.so/2c73e766c90181c28529db08baf8b54a, https://www.notion.so/2c73e766c90181d4b53fe2b0d2f6dc2c",planned,,
+}",default,fuel_consumption_cumulative (https://www.notion.so/fuel_consumption_cumulative-2da3e766c90181e68066f2a1359e42b6?pvs=21),number,fuel.consumption.cumulative,liters,calculated,,navixy,,,"https://www.notion.so/2c73e766c9018108b661f478f39b8983, https://www.notion.so/2c73e766c901812bb14bc571c05dc541, https://www.notion.so/2c73e766c90181c28529db08baf8b54a, https://www.notion.so/2c73e766c90181d4b53fe2b0d2f6dc2c",planned,1.0.4,navixy-v1.0.4 (https://www.notion.so/navixy-v1-0-4-2e13e766c90180599ad4f1d7aab1e948?pvs=21)
