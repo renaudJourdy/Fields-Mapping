@@ -1,5 +1,7 @@
 **Status:** 🎯 Done
 
+---
+
 # Purpose
 
 The YAML Configuration Database tracks generated YAML configuration files with versioning and provider-specific configurations. This database serves as the **single source of truth** for configuration file versions and deployment tracking.
@@ -61,7 +63,29 @@ Columns are listed in the same order as they appear in the CSV export:
 
 # YAML Generation Specification
 
-YAML configurations are generated from the Mapping Fields Database using the `generate_yaml_from_csv.py` script. The script reads `Computation Structure JSON` from Mapping Fields and generates optimized YAML following the specification in `yaml-mapping-reference.yaml`.
+YAML configurations are generated from Mapping Fields CSV exports using Python scripts. The process: export Mapping Fields database → script reads CSV → extracts Computation Structure JSON → applies 8 optimization rules → orders by dependencies → generates YAML with comments → outputs to `output/` directory.
+
+## Generation Scripts
+
+**`scripts/generate_yaml_from_csv.py`**: Generates YAML from Mapping Fields CSV
+
+[Generate YAML From CSV](https://www.notion.so/Generate-YAML-From-CSV-2e33e766c90180ac9451f292dba1efbd?pvs=21)
+
+- Input: Most recent CSV from `3-mapping-fields/export/` (auto-detected)
+- Output: YAML file in `output/` directory (filename: `{provider}-mapping-{date}.yaml`)
+- Process: Reads Computation Structure JSON, applies optimization rules from `yaml-mapping-reference.yaml`, orders mappings by `parameters.fleeti` dependencies, injects comments (Field Path, Computation Approach)
+- Filters: Only processes mappings with status `active` or `planned`
+
+**`scripts/validate_yaml.py`**: Validates generated YAML
+
+[Validate YAML](https://www.notion.so/Validate-YAML-2e33e766c901803c982cccd277f4bcbb?pvs=21)
+
+- Validates YAML syntax and structure
+- Cross-checks CSV/YAML key sets match
+- Validates Fleeti Field Paths format
+- Checks dependency order (fields referenced in `parameters.fleeti` must appear before dependents)
+
+**Note:** Scripts assume local project structure (paths relative to script location). Adapt paths for your environment.
 
 ## Key Concepts
 
@@ -70,11 +94,14 @@ YAML configurations are generated from the Mapping Fields Database using the `ge
 **Mapping Types**: `direct`, `prioritized`, `calculated`, `transformed`, `io_mapped`, `mix` - each generates different YAML structure.
 
 **Parameter Types** (for calculated fields):
+
 - `provider:` - References provider telemetry fields
 - `fleeti:` - References other Fleeti fields (dependencies)
 - `static:` - Constant values (bit positions, thresholds, etc.)
 
 ## YAML Mapping Reference
+
+[YAML Configuration Specification](https://www.notion.so/YAML-Configuration-Specification-2e33e766c901804f982bc8d0357430db?pvs=21)
 
 The **`yaml-mapping-reference.yaml`** file is the authoritative specification for YAML structure. It contains:
 
@@ -86,6 +113,7 @@ The **`yaml-mapping-reference.yaml`** file is the authoritative specification fo
 **Location:** `yaml-mapping-reference.yaml` in this directory
 
 **Usage:** Refer to this file when:
+
 - Understanding YAML structure requirements
 - Writing or modifying YAML generation scripts
 - Debugging YAML configuration issues
@@ -93,6 +121,6 @@ The **`yaml-mapping-reference.yaml`** file is the authoritative specification fo
 
 ---
 
-# YAML Configuration Database
+# Database
 
 [YAML Configurations (db)](https://www.notion.so/2cc3e766c90180199843f5b0ce72e2ed?pvs=21)
