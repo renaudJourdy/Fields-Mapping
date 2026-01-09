@@ -2,25 +2,16 @@
 
 # Purpose
 
-The Fleeti Fields Database is the complete catalog of all **Fleeti canonical telemetry fields** organized by section. This database serves as the **single source of truth** for Fleeti telemetry field definitions.
+The Fleeti Fields Database is the complete catalog of all **Fleeti canonical telemetry fields** organized by category. This database serves as the **single source of truth** for Fleeti telemetry field definitions.
 
 **Important Distinction:**
 
-- **Provider Fields** (300+ fields): Provider-specific telemetry fields from Navixy, Teltonika, OEM, etc. These are documented in the [Provider Fields Database](https://www.notion.so/1-provider-fields/README.md).
-- **Fleeti Fields**: Canonical semantic telemetry fields that represent the unified Fleeti telemetry model. Multiple provider fields may map to a single Fleeti field (e.g., `can_speed`, `obd_speed`, `speed` all map to `motion.speed`).
+- **Provider Fields**: Provider-specific telemetry fields from Navixy, Teltonika, OEM, etc. Documented in the [Provider Fields Database](https://www.notion.so/Provider-Fields-Database-2c73e766c90180e79450f8d6500a0613?pvs=21).
+- **Fleeti Fields**: Canonical semantic telemetry fields representing the unified Fleeti telemetry model. Multiple provider fields may map to a single Fleeti field (e.g., `can_speed`, `obd_speed`, `speed` all map to `motion.speed`).
 
-The complete list of Fleeti fields is documented in the [Schema Specification](https://www.notion.so/docs/legacy/fleeti-telemetry-schema-specification.md).
+**Key Contents:** Field names (stable identifiers), field paths, categories, computation approaches (pseudo-code), computation structure JSON (machine-readable for YAML generation), WebSocket/REST API exposure, dependencies, and relations to mapping rules.
 
----
-
-# What This Database Contains
-
-- **Fleeti field names**: Canonical field names in Fleeti format
-- **Field sections**: Organization (Asset Metadata, Location, Motion, Power, Fuel, etc.)
-- **Field types**: Data types and structures
-- **Field priorities**: Implementation priorities (P0-P3, T, BL, ?)
-- **Transformation requirements**: How fields are computed (direct, prioritized, calculated, transformed)
-- **Visibility**: Customer-facing vs internal fields
+**Note:** Computation Approach contains pseudo-code (not formulas). Full detailed pseudo-code for complex functions is in Notion database raw content (not CSV). Very complex functions have dedicated `.pseudo.md` files.
 
 ---
 
@@ -28,130 +19,94 @@ The complete list of Fleeti fields is documented in the [Schema Specification](h
 
 ## Column Definitions
 
+Columns are listed in the same order as they appear in the CSV export:
+
 | Column Name | Type | Required | Description | Example | Why It's Important |
 | --- | --- | --- | --- | --- | --- |
-| **Field Name** | Title | ✅ Yes | Stable field identifier - primary key | `fuel.consumption.cumulative` | Primary key - stable identifier that uniquely identifies each Fleeti field. This is the canonical reference used throughout the system. **Does not change** even if the field is moved to a different path in the telemetry object. Used for references, relations, and stable identification. |
-| **Field Path** | Text | ✅ Yes | Full hierarchical path in telemetry object (section → sub-objects → field) | `fuel.consumption.cumulative` | Current technical path in the telemetry JSON structure. Follows the structure: section (e.g., `fuel`, `location`) → sub-objects (e.g., `consumption`, `precision`) → field (e.g., `cumulative`, `hdop`). **Can change** if field is reorganized (e.g., moved from `fuel.consumption.cumulative` to `fuel.total.consumption`). Used in YAML config generation and API responses. Critical for consistency. |
-| **Category** | Select | ✅ Yes | Section/category | `fuel`, `location`, `motion`, `status`, `power`, `diagnostics`, `sensors`, `driving_behavior`, `device`, `connectivity`, `io`, `driver`, `other`, `metadata` | Organizes fields by domain. Enables filtering and grouping. Critical for schema organization. |
-| **Priority** | Select | ✅ Yes | Implementation priority | `P0`, `P1`, `P2`, `P3`, `T`, `BL`, `?`, `ignored`, `later` | Guides implementation order. P0 fields are critical for MVP. Essential for prioritization and planning. |
-| **Field Type** | Select | ✅ Yes | Mapping type | `direct`, `prioritized`, `calculated`, `aggregated`, `transformed`, `io_mapped`, `asset_integrated` | Determines transformation approach. Critical for configuration generation. Affects how mapping rules are structured. |
-| **Structure Type** | Select | ✅ Yes | Data structure | `simple_value`, `value_unit_object`, `nested_object`, `array` | Defines field structure in telemetry object. Important for API contracts and frontend consumption. |
-| **JSON Structure** | Text | ✅ Yes | JSON representation example | `{ "value": 65.5, "unit": "km/h" }` | Exact JSON structure of the field in the telemetry object. Shows how value, unit, and timestamps are combined. Critical for API documentation and frontend integration. Examples: `65.5` (simple_value), `{ "value": 65.5, "unit": "km/h" }` (value_unit_object), `{ "value": true, "last_changed_at": 1704067200000 }` (nested_object with timestamp), `[{ "value": 85, "unit": "%" }]` (array of value_unit_objects). |
-| **Data Type** | Select | ✅ Yes | JSON data type | `number`, `string`, `boolean`, `object`, `array`, `null` | Type safety and validation. Required for schema validation and API documentation. |
-| **Unit** | Text | ❌ No | Standard unit (if applicable) | `km/h`, `°C`, `l`, `%` | Fleeti standard unit. Important for consistency across providers. Used in API documentation. |
-| **Description** | Text | ✅ Yes | What the field represents | `Current fuel level in liters` | Critical for understanding field purpose. Used in API docs and developer reference. |
-| **WebSocket Contracts** | Multi-select | ❌ No | WebSocket streams that include this field | `live.map.markers`, `live.assets.list`, `live.asset.details` | Tracks which WebSocket contracts expose this field. Enables contract completeness checks and field visibility analysis. Options: `live.map.markers` (Live Map Markers), `live.assets.list` (Asset List), `live.asset.details` (Asset Details). |
-| **REST API Endpoints** | Multi-select | ❌ No | REST API endpoints that expose this field | `api.telemetry.hot`, `api.telemetry.warm`, `api.telemetry.historical` | Tracks which REST API endpoints expose this field. Helps determine field availability in different storage tiers and API versions. Options: `api.telemetry.hot` (Hot Storage API - core fields), `api.telemetry.warm` (Warm Storage API - complete fields), `api.telemetry.historical` (Historical API - time-range queries). |
-| **Provider Fields** | Relation | ❌ No | Links to Provider Fields DB (many-to-many via Field Mappings) | (Relation) | Shows which provider fields map to this Fleeti field. Useful for impact analysis. |
-| **Field Mappings** | Relation | ❌ No | Links to Field Mappings DB (one-to-many) | (Relation) | Direct access to mapping rules. Critical for configuration generation. |
-| **Dependencies** | Relation | ❌ No | Other Fleeti fields this depends on | Links to other Fleeti Fields | Tracks field dependencies. Critical for calculated/transformed fields. Ensures correct evaluation order. Prevents circular dependencies. |
-| **Computation Approach** | Text | ❌ No | High-level description of how field is computed (generic, not provider-specific) | `Derived from heading using cardinal direction calculation`, `Prioritized from multiple speed sources (CAN > OBD > GPS)`, `Combined with static asset metadata (tank capacity)` | Generic description of computation approach. **Note:** Provider-specific formulas, priority rules, and transformation logic are documented in the [Mapping Fields Database](https://www.notion.so/3-mapping-fields/README.md), not here. This field provides high-level understanding only. |
-| **Status** | Select | ✅ Yes | Field status | `active`, `deprecated`, `planned`, `under_review` | Tracks field lifecycle. Deprecated fields should not be used in new code. Critical for data quality. |
-| **Version Added** | Text | ✅ Yes | Version when field was added | `1.0.0` | Version tracking. Enables change history and migration planning. |
-| **Change History** | Relation | ❌ No | Links to Change History DB (one-to-many) | (Relation) | Complete audit trail of changes. Important for compliance and troubleshooting. |
-| **YAML Config Version** | Text | ❌ No | Last synced YAML version | `1.2.3` | Tracks sync status with generated configuration. Critical for configuration management workflow. |
-| **Notes** | Text | ❌ No | Additional notes or context | `Requires Asset Service integration` | Captures important context, limitations, or special requirements. Helps developers understand constraints. |
+| **Name** | Title | ✅ Yes | Stable field identifier (primary key) | `location_latitude` | Stable identifier that doesn't change even if field is reorganized. |
+| **Category** | Select | ✅ Yes | Field category/section | `location`, `motion`, `power`, `fuel`, `status` | Organizes fields by domain. |
+| **Complex Cumputation** | Select | ❌ No | Indicates if computation is complex | `Yes`, `No` | Flags complex computation logic. Note: Column name typo ("Cumputation"). |
+| **Computation Approach** | Text | ❌ No | Pseudo-code description (generic, not provider-specific) | `Derived from heading using cardinal direction calculation` | Human-readable pseudo-code. Full details in Notion raw content (not CSV). Provider-specific rules in Mapping Fields Database. |
+| **Computation Structure JSON** | Text | ❌ No | Machine-readable JSON for YAML generation | `{"type": "prioritized", "sources": [...]}` | Used by `generate_yaml_from_csv.py` to generate YAML structure. Contains type, sources, priorities, functions, parameters. |
+| **Data Type** | Select | ✅ Yes | JSON data type | `number`, `string`, `boolean`, `object`, `array` | Type safety and validation. |
+| **Dependencies** | Relation | ❌ No | Other Fleeti fields this depends on | (Relation) | Tracks dependencies for correct evaluation order. |
+| **Description** | Text | ✅ Yes | What the field represents | `Current fuel level in liters` | Field purpose. Used in API docs. |
+| **Field Path** | Text | ✅ Yes | Current path in telemetry JSON | `location.latitude` | **Can change** if field is reorganized. Used in YAML generation and API responses. |
+| **Field Type** | Select | ✅ Yes | Mapping type | `direct`, `prioritized`, `calculated`, `transformed`, `io_mapped`, `mix` | Determines transformation approach. |
+| **💽 Mapping Fields (db)** | Relation | ❌ No | Links to Mapping Fields DB | (Relation) | Direct access to mapping rules. |
+| **Notes** | Text | ❌ No | Additional context | `Requires Asset Service integration` | Important context or limitations. |
+| **💽 Provider Field (db)** | Relation | ❌ No | Links to Provider Fields DB | (Relation) | Shows which provider fields map to this field. |
+| **Provider Field Path** | Text | ❌ No | Provider field path reference | `params.can_speed` | Reference for documentation. |
+| **Provider Field Unit** | Text | ❌ No | Provider field unit reference | `km/h`, `m/s` | Reference for unit conversion. |
+| **REST API Endpoints** | Multi-select | ❌ No | REST API endpoints that expose this field | `/telemetry (CUSTOMER)`, `/telemetry (FLEETI)` | Tracks API exposure. |
+| **Status** | Select | ✅ Yes | Field status | `active`, `deprecated`, `planned`, `inactive`, `under_review` | Field lifecycle. |
+| **Unit** | Text | ❌ No | Standard unit (if applicable) | `km/h`, `°C`, `liters`, `%` | Fleeti standard unit. |
+| **Version Added** | Text | ✅ Yes | Version when field was added | `1.0.0` | Version tracking. |
+| **WebSocket Contracts** | Multi-select | ❌ No | WebSocket streams that include this field | `live.map.markers`, `live.assets.list`, `live.asset.details` | Tracks WebSocket exposure. |
 
 ## Primary Key
 
-**Field Name** serves as the primary key. Must be unique and follow dot-separated naming convention (e.g., `fuel.consumption.cumulative`, `location.latitude`).
+**Name** serves as the primary key. Must be unique and follow dot-separated naming convention (e.g., `location_latitude`, `fuel_consumption_cumulative`).
 
-**Important:** Field Name is a **stable identifier** that does not change even if the field is reorganized in the telemetry structure. Field Path can be updated independently to reflect the current technical location in the JSON structure.
+**Important:** Field Name is a **stable identifier** that doesn't change even if field is reorganized. Field Path can be updated independently.
+
+**Example:** `location_latitude` (stable) → `location.latitude` (can change to `position.latitude`)
 
 ## Validation Rules
 
-- **Field Name**: Must be unique and follow dot-separated format (e.g., `fuel.consumption.cumulative`)
-- **Field Path**: Must follow format `category.field` (lowercase, dot-separated). Can differ from Field Name if field is reorganized, but typically matches initially.
-- **Priority**: Must be one of: P0, P1, P2, P3, T, BL, ?, ignored, later
-- **Field Type**: Must match mapping type in Field Mappings database
+- **Name**: Must be unique and follow naming convention
+- **Field Path**: Must follow format `category.field` (lowercase, dot-separated)
+- **Field Type**: Must match mapping type in Mapping Fields database
 - **Dependencies**: Cannot create circular dependencies
 - **Status**: Cannot be `active` if no mappings exist (warning, not error)
 
-## Important: Provider-Specific Logic
+---
 
-**Calculation formulas, transformation rules, and priority chains are provider-specific** and are documented in the [🔀 Mapping Fields Database](https://www.notion.so/3-mapping-fields/README.md), not in this database.
+## Computation Documentation
 
-**Why?**
+Computation logic is documented at three levels:
 
-- A single Fleeti field (e.g., `motion.speed`) can have multiple provider fields mapping to it (`can_speed`, `obd_speed`, `speed`)
-- Each provider may require different formulas, unit conversions, or priority rules
-- The Mapping Fields Database contains the actual transformation logic per provider
-
-**This Database Contains:**
-
-- ✅ Semantic field definitions (what the field represents)
-- ✅ Field structure and data types
-- ✅ High-level computation approach (generic description)
-- ✅ Dependencies on other Fleeti fields
-- ✅ API/WebSocket exposure
-
-**Mapping Fields Database Contains:**
-
-- ✅ Provider-specific calculation formulas
-- ✅ Priority chains (which provider field to use first, second, etc.)
-- ✅ Transformation rules combining telemetry with static data
-- ✅ Unit conversions per provider
-- ✅ Actual implementation logic for configuration generation
-
-## Calculated Fields (Formulas)
-
-**Formula 1: Mapping Status**
-
-```
-if(empty(prop("Field Mappings")), "⚠️ Unmapped", "✅ Mapped")
-```
-
-Purpose: Visual indicator of mapping completeness. Helps identify fields needing mapping.
-
-**Formula 2: Has Dependencies**
-
-```
-if(empty(prop("Dependencies")), "No", "Yes")
-```
-
-Purpose: Quick indicator if field has dependencies. Important for calculated/transformed fields.
-
-**Formula 3: Days Since Last Modified**
-
-```
-dateBetween(prop("Last Modified"), now(), "days")
-```
-
-Purpose: Tracks how recently field was updated. Useful for change tracking.
-
-# How to Use
-
-This database is used to:
-
-- Define Fleeti telemetry structure
-- Prioritize field implementation
-- Generate configuration files
-- Reference field definitions in specifications
+1. **Computation Approach** (CSV): High-level pseudo-code description
+2. **Notion Database Raw Content**: Full detailed pseudo-code (not in CSV export)
+3. **Dedicated Markdown Files** (`.pseudo.md`): Very complex functions (e.g., `derive_fuel_levels.pseudo.md`, `derive_sensors_environment.pseudo.md`)
 
 ---
 
-# Related Documentation
+## YAML Configuration Generation
 
-- **Schema Specification**: Big picture reference (not definitive)
-- **🔀 Mapping Fields Database**: How provider fields map to Fleeti fields
-- **Provider Fields**: Field catalog documentation
+Data from this database is used by YAML generation scripts:
+
+- **Computation Structure JSON** → Generates YAML structure (via `generate_yaml_from_csv.py`)
+- **Computation Approach** → Added as YAML comments
+- **Field Path** → Added as YAML comments for reference
+
+See [YAML Configuration Database](../4-yaml-configuration/README.md) for details.
+
+## Provider-Specific Logic
+
+**Transformation rules and provider-specific mapping logic are in the [Mapping Fields Database](https://www.notion.so/Mapping-Fields-Database-2c73e766c9018042aa20c03b6963c681?pvs=21), not here.**
+
+This database contains generic field definitions and pseudo-code. Mapping Fields Database contains provider-specific transformation rules, priority chains, and unit conversions per provider.
+
+---
+
+# How to Use
+
+- Define Fleeti telemetry structure
+- Generate YAML configurations (via Mapping Fields Database)
+- Reference field definitions in WebSocket and API contracts
+- Track field dependencies and evaluation order
+
+---
+
+# Integration with Contracts
+
+**WebSocket Contracts** and **REST API Endpoints** columns track field exposure in WebSocket streams and REST API endpoints.
+
+See [WebSocket Contracts](https://www.notion.so/WebSocket-Contracts-2c73e766c90180fab506dba058ba2310?pvs=21) and [API Contracts](https://www.notion.so/API-Contracts-2c73e766c901807faafee6b8a3dd2d30?pvs=21) for specifications.
 
 ---
 
 # Fleeti Fields Database
 
-## Database
-
 [Fleeti Fields (db)](https://www.notion.so/2c73e766c901801d9ec1dbd299d1e30e?pvs=21)
-
-## Fleeti Fields Count
-
-[Untitled](https://www.notion.so/2dc3e766c90180f6a472de95fe871127?pvs=21)
-
-## Provider Fields Count
-
-[Untitled](https://www.notion.so/2dc3e766c901805fa4c4d638af851977?pvs=21)
-
-## Database Views
-
-[Untitled](https://www.notion.so/2dc3e766c901806d8153efbef8aa5351?pvs=21)

@@ -1,19 +1,19 @@
 **Status:** 🎯 Done
 
-This section defines the three critical databases that serve as the single source of truth for field definitions and mappings in the Fleeti Telemetry Mapping system.
+This section defines the four databases that serve as the single source of truth for field definitions and mappings in the Fleeti Telemetry Mapping system.
 
 ---
 
 # Purpose
 
-The databases section provides:
+**These databases are the definitive source of truth** for field definitions. They provide:
 
-- **Provider Fields Database**: Complete catalog of all provider-specific telemetry fields
-- **Fleeti Fields Database**: Complete catalog of all Fleeti telemetry fields (~343+ fields)
-- **Mapping Fields Database**: Field transformation rules linking provider fields to Fleeti fields
+- **Provider Fields Database**: Complete catalog of provider-specific telemetry fields (~340 Navixy fields)
+- **Fleeti Fields Database**: Complete catalog of unified Fleeti telemetry fields
+- **Mapping Fields Database**: Transformation rules linking provider fields to Fleeti fields
 - **YAML Configuration Database**: Versioned tracking of generated YAML configuration files
 
-**These databases are the definitive source of truth** for field definitions. Reference documents (like the schema specification) provide the big picture and help with prioritization, but field definitions come from these databases.
+Reference documents provide the big picture, but field definitions come from these databases.
 
 ---
 
@@ -21,47 +21,31 @@ The databases section provides:
 
 [Provider Fields Database](https://www.notion.so/Provider-Fields-Database-2c73e766c90180e79450f8d6500a0613?pvs=21)
 
-Catalog of all provider-specific telemetry fields organized by provider (Navixy, Teltonika, OEM, etc.).
+Catalog of provider-specific telemetry fields (Navixy, Teltonika, OEM, etc.).
 
-**Contents:**
+**Key Contents:** Field names, types, paths, availability, units, descriptions
 
-- Provider field names, types, and descriptions
-- Observed values and formats
-- Provider-specific field metadata
-- Field availability by provider
-
-**Purpose:** Used to map provider fields to Fleeti canonical fields.
+**Purpose:** Source fields for mapping to Fleeti canonical fields
 
 ---
 
 [Fleeti Fields Database](https://www.notion.so/Fleeti-Fields-Database-2c73e766c90180ad9750d33b64db1c01?pvs=21)
 
-Complete catalog of all Fleeti telemetry fields organized by section (Asset Metadata, Location, Motion, Power, Fuel, etc.).
+Complete catalog of unified Fleeti telemetry fields organized by category (Location, Motion, Power, Fuel, Status, etc.).
 
-**Contents:**
+**Key Contents:** Field names (stable identifiers), field paths, categories, priorities (P0-P3, T, BL), computation approaches, WebSocket/REST API exposure
 
-- Fleeti field names, types, and priorities
-- Field sections and organization
-- Transformation requirements
-- Visibility and usage (P0-P3, T, BL)
-
-**Purpose:** Serves as the canonical reference for Fleeti telemetry structure.
+**Purpose:** Canonical reference for Fleeti telemetry structure. Used by WebSocket contracts and REST API endpoints.
 
 ---
 
 [Mapping Fields Database](https://www.notion.so/Mapping-Fields-Database-2c73e766c9018042aa20c03b6963c681?pvs=21)
 
-Field transformation rules and priority chains linking provider fields to Fleeti fields.
+Transformation rules linking provider fields to Fleeti fields per provider.
 
-**Contents:**
+**Key Contents:** Mapping types (direct, prioritized, calculated, transformed, io_mapped), computation structure JSON, transformation logic, configuration levels
 
-- Direct mappings (1:1 provider → Fleeti)
-- Priority chains (multiple provider fields → one Fleeti field)
-- Calculation rules (derived fields)
-- I/O mappings (raw I/O → semantic fields)
-- Transformation logic
-
-**Purpose:** Links provider fields to Fleeti fields with transformation logic.
+**Purpose:** Defines how provider data transforms into Fleeti format
 
 ---
 
@@ -69,14 +53,9 @@ Field transformation rules and priority chains linking provider fields to Fleeti
 
 Versioned tracking of generated YAML configuration files per provider.
 
-**Contents:**
+**Key Contents:** Generated YAML files, semantic versions, generation metadata, relations to mapping fields
 
-- Generated YAML configuration files
-- Version tracking per provider
-- Generation metadata (date, status)
-- Relations to mapping fields used in generation
-
-**Purpose:** Version control and tracking of generated configuration files. Enables configuration management, rollback, and audit trail of deployed configurations.
+**Purpose:** Version control and deployment tracking of configuration files
 
 ---
 
@@ -85,155 +64,42 @@ Versioned tracking of generated YAML configuration files per provider.
 The databases are interconnected through relations:
 
 ```
-┌─────────────────────────────┐
-│  Provider Fields Database   │
-│                             │
-│  - Field Name (PK)          │
-│  - Provider                 │
-│  - Field Path               │
-│  - Data Type                │
-│  - Status                   │
-└──────────┬──────────────────┘
-           │
-           │ many-to-many
-           │ (via Field Mappings)
-           │
-           ▼
-┌──────────────────────────────────┐
-│  Mapping Fields Database         │
-│                                  │
-│  - Mapping Name (PK)             │
-│  - Fleeti Field (FK)             │
-│  - Provider Fields (FK)          │
-│  - Mapping Type                  │
-│  - Priority JSON                 │
-│  - Calculation Formula           │
-│  - Status                        │
-└──────────┬───────────────────┬───┘
-           │                   │
-           │ many-to-one       │ one-to-many
-           │                   │
-           ▼                   ▼
-┌─────────────────────────┐ ┌─────────────────────────────┐
-│  Fleeti Fields Database │ │ YAML Configuration Database │
-│                         │ │                             │
-│  - Field Name (PK)      │ │ - Config Name (PK)          │
-│  - Field Path           │ │ - Provider                  │
-│  - Category             │ │ - Version                   │
-│  - Priority             │ │ - YAML Content              │
-│  - Field Type           │ │ - Generation Date           │
-│  - Status               │ │ - Status                    │
-└─────────────────────────┘ └─────────────────────────────┘
+Provider Fields (N) ──many-to-many──> Mapping Fields (N)
+                                          │
+                                          │ many-to-one
+                                          ▼
+                                    Fleeti Fields (1)
+                                          │
+                                          │ self-relation
+                                          ▼
+                                    Dependencies
+                                          │
+Mapping Fields (1) ──one-to-many──> YAML Configuration (N)
 ```
 
-## Relationship Details
+## **Key Relationships**
 
-### Relationship 1: Provider Fields ↔ Mapping Fields
+1. **Provider Fields ↔ Mapping Fields** (N:M): Provider fields can be used in multiple mappings; mappings can use multiple provider fields
+2. **Mapping Fields → Fleeti Fields** (N:1): Multiple mappings can target one Fleeti field (e.g., different providers mapping to same field)
+3. **Fleeti Fields → Fleeti Fields** (Self-relation): Tracks dependencies between fields for correct evaluation order
+4. **Mapping Fields → YAML Configuration** (1:N): One YAML config version contains many mappings; tracks which mappings are in which config version
 
-**Type:** Many-to-Many (via Relation field)
-
-**From Database:** Provider Fields
-
-**To Database:** Mapping Fields
-
-**Via Field:** `Provider Fields` (Relation field in Mapping Fields)
-
-**Cardinality:** N:M (one provider field can be used in many mappings; one mapping can use many provider fields)
-
-**Required:** Yes (mapping must reference at least one provider field)
-
-**Cascade Rules:** If the provider field is deleted, mappings referencing it should be marked deprecated
-
-**Purpose:** Links provider fields to mapping rules. Enables:
-
-- Finding all mappings that use a specific provider field
-- Identifying which provider fields are used for a mapping
-- Impact analysis when provider fields change
-
-### Relationship 2: Mapping Fields → Fleeti Fields
-
-**Type:** Many-to-One
-
-**From Database:** Mapping Fields
-
-**To Database:** Fleeti Fields
-
-**Via Field:** `Fleeti Field` (Relation field in Mapping Fields)
-
-**Cardinality:** N:1 (many mappings can target one Fleeti field)
-
-**Required:** Yes (mapping must reference a Fleeti field)
-
-**Cascade Rules:** If the Fleeti field is deleted, mappings referencing it should be marked deprecated
-
-**Purpose:** Links mapping rules to target Fleeti fields. Enables:
-
-- Finding all mappings for a specific Fleeti field
-- Generating configuration for a specific field
-- Understanding how a field is computed
-
-### Relationship 3: Fleeti Fields → Fleeti Fields (Self-Relation)
-
-**Type:** Many-to-Many (Self-Relation)
-
-**Via Field:** `Dependencies` (Relation field in Fleeti Fields)
-
-**Cardinality:** N:M (one field can depend on many fields, and one field can be depended upon by many fields)
-
-**Required:** No (only for calculated/transformed fields)
-
-**Cascade Rules:** Prevents circular dependencies
-
-**Purpose:** Tracks field dependencies. Critical for:
-
-- Ensuring correct evaluation order
-- Identifying fields that need to be computed first
-- Preventing circular dependencies
-
-### Relationship 4: Mapping Fields → YAML Configuration
-
-**Type:** One-to-Many
-
-**From Database:** Mapping Fields
-
-**To Database:** YAML Configuration
-
-**Via Field:** `YAML Config` (Relation field in Mapping Fields)
-
-**Cardinality:** 1:N (one YAML config contains many mappings; one mapping belongs to one YAML config version)
-
-**Required:** No (optional, but recommended for tracking)
-
-**Purpose:** Links mapping rules to generated configuration versions. Enables:
-
-- Finding which YAML config version contains a specific mapping
-- Identifying all mappings included in a configuration version
-- Tracking configuration generation and versioning
-- Impact analysis when mappings change (which configs need regeneration)
+**Relationship Purpose:** Enables impact analysis, configuration generation, dependency tracking, and version management.
 
 ## Workflow
 
-1. **Provider fields are cataloged** in the Provider Fields Database
-    - Fields are discovered from provider packets
-    - Field properties are documented (type, unit, availability)
-2. **Fleeti fields are defined** in the Fleeti Fields Database
-    - Fields are organized by category
-    - Priorities are assigned (P0-P3)
-    - Field types are specified (direct, calculated, etc.)
-3. **Mapping rules are created** in the Mapping Fields Database
-    - Links provider fields to Fleeti fields
-    - Defines transformation logic
-    - Specifies priority orders, formulas, etc.
-4. **YAML configurations are generated and tracked** in the YAML Configuration Database
-    - Configurations are generated from mapping rules
-    - Versions are tracked and managed per provider
-    - Changes trigger new configuration versions
-    - Configuration files are versioned and audited
+1. **Catalog provider fields** → Provider Fields Database
+2. **Define Fleeti fields** → Fleeti Fields Database (with computation approaches)
+3. **Create mapping rules** → Mapping Fields Database (links provider → Fleeti with transformation logic)
+4. **Generate YAML configs** → YAML Configuration Database (tracks versions and deployment)
 
 ---
 
-# Related Documentation
+# Integration with Contracts
 
-- **Schema Specification**: Big picture reference (not definitive; databases are the source of truth)
-- **Field Mappings**: Field catalogs and mapping documentation
-- **Configuration Guide**: How configuration files are generated from databases
+Fleeti Fields Database columns **WebSocket Contracts** and **REST API Endpoints** track which fields are exposed in:
+
+- WebSocket streams (`live.map.markers`, `live.assets.list`, `live.asset.details`)
+- REST API endpoints (`/api/v1/telemetry/snapshots`, `/api/v1/telemetry/assets/{id}/history`)
+
+See  [WebSocket Contracts](https://www.notion.so/WebSocket-Contracts-2c73e766c90180fab506dba058ba2310?pvs=21) and [API Contracts](https://www.notion.so/API-Contracts-2c73e766c901807faafee6b8a3dd2d30?pvs=21)  for contract specifications.
