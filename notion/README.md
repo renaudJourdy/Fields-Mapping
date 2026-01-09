@@ -82,26 +82,52 @@ Complete technical specifications including telemetry system specification, stat
 
 ---
 
-### [Field Mappings](./2-documentation/field-mappings/README.md)
+### [Databases](./2-documentation/1-specifications/1-databases/README.md)
 
-*(✅ Validated)*
+*(✅ Done)*
 
-Field catalogs and mapping documentation including Fleeti fields catalog, provider fields catalog, and mapping rules.
+Four databases that serve as the single source of truth for field definitions and mappings: Provider Fields Database, Fleeti Fields Database, Mapping Fields Database, and YAML Configuration Database.
 
-> *Field mapping documentation covering Fleeti telemetry fields, provider field catalogs, and transformation rules for converting provider data to Fleeti format.*
+> *These databases are the definitive source of truth for field definitions. They provide complete catalogs of provider-specific telemetry fields, unified Fleeti telemetry fields, transformation rules linking provider to Fleeti fields, and versioned tracking of generated YAML configuration files.*
 > 
 
 **Audience:** Developers and field mapping specialists
 
 ---
 
-### [Reference Materials](./2-documentation/reference-materials/README.md)
+### [WebSocket Contracts](./2-documentation/1-specifications/2-websocket-contracts/README.md)
+
+*(🎯 Structure Created - Content To Be Developed)*
+
+WebSocket contract specifications for real-time telemetry streaming to frontend applications, including Live Map Markers, Asset List, and Asset Details streams.
+
+> *WebSocket contracts define stream names, message formats, subscription parameters, update patterns (snapshot/delta), and error handling. Contracts specify which Fleeti fields are included in each stream, referencing field definitions from the Fleeti Fields Database.*
+> 
+
+**Audience:** Frontend developers and backend developers
+
+---
+
+### [API Contracts](./2-documentation/1-specifications/3-api-contracts/README.md)
+
+*(✅ Done)*
+
+REST API contract specifications for telemetry endpoints including snapshots, asset history, and visibility rules with customer vs admin tiers.
+
+> *API contracts define endpoint URLs, request/response formats, query parameters, pagination, authentication, and error responses. Contracts specify Fleeti fields from the database and indicate which storage tiers are used (hot/warm/cold) for each endpoint.*
+> 
+
+**Audience:** Frontend developers and backend developers
+
+---
+
+### [Reference Materials](./2-documentation/4-reference-materials/README.md)
 
 *(✅ Validated)*
 
-Reference documentation including provider catalogs, enum definitions, and legacy documentation.
+Reference documentation including telemetry full schema, status rules, and provider field catalogs (Navixy, Flespi, Teltonika).
 
-> *Reference materials including provider field catalogs (Navixy, Teltonika, Flespi), Fleeti API enumerations, and historical mapping documents.*
+> *Reference materials providing complete telemetry schema reference with Navixy field mappings, status compatibility matrix for asset types, and provider field catalogs in CSV format for Navixy, Flespi, and Teltonika devices.*
 > 
 
 **Audience:** Developers and reference users
