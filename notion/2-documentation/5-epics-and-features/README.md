@@ -1,6 +1,6 @@
-# Epic 1: Provider Ingestion & Data Forwarding
+# Epic 1 - Provider Ingestion & Data Forwarding
 
-## F1.1: Navixy Data Forwarding Integration
+## F1.1 - Navixy Data Forwarding Integration
 
 - Connect to Navixy Data Forwarding endpoint
 - Authenticate and establish connection per customer
@@ -10,7 +10,7 @@
 - Store raw packets in cold storage
 - Forward parsed data to transformation pipeline
 
-## F1.2: Provider-Agnostic Architecture
+## F1.2 - Provider-Agnostic Architecture
 
 **Architectural Requirement**
 
@@ -23,7 +23,7 @@
 
 **Note:** Architecture readiness, not implementing multiple providers yet
 
-## F1.3: Customer Management for Data Forwarding
+## F1.3 - Customer Management for Data Forwarding
 
 - Manually add single customer to data forwarding
 - Manually remove single customer from data forwarding
@@ -31,9 +31,9 @@
 - Bulk remove multiple customers from data forwarding
 - Suspend data forwarding per customer
 - Resume data forwarding per customer
-- Create documentation: How to connect to Navixy for specific customer
+- Create documentation - How to connect to Navixy for specific customer
 
-## F1.4: Data Forwarding Health Monitoring
+## F1.4 - Data Forwarding Health Monitoring
 
 - Monitor connection status per customer
 - Detect when data forwarding stops (partial failure)
@@ -42,7 +42,7 @@
 - Alert system for total failures
 - Track connection health metrics
 
-## F1.5: Data Recovery System
+## F1.5 - Data Recovery System
 
 - Detect gap in received data
 - Manual recovery trigger for lost packets via Navixy API
@@ -52,7 +52,7 @@
 - Handle recovery workflow decision (rebuild raw packet logs or direct API to database)
 - Validate recovered data integrity
 
-## F1.6: Auto-sync with Customer System
+## F1.6 - Auto-sync with Customer System
 
 - Automatic data forwarding setup when new customer added in Fleeti Admin
 - Synchronization with customer-based system
@@ -61,9 +61,9 @@
 
 ---
 
-# Epic 2: Transformation Pipeline
+# Epic 2 - Transformation Pipeline
 
-## F2.1: YAML Configuration Execution
+## F2.1 - YAML Configuration Execution
 
 - Load provider-specific YAML mapping files
 - Execute YAML configuration for raw packets
@@ -75,7 +75,7 @@
 - Transform raw packets to Fleeti format
 - Validate transformed data structure
 
-## F2.2: Hierarchical Configuration Support
+## F2.2 - Hierarchical Configuration Support
 
 **Architecture**
 
@@ -88,9 +88,9 @@
 
 ---
 
-# Epic 3: Status Computation
+# Epic 3 - Status Computation
 
-## F3.1: Status Families Computation
+## F3.1 - Status Families Computation
 
 - Compute Connectivity status family (online/offline)
 - Compute Transit status family (in_transit/parked)
@@ -98,13 +98,13 @@
 - Compute Immobilization status family (free/immobilized/immobilizing/releasing)
 - Compute top_status using priority hierarchy (Connectivity > Immobilization > Engine > Movement > Online)
 - Backend-driven status consistency (no frontend computation)
-- Required for: Mobile app marker rendering, WebSocket streams
+- Required for - Mobile app marker rendering, WebSocket streams
 
 ---
 
-# Epic 4: Storage Strategy
+# Epic 4 - Storage Strategy
 
-## F4.1: Multi-Tier Storage Implementation
+## F4.1 - Multi-Tier Storage Implementation
 
 - Implement hot storage for live map markers (< 100ms latency requirement)
 - Implement warm storage for asset list/details (< 500ms latency requirement)
@@ -114,7 +114,7 @@
 - Optimize hot storage for real-time queries
 - Optimize warm storage for list/details queries
 
-## F4.2: Storage Retention Policy
+## F4.2 - Storage Retention Policy
 
 - Implement 1 month retention in hot/warm storage
 - Automatically move older data to cold storage
@@ -124,15 +124,15 @@
 
 **Investigation Items:**
 
-- Cost comparison: 1 month vs 1 year in hot/warm storage
-- Performance metrics: Cold storage query latency for 1 month of history
-- Hot vs Warm: Performance and cost differences (should we only have hot storage?)
+- Cost comparison - 1 month vs 1 year in hot/warm storage
+- Performance metrics - Cold storage query latency for 1 month of history
+- Hot vs Warm - Performance and cost differences (should we only have hot storage?)
 
 ---
 
-# Epic 5: Troubleshooting & Investigation
+# Epic 5 - Troubleshooting & Investigation
 
-## F5.1: Mapping Investigation Tool
+## F5.1 - Mapping Investigation Tool
 
 - Rebuild mapping logic for specific time period
 - Show which provider fields were selected (e.g., CAN speed vs OBD speed)
@@ -142,20 +142,20 @@
 - Visualize field selection process
 - Export investigation results
 
-## F5.2: Mapping Audit Trail
+## F5.2 - Mapping Audit Trail
 
 **Optional**
 
 - Store mapping decisions in cold storage for 1 year
-- Record plaintext correspondence: value, source field, calculation parameters
+- Record plaintext correspondence - value, source field, calculation parameters
 - Enable audit trail querying
 - Implement audit trail retention policy
 
 ---
 
-# Epic 6: Data Consumption
+# Epic 6 - Data Consumption
 
-## F6.1: WebSocket Stream - `live.map.markers`
+## F6.1 - WebSocket Stream - `live.map.markers`
 
 - Implement WebSocket subscription handler for `live.map.markers`
 - Handle viewport-based filtering
@@ -169,7 +169,7 @@
 - Support real-time heading updates
 - Support real-time status updates
 
-## F6.2: WebSocket Stream - `live.assets.list`
+## F6.2 - WebSocket Stream - `live.assets.list`
 
 - Implement WebSocket subscription handler for `live.assets.list`
 - Support grouping modes (group/type/geofence)
@@ -180,7 +180,7 @@
 - Handle real-time status updates
 - Handle real-time metric updates
 
-## F6.3: WebSocket Stream - `live.asset.details`
+## F6.3 - WebSocket Stream - `live.asset.details`
 
 - Implement WebSocket subscription handler for `live.asset.details`
 - Support asset-specific subscription (by asset_id)
@@ -191,7 +191,7 @@
 - Support ongoing trip visualization
 - Handle subscription switching (change asset)
 
-## F6.4: WebSocket Stream - `live.map.geofences`
+## F6.4 - WebSocket Stream - `live.map.geofences`
 
 - Implement WebSocket subscription handler for `live.map.geofences`
 - Handle viewport-based geofence filtering
@@ -201,7 +201,7 @@
 - Support real-time geofence updates
 - Handle geofence geometry rendering
 
-## F6.5: REST API - Telemetry Snapshots
+## F6.5 - REST API - Telemetry Snapshots
 
 - Implement `/api/v1/telemetry/snapshots` endpoint (customer scope)
 - Implement `/api/v1/admin/telemetry/snapshots` endpoint (admin scope)
@@ -211,7 +211,7 @@
 - Support filtering and pagination
 - Optimize query performance
 
-## F6.6: REST API - Asset Telemetry History
+## F6.6 - REST API - Asset Telemetry History
 
 - Implement `/api/v1/telemetry/assets/{asset_id}/history` endpoint (customer scope)
 - Implement `/api/v1/admin/telemetry/assets/{asset_id}/history` endpoint (admin scope)
@@ -222,7 +222,7 @@
 - Support pagination
 - Optimize cross-tier query performance
 
-## F6.7: REST API - Trip History
+## F6.7 - REST API - Trip History
 
 - Implement trip history overview endpoint
 - Implement trip history details endpoint
@@ -231,7 +231,7 @@
 - Support trip filtering and pagination
 - Aggregate trip waypoints and metrics
 
-## F6.8: REST API - Geofences
+## F6.8 - REST API - Geofences
 
 - Implement `/api/v1/geofences` endpoint (list)
 - Implement `/api/v1/geofences/{geofence_id}` endpoint (details)
@@ -241,21 +241,21 @@
 - Return geofence geometry and metadata
 - Support view-only access (no CRUD operations)
 
-## F6.9: Advanced WebSocket Filters
+## F6.9 - Advanced WebSocket Filters
 
-- Implement advanced filtering: group_ids
-- Implement advanced filtering: customer_reference
-- Implement advanced filtering: country
-- Implement advanced filtering: focus mode
-- Implement advanced filtering: top_status
+- Implement advanced filtering - group_ids
+- Implement advanced filtering - customer_reference
+- Implement advanced filtering - country
+- Implement advanced filtering - focus mode
+- Implement advanced filtering - top_status
 - Enhance viewport and filter capabilities
 - Support filter combinations
 
 ---
 
-# Epic 7: Provider Priority Configuration
+# Epic 7 - Provider Priority Configuration
 
-## F7.1: Provider Priority Rules
+## F7.1 - Provider Priority Rules
 
 - Implement field-level provider selection for multi-gateway assets
 - Support hierarchical configuration (default/customer/group/asset)
