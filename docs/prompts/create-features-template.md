@@ -50,27 +50,9 @@ Before starting, identify your feature type to determine which optional sections
 
 ## Core Template Structure
 
-### 1. Header & Metadata
+**Note:** Do NOT include header/metadata section. Start directly with the Description section.
 
-```markdown
-# F[N].[M] - [Feature Name]
-
-**Epic:** E[N] - [Epic Name]
-**Feature Type:** [Ingestion/Transformation/Computation/Storage/API/Operational/Architecture/Configuration]
-**Depends on:** [List dependencies: other features, epics, or external services]
-**Related Features:** [List related features within the same or other epics]
-**Status:** [Draft/In Review/Approved]
-```
-
-**Guidance:**
-- Use the exact feature number from the epic README
-- Be specific about dependencies (e.g., "F2.1 - YAML Configuration Execution")
-- List related features that interact with this one
-- Update status as feature progresses
-
----
-
-### 2. Description
+# Description
 
 **What to include:**
 - Clear statement of what the feature does (1-2 sentences)
@@ -91,11 +73,11 @@ Before starting, identify your feature type to determine which optional sections
 
 ---
 
-### 3. Business Logic / Processing Logic
+# Business Logic / Processing Logic
 
 This is the core section. Include all relevant subsections based on your feature type.
 
-#### 3.1 Core Rules and Priorities
+## Core Rules and Priorities
 
 **What to include:**
 - Priority rules (if applicable)
@@ -114,7 +96,7 @@ This is the core section. Include all relevant subsections based on your feature
 - Use bullet points for decision logic
 - Use tables for state matrices or priority hierarchies
 
-#### 3.2 Processing Steps
+## Processing Steps
 
 **What to include:**
 - Step-by-step workflow (numbered steps)
@@ -133,7 +115,7 @@ This is the core section. Include all relevant subsections based on your feature
 - Be specific about inputs and outputs at each step
 - Reference data structures and formats
 
-#### 3.3 Edge Cases and Error Handling
+## Edge Cases and Error Handling
 
 **What to include:**
 - Error conditions and how they're handled
@@ -152,7 +134,7 @@ This is the core section. Include all relevant subsections based on your feature
 - Group related edge cases together
 - Reference error handling documentation when applicable
 
-#### 3.4 State Management (If Applicable)
+## State Management (If Applicable)
 
 **What to include:**
 - System states
@@ -179,7 +161,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 
 #### For API/WebSocket Features (E6)
 
-**3.5 API/WebSocket Contract**
+**## API/WebSocket Contract**
 
 **What to include:**
 - Endpoint URL or stream name
@@ -200,14 +182,14 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - Reference contract documentation: `notion/2-documentation/2-websocket-contracts/` or `notion/2-documentation/3-api-contracts/`
 - Include error response examples
 
-**3.6 Rate Limiting and Throttling**
+**## Rate Limiting and Throttling**
 
 **What to include:**
 - Rate limits (requests per second, messages per second)
 - Throttling behavior
 - Rate limit headers or error responses
 
-**3.7 Subscription Management (WebSocket only)**
+**## Subscription Management (WebSocket only)**
 
 **What to include:**
 - Subscription lifecycle
@@ -215,7 +197,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - Reconnection logic
 - Sequence number handling
 
-**3.8 Message Sequencing (WebSocket only)**
+**## Message Sequencing (WebSocket only)**
 
 **What to include:**
 - Sequence number guarantees
@@ -227,7 +209,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 
 #### For Data Processing Features (E2, E3)
 
-**3.5 Input/Output Specifications**
+**## Input/Output Specifications**
 
 **What to include:**
 - Input data sources and formats
@@ -265,7 +247,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - Use formulas for calculations
 - Use tables for mapping matrices
 
-**3.7 YAML Configuration References**
+**## YAML Configuration References**
 
 **What to include:**
 - Which YAML configuration files are used
@@ -281,7 +263,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - Reference YAML configuration: `notion/2-documentation/1-field-mappings-and-databases/4-yaml-configuration/`
 - Reference YAML mapping reference: `notion/2-documentation/1-field-mappings-and-databases/4-yaml-configuration/yaml-mapping-reference.yaml`
 
-**3.8 Field Mapping References**
+**## Field Mapping References**
 
 **What to include:**
 - Provider fields used
@@ -297,7 +279,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - Reference Mapping Fields Database: `notion/2-documentation/1-field-mappings-and-databases/3-mapping-fields/`
 - Use tables for field mappings
 
-**3.9 Computation Formulas (If Applicable)**
+**## Computation Formulas (If Applicable)**
 
 **What to include:**
 - Mathematical formulas
@@ -320,7 +302,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 
 #### For Storage Features (E4)
 
-**3.5 Storage Tier Strategy**
+**## Storage Tier Strategy**
 
 **What to include:**
 - Which storage tier is used (hot/warm/cold)
@@ -337,7 +319,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - Use tables for tier characteristics
 - Document latency requirements
 
-**3.6 Data Lifecycle**
+**## Data Lifecycle**
 
 **What to include:**
 - Data creation process
@@ -351,7 +333,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - When is data archived?
 - When is data deleted?
 
-**3.7 Retention Policies**
+**## Retention Policies**
 
 **What to include:**
 - Retention periods per tier
@@ -363,7 +345,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - What triggers data movement between tiers?
 - Are there exceptions to retention rules?
 
-**3.8 Migration Logic**
+**## Migration Logic**
 
 **What to include:**
 - Tier movement procedures
@@ -377,7 +359,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - When does migration occur?
 - How is consistency maintained during migration?
 
-**3.9 Query Patterns**
+**## Query Patterns**
 
 **What to include:**
 - Common query patterns
@@ -395,7 +377,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 
 #### For Integration Features (E1)
 
-**3.5 External Service Contracts**
+**## External Service Contracts**
 
 **What to include:**
 - Provider API endpoints
@@ -414,7 +396,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - Use code blocks for API examples
 - Document authentication flows
 
-**3.6 Connection Management**
+**## Connection Management**
 
 **What to include:**
 - Connection lifecycle
@@ -428,7 +410,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - What happens on connection failure?
 - How are connections monitored?
 
-**3.7 Error Handling**
+**## Error Handling**
 
 **What to include:**
 - Retry logic
@@ -442,7 +424,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - What are the failure modes?
 - How is recovery handled?
 
-**3.8 Health Monitoring**
+**## Health Monitoring**
 
 **What to include:**
 - Health check procedures
@@ -456,7 +438,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - When are alerts triggered?
 - How is status reported?
 
-**3.9 Data Recovery Procedures**
+**## Data Recovery Procedures**
 
 **What to include:**
 - Gap detection logic
@@ -474,7 +456,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 
 #### For Operational Features (E1.4, E1.5, E5)
 
-**3.5 Monitoring Metrics**
+**## Monitoring Metrics**
 
 **What to include:**
 - Key metrics to track
@@ -492,7 +474,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - Use tables for metric definitions
 - Reference monitoring documentation
 
-**3.6 Alerting Rules**
+**## Alerting Rules**
 
 **What to include:**
 - Alert conditions
@@ -510,7 +492,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - Use tables for alert rules
 - Document threshold values
 
-**3.7 Recovery Procedures**
+**## Recovery Procedures**
 
 **What to include:**
 - Recovery triggers
@@ -524,7 +506,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - How is recovery validated?
 - Can recovery be rolled back?
 
-**3.8 Investigation Workflows**
+**## Investigation Workflows**
 
 **What to include:**
 - Investigation triggers
@@ -538,7 +520,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - What data is needed for investigation?
 - What tools are used?
 
-**3.9 Audit Trail Logic**
+**## Audit Trail Logic**
 
 **What to include:**
 - What is logged
@@ -552,7 +534,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - How long are logs retained?
 - How are logs queried?
 
-**3.10 Data Quality Checks**
+**## Data Quality Checks**
 
 **What to include:**
 - Quality validation rules
@@ -570,7 +552,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 
 #### For Architecture Features (E1.2, E2.2)
 
-**3.5 Design Principles**
+**## Design Principles**
 
 **What to include:**
 - Architectural principles
@@ -588,7 +570,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - Use bullet points for principles
 - Document decision rationale
 
-**3.6 Abstraction Layers**
+**## Abstraction Layers**
 
 **What to include:**
 - Layer definitions
@@ -606,7 +588,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - Use diagrams or tables for layer structure
 - Document interfaces between layers
 
-**3.7 Future Extensibility**
+**## Future Extensibility**
 
 **What to include:**
 - Extension points
@@ -620,7 +602,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - How is backward compatibility maintained?
 - What are the migration paths?
 
-**3.8 Implementation Readiness**
+**## Implementation Readiness**
 
 **What to include:**
 - What needs to be implemented
@@ -634,7 +616,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - What are the implementation phases?
 - What are the success criteria?
 
-**3.9 Provider Isolation**
+**## Provider Isolation**
 
 **What to include:**
 - Isolation mechanisms
@@ -648,7 +630,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - What is shared vs isolated?
 - How is isolation tested?
 
-**3.10 Configuration Hierarchy**
+**## Configuration Hierarchy**
 
 **What to include:**
 - Hierarchy levels
@@ -666,7 +648,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 
 #### For Configuration Features (E7)
 
-**3.5 Configuration Structure**
+**## Configuration Structure**
 
 **What to include:**
 - Configuration format
@@ -684,7 +666,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - Use code blocks for configuration examples
 - Reference configuration documentation
 
-**3.6 Hierarchy Resolution**
+**## Hierarchy Resolution**
 
 **What to include:**
 - Resolution order
@@ -702,7 +684,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - Use numbered lists for resolution order
 - Use examples for merge logic
 
-**3.7 Default Behaviors**
+**## Default Behaviors**
 
 **What to include:**
 - Default values
@@ -716,7 +698,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - What is the fallback logic?
 - How are defaults inherited?
 
-**3.8 Override Mechanisms**
+**## Override Mechanisms**
 
 **What to include:**
 - Override levels
@@ -730,7 +712,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - How are overrides validated?
 - What is the override precedence?
 
-**3.9 Priority Rules**
+**## Priority Rules**
 
 **What to include:**
 - Priority definition
@@ -744,7 +726,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 - How are conflicts handled?
 - What are priority examples?
 
-**3.10 Validation Logic**
+**## Validation Logic**
 
 **What to include:**
 - Validation rules
@@ -760,7 +742,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 
 ---
 
-### 4. Performance Requirements (When Applicable)
+# Performance Requirements (When Applicable)
 
 **What to include:**
 - Latency requirements (response time, processing time)
@@ -788,7 +770,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 
 ---
 
-### 5. Acceptance Criteria
+# Acceptance Criteria
 
 **What to include:**
 - Observable behaviors in Given-When-Then format
@@ -816,13 +798,13 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 
 **Example:**
 ```markdown
-### AC1 - Successful Data Forwarding Connection
+## AC1 - Successful Data Forwarding Connection
 
 **Given** a customer is configured for Navixy data forwarding  
 **When** the system establishes connection to Navixy endpoint  
 **Then** connection is authenticated, subscription is active, and raw packets are received
 
-### AC2 - Connection Failure Handling
+## AC2 - Connection Failure Handling
 
 **Given** a data forwarding connection is active  
 **When** the connection to Navixy endpoint fails  
@@ -831,7 +813,7 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 
 ---
 
-### 6. References
+# References
 
 **What to include:**
 - Related epic documentation
@@ -848,26 +830,26 @@ Include these subsections under "Business Logic / Processing Logic" based on you
 
 **Example:**
 ```markdown
-### Related Documentation
+## Related Documentation
 - [Epic 1 - Provider Ingestion & Data Forwarding](../E1-Provider-Ingestion-Data-Forwarding/README.md)
 - [F1.1 - Navixy Data Forwarding Integration](../E1-Provider-Ingestion-Data-Forwarding/F1.1-Navixy-Data-Forwarding-Integration.md)
 
-### Database References
+## Database References
 - [Fleeti Fields Database](../../1-field-mappings-and-databases/2-fleeti-fields/README.md)
 - [Mapping Fields Database](../../1-field-mappings-and-databases/3-mapping-fields/README.md)
 
-### Contract Specifications
+## Contract Specifications
 - [WebSocket Contracts - Live Map Markers](../../2-websocket-contracts/1-live-map-markers.md)
 - [API Contracts - Telemetry Snapshots](../../3-api-contracts/1-telemetry-snapshots.md)
 
-### Reference Materials
+## Reference Materials
 - [Telemetry Full Schema](../../4-reference-materials/1-telemetry-full-schema.md)
 - [Status Rules](../../4-reference-materials/2-status-rules.md)
 ```
 
 ---
 
-### 7. Non-Goals
+# Non-Goals
 
 **What to include:**
 - Explicit out-of-scope items
